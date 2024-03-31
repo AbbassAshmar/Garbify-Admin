@@ -1,12 +1,12 @@
-import { createContext,useState,useEffect } from "react";
+import { createContext, useEffect, useState } from 'react'
 import defaultUserProfilePicture from "../assets/defaultUserProfilePicture.jpg";
 
-const userStateContext = createContext({
+export const userContext = createContext({
     user:null,
     token:null,
     setToken:()=>{},
     setUser:()=>{},
-});
+})
 
 const DEFAULT_USER = {
     id:null,
@@ -37,7 +37,7 @@ async function refreshAccessToken(){
 }
 
 // tries to fetch user one time if a token exists
-export default function UserState({children}){
+export default function UserStateContext({children}){
     const [token , setToken] = useState(localStorage.getItem("token")||null);
     const [user, setUser] = useState(DEFAULT_USER);
 
@@ -48,7 +48,7 @@ export default function UserState({children}){
     
     async function fetchUserInfo() {
         try {
-            const uri = import.meta.env.VITE_API_URL + '/api/users/user';
+            const url = import.meta.env.VITE_API_DOMAIN + '/api/users/user';
             let init = {
                 method: "GET",
                 headers: {
@@ -58,13 +58,16 @@ export default function UserState({children}){
                 },
             };
 
-            let request = await fetch(uri, init);
+            let request = await fetch(url, init);
             
             // could be that the access token is expired
-            if (request.status === 401 && (new_token = await refreshAccessToken())) {
-                init.headers['Authorization'] = 'Bearer ' + new_token;
-                request = await fetch(uri, init); // try again with the new token
-                _setToken(new_token)
+            if (request.status === 401 ) {
+                let new_token = await refreshAccessToken();
+                if (new_token){
+                    init.headers['Authorization'] = 'Bearer ' + new_token;
+                    request = await fetch(uri, init); // try again with the new token
+                    _setToken(new_token)
+                }
             }
 
             if (request.status === 200) {
@@ -105,16 +108,17 @@ export default function UserState({children}){
         }
     }
 
+    
     return (
         <>
-        <userStateContext.Provider value={{
-            token,
-            user,
-            setToken:_setToken,
-            setUser:_setUser,
-        }}>
-            {children}
-        </userStateContext.Provider>
+            <userContext.Provider value={{
+                token:token,
+                user:user,
+                setToken:_setToken,
+                setUser:_setUser,
+            }}>
+                {children}
+            </userContext.Provider>
         </>
     )
 }
