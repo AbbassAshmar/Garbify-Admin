@@ -23,6 +23,10 @@ justify-content:center;
 const BarsIcon = styled.i`
 font-size:1.3rem;
 color:var(--main-color);
+cursor:pointer;
+&:hover{
+    color:#009BCC;
+}
 `
 const SearchBarContainer = styled.form`
 position:relative;
@@ -101,13 +105,16 @@ font-size:var(--small-1);
 color:#A8AAAE;
 font-weight:400;
 `
-export default function Navbar(){
+export default function Navbar({setShowSideBarNavigation,showSideBarNavigation}){
     const userState = useUserState();
     
+    function handleBarsIconClick(){
+        setShowSideBarNavigation(!showSideBarNavigation)
+    }
     return (
         <Container>
             <LogoContainer>
-                <BarsIcon className="fa-solid fa-bars" />
+                <BarsIcon onClick={handleBarsIconClick} className="fa-solid fa-bars" />
                 <Logo />
             </LogoContainer>
             <SearchBarContainer>
