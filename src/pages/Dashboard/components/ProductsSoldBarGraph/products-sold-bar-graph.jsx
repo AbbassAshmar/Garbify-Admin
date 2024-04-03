@@ -14,6 +14,8 @@ gap:2rem;
 width: 100%;
 height:100%;
 justify-content: space-between;
+border-radius: 6px;
+box-shadow: 0px 0px 15px rgba(0,0,0,.11) ;
 `
 
 const BarContainer = styled.div`

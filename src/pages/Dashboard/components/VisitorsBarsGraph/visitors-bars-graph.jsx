@@ -12,6 +12,8 @@ gap:2rem;
 width: 100%;
 height:100%;
 justify-content: space-between;
+border-radius: 6px;
+box-shadow: 0px 0px 15px rgba(0,0,0,.11) ;
 `
 
 const Content = styled.div`
@@ -33,12 +35,9 @@ const DetailsContainer = styled.div`
 
 `
 
-const ClientsCount = styled.h5`
+const ClientsCount = styled.h3`
 font-weight:600;
-display:flex;
-align-items:flex-end;
-gap:4px;
-
+font-size:var(--heading-3);
 `
 const TimePeriod = styled.p`
 font-size:var(--body);
@@ -94,9 +93,7 @@ export default function VisitorsBarsGraph(){
             <Content>
                 <TextContainer>
                     <DetailsContainer>
-                        <ClientsCount>
-                            <h3 style={{fontSize:"var(--heading-3)",fontWeight:"600"}}>+300</h3> 
-                        </ClientsCount>
+                        <ClientsCount>+300</ClientsCount>
                         <TimePeriod>clients last 10 days</TimePeriod>
                     </DetailsContainer>
                     <SummaryContainer>

@@ -28,28 +28,41 @@ align-items: stretch;
 `
 const TrafficProductsContainer = styled.div`
 display:flex;
-overflow:hidden;
 justify-content:space-between;
 gap:2rem;
 flex:1;
 `
 const TableOverviewGraphs = styled.div`
 width: 100%;
+display: flex;
+gap:2rem;
+
+@media screen and (max-width:1400px){
+    flex-direction: column;
+}
 `
 const ProductsPerformanceTableContainer = styled.div`
-flex:1;
+flex:1.6;
 `
 const OverviewGraphsContainer = styled.div`
 flex:1;
 gap:2rem;
 display: flex;
 flex-direction: column;
+@media screen and (max-width:1400px){
+    flex-direction: row;
+    align-items: stretch;
+}
 `
 export default function Dashboard(){
     return(
         <Container>
-            <StatisticsBoxes />
-            <SalesGraph />
+            <div>
+                <StatisticsBoxes />
+                <SalesGraph />
+            </div>
+
+
             <ExtraGraphs>
                 <div style={{flex:'1'}}>
                     <VisitorsBarsGraph />
@@ -63,15 +76,21 @@ export default function Dashboard(){
                     </div>
                 </TrafficProductsContainer>
             </ExtraGraphs>
+
             <TableOverviewGraphs>
                 <ProductsPerformanceTableContainer>
                     <ProductsPerformanceTable />
                 </ProductsPerformanceTableContainer>
                 <OverviewGraphsContainer>
-                    <CategoriesOverviewGraph />
-                    <SalesOverviewGraph />
+                    <div style={{flex:'1'}}>
+                        <CategoriesOverviewGraph />
+                    </div>
+                    <div style={{flex:'1'}}>
+                        <SalesOverviewGraph />
+                    </div>
                 </OverviewGraphsContainer>
             </TableOverviewGraphs>
+
         </Container>
     )
 }

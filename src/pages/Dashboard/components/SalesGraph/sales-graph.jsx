@@ -11,6 +11,8 @@ display:flex;
 flex-direction:column;
 align-items:flex-start;
 gap:2rem;
+border-radius: 6px;
+box-shadow: 0px 0px 15px rgba(0,0,0,.11) ;
 `
 const GraphContainer = styled.div`
 width:100%;

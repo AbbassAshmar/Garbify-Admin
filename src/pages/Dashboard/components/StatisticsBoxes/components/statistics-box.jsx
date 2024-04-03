@@ -1,25 +1,29 @@
-
 import styled from "styled-components";
 import IncreaseIcon from "../../../../../components/IncreaseIcon/increase-icon";
 import DecreaseIcon from "../../../../../components/DecreaseIcon/decrease-icon";
 
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS } from 'chart.js/auto' 
+import { useEffect, useState } from "react";
+
+import useUserState  from "../../../../../hooks/use-user-state";
+import { useSendRequest } from "../../../../../hooks/use-send-request";
 
 const Container = styled.div`
-display:flex;
-align-items:center;
-justify-content:space-between;
-background:white;
-padding:2rem;
 gap:2rem;
+display:flex;
+padding:2rem;
+background:white;
+align-items:center;
+border-radius: 6px;
+justify-content:space-between;
+box-shadow: 0px 0px 15px rgba(0,0,0,.11) ;
 `
-
 const StatIconContainer = styled.div`
+gap:1rem;
 display:flex;
 align-items:flex-starts;
 flex-direction:column;
-gap:1rem;
 `
 const IconContainer = styled.div`
 display:flex;
@@ -27,11 +31,11 @@ align-items:center;
 justify-content:center;
 width:40px;
 height:40px;
-background:rgba(255,0,0,0.2);
+background:${({$color})=>$color};
 border-radius: 50%;
 `
 const Icon = styled.i`
-color:rgba(255,0,0,01);
+color:${({$color})=>$color};
 font-size:1rem;
 `
 const Stats = styled.div`
@@ -55,14 +59,13 @@ width:100%;
 flex-direction:column;
 justify-content:space-between;
 `
-const ValueStatus = styled.div`
+
+const PercentageChange = styled.div`
+font-weight:600;
 display:flex;
 align-items:center;
 gap:.25rem;
 align-self:flex-end;
-`
-const ChangeQuantity = styled.div`
-font-weight:600;
 `
 
 const LineWrapper = styled.div`
@@ -71,17 +74,15 @@ height:50px;
 transform:translateY(10px);
 `
 
-const chartData = {
-    labels: [ 'April', 'May', 'June', 'July'],
-    datasets: [
-        {
-            data: [ 81, 56, 55, 40],
-            fill: false,
-            borderColor: 'red',
-            tension: 0.4,
-        },
-    ],
-};
+//  /revenue/variablity?timeSpan=month, timeSpan=day, timeSpan=year, 
+
+// /profit/variability
+
+// /orders/variablity
+
+// /clients/variability
+
+
 
 const chartOptions = {
     scales: {
@@ -93,25 +94,89 @@ const chartOptions = {
     },
 };
 
-export default function StatisticsBox(){
+export default function StatisticsBox({value, name, iconClass, color, endpoint}){
+    const userState = useUserState();
+    const {sendRequest, serverError} = useSendRequest(userState);
+
+    const [variability, setVariability] = useState([89,120,89,111]);
+    const [percentageChange, setPercentageChange] = useState(0);
+
+
+    async function getVariability(){
+        const {request, response} = await sendRequest(endpoint);
+
+        if (request?.status == 200){
+            const variabilityArr= response.data.variability;
+            setVariability(variabilityArr);
+
+            if (variabilityArr.length == 0){
+                setVariability(0)
+            }
+            
+            if (variabilityArr.length == 1){
+                setVariability(variabilityArr[0])
+            }
+
+            if (variabilityArr.length >= 2){
+                const precentChange = ((variabilityArr[-1] - variabilityArr[-2]) /variabilityArr[-2])* 100;
+                setPercentageChange(precentChange)
+            }
+        }
+    }
+
+    useEffect(()=>{
+        getVariability();
+    },[])
+
+
+    const chartData = {
+        labels: [ 'April', 'May', 'June', 'July'],
+        datasets: [
+            {
+                data: variability,
+                fill: false,
+                borderColor: `rgb(${color})`,
+                tension: 0.4,
+            },
+        ],
+    };
+
+
+    const renderPercentageChange = ()=>{
+        if (percentageChange < 0){
+            return (
+                <>
+                    <DecreaseIcon /> 
+                    <p>{`-${percentageChange}%`}</p>
+                </>
+            )
+        }
+
+        return (
+            <>
+                <IncreaseIcon />
+                <p>{`+${percentageChange}%`}</p>
+            </>
+        )
+    }
+
     return (
         <Container>
             <StatIconContainer>
-                <IconContainer>
-                    <Icon className="fa-solid fa-dollar-sign"/>
+                <IconContainer $color={`rgba(${color},0.2)`}>
+                    <Icon $color={`rgba(${color},1)`} className={iconClass}/>
                 </IconContainer>
                 <Stats>
-                    <Value>504.32$</Value>
-                    <Name>Today's Sales</Name>
+                    <Value>{value}</Value>
+                    <Name>{name}</Name>
                 </Stats>        
             </StatIconContainer>
             <LineContainer>
-                <ValueStatus>
-                    <IncreaseIcon />
-                    <ChangeQuantity>+32%</ChangeQuantity>
-                </ValueStatus>
+                <PercentageChange>
+                    {renderPercentageChange()}
+                </PercentageChange>
                 <LineWrapper>
-                    <Line data={chartData} options={chartOptions} />
+                    <Line  data={chartData} options={chartOptions} />
                 </LineWrapper>
             </LineContainer>
         </Container>

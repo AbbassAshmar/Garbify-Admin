@@ -13,6 +13,8 @@ padding:2rem;
 display:flex;
 flex-direction: column;
 background-color: white;
+border-radius: 6px;
+box-shadow: 0px 0px 15px rgba(0,0,0,.11) ;
 `
 const TitleMonthContainer = styled.div`
 width:100%;
@@ -24,6 +26,13 @@ const MonthButton = styled.button`
 display: flex;
 align-items: flex-end;
 gap:.5rem;
+background-color: #F1F4F9;
+padding:.3rem 1rem;
+border:none;
+color:#A8AAAE;
+font-weight:600;
+font-size:1rem;
+border-radius: 3px;
 `
 ////// table ---------------------------
 const Table = styled.table`
@@ -31,25 +40,23 @@ border-collapse: collapse;
 table-layout: fixed 
 `;
 
-
 const TableHead = styled.thead`
-  border-bottom: 2px solid #F1F4F9;
+border-bottom: 2px solid #F1F4F9;
 `;
 
 const TableRow = styled.tr`
-  border-bottom: 2px solid #F1F4F9;
-  padding-bottom:2rem;;
+border-bottom: 2px solid #F1F4F9;
+padding:2rem 0;
 `;
 
 const TableHeader = styled.th`
-  padding:0 1rem 1rem 0;
+  padding:0 1rem 1.5rem 0;
   text-align: left;
 `;
 
 const TableCell = styled.td`
-  padding: 10px;
   text-align: left;
-  
+  padding:1.5rem .5rem;
 `;
 
 const LineGraphContainer = styled.div`
@@ -126,27 +133,27 @@ export default function ProductsPerformanceTable() {
         <Table>
             <TableHead>
                 <TableRow>
-					<TableHeader>Products</TableHeader>
-					<TableHeader>Performance</TableHeader>
-					<TableHeader>Sold</TableHeader>
-					<TableHeader>Revenue</TableHeader>
-					<TableHeader>Progress</TableHeader>
+                  <TableHeader>Products</TableHeader>
+                  <TableHeader>Revenue</TableHeader>
+                  <TableHeader>Sold</TableHeader>
+                  <TableHeader>Progress</TableHeader>
+                  <TableHeader>Performance</TableHeader>
                 </TableRow>
             </TableHead>
             <tbody>
                 {productsData.map((product, index) => (
                     <TableRow key={index}>
-                        <TableCell style={{width:"20%",padding:"1rem 1rem 2rem 0"}}>
+                        <TableCell style={{width:"25%"}}>
                           <ProductCardHorizontal name={product.name} image={product.image} price={product.price} />
                         </TableCell>
+                        <TableCell style={{width:"18%"}}>{product.revenue}</TableCell>
+                        <TableCell style={{width:"18%"}}>{product.sold}</TableCell>
+                        <TableCell style={{width:"18%"}}>{product.progress}</TableCell>
                         <TableCell style={{width:"13%",padding:"0 4rem 0 0"}}>
                             <LineGraphContainer>
                                 <Line data={{ labels: ['jan', 'feb', 'mar','apr','jun','jul'], datasets: [{ label:"performance",data: product.performance, fill: false, borderColor: 'green' }] }} options={chartOptions} />
                             </LineGraphContainer>
                         </TableCell>
-                        <TableCell style={{padding:"0"}}>{product.sold}</TableCell>
-                        <TableCell>{product.revenue}</TableCell>
-                        <TableCell>{product.progress}</TableCell>
                     </TableRow>
                 ))}
             </tbody>

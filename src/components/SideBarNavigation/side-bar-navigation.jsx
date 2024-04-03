@@ -107,7 +107,7 @@ color:${({$selected})=> ($selected ?'var(--main-color)' : 'black')};
     }
 }
 `
-const PagesBlockTitle = styled.p`
+const PagesBlockTitle = styled.div`
 display:flex;
 gap:1rem;
 width:100%;

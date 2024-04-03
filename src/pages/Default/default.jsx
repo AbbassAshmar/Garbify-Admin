@@ -8,15 +8,15 @@ const Container = styled.div`
 display:flex;
 flex-direction:column;
 width:100%;
-overflow:hidden;
 `
 const Body = styled.div`
 display:flex;
 `
 const SideBarNavigationContainer = styled.div`
-flex:${({$flex})=> $flex};
 overflow:clip;
 transition:flex .3s;
+flex:${({$flex})=> $flex};
+border-right: 2px solid rgba(190, 200, 208,.5);
 `
 const OutletContainer = styled.div`
 flex:5;

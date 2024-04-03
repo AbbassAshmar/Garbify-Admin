@@ -12,6 +12,8 @@ align-items:center;
 height:70px;
 position:sticky;
 top:0;
+z-index:100;
+box-shadow: 0px 4px 24px 0px rgba(20, 25, 38, 0.05);
 `
 
 const LogoContainer =  styled.div`

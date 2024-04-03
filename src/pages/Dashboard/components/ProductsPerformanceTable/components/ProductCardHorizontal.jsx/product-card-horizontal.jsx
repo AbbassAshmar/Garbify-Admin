@@ -8,7 +8,7 @@ gap:1rem;
 `
 
 const ImageContainer = styled.div`
-width:27%;
+width:21%;
 aspect-ratio:1/1.04;
 position:relative;
 display:flex;
