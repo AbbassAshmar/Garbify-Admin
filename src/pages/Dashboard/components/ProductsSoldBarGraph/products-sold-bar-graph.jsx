@@ -53,8 +53,32 @@ const options = {
     responsive: true, // Make the chart responsive
     maintainAspectRatio: false,
     scales: {
-        x:{display:false},
-        y:{display:false}
+        y:{
+            display:true,
+            grid:{
+                drawBorder: false, 
+                lineWidth:4,
+                color:'#F1F4F9',
+            },
+            border:{
+                display:false,
+            }, 
+            ticks: {
+                display: false,
+                stepSize:20,
+                beginAtZero: true
+            },
+        },
+        x: {
+            display: true, 
+            grid: {
+                display: false 
+            },
+            border:{
+                display:false,
+                dash: [30, 30],
+            }, 
+        }
     },
     plugins: {
         legend: {display: false},

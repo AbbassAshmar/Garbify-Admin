@@ -4,6 +4,9 @@ import SalesGraph from "./components/SalesGraph/sales-graph";
 import TrafficLineGraph from "./components/TrafficLineGraph/traffic-line-graph";
 import ProductsSoldBarGraph from "./components/ProductsSoldBarGraph/products-sold-bar-graph";
 import VisitorsBarsGraph from "./components/VisitorsBarsGraph/visitors-bars-graph";
+import ProductsPerformanceTable from "./components/ProductsPerformanceTable/products-performance-table";
+import CategoriesOverviewGraph from "./components/CategoriesOverviewGraph/categories-overview-graph";
+import SalesOverviewGraph from "./components/SalesOverviewGraph/sales-overview-graph";
 
 const Container = styled.div`
 background-color:var(--seconday-color);
@@ -30,6 +33,18 @@ justify-content:space-between;
 gap:2rem;
 flex:1;
 `
+const TableOverviewGraphs = styled.div`
+width: 100%;
+`
+const ProductsPerformanceTableContainer = styled.div`
+flex:1;
+`
+const OverviewGraphsContainer = styled.div`
+flex:1;
+gap:2rem;
+display: flex;
+flex-direction: column;
+`
 export default function Dashboard(){
     return(
         <Container>
@@ -39,7 +54,6 @@ export default function Dashboard(){
                 <div style={{flex:'1'}}>
                     <VisitorsBarsGraph />
                 </div>
-
                 <TrafficProductsContainer>
                     <div style={{flex:"1",minWidth:'0'}}>
                         <TrafficLineGraph />
@@ -48,8 +62,16 @@ export default function Dashboard(){
                         <ProductsSoldBarGraph />
                     </div>
                 </TrafficProductsContainer>
-                
             </ExtraGraphs>
+            <TableOverviewGraphs>
+                <ProductsPerformanceTableContainer>
+                    <ProductsPerformanceTable />
+                </ProductsPerformanceTableContainer>
+                <OverviewGraphsContainer>
+                    <CategoriesOverviewGraph />
+                    <SalesOverviewGraph />
+                </OverviewGraphsContainer>
+            </TableOverviewGraphs>
         </Container>
     )
 }

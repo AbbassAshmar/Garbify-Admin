@@ -18,12 +18,14 @@ const Content = styled.div`
 display:flex;
 align-items: stretch;
 justify-content: space-between;
+gap:1rem;
 `
 const TextContainer = styled.div`
+flex:1;
 display:flex;
 flex-direction: column;
 justify-content: flex-end;
-gap:4rem;
+gap:2rem;
 `
 
 
@@ -45,11 +47,12 @@ color:#A8AAAE;
 `
 const SummaryContainer = styled.div`
 display: flex;
+margin-bottom: 1rem;
 gap:1rem;
 flex-wrap:wrap;
 `
 const BarGraphContainr = styled.div`
-    
+flex:1.4;
 `
 
 const data = {
@@ -74,8 +77,7 @@ const data = {
   
 const options = {
     responsive: true,
-    aspectRatio: 1/.7,
-    // maintainAspectRatio: false,
+    maintainAspectRatio: false,
     scales: {
         y: {display: false},
         x: {
