@@ -6,7 +6,7 @@ import VariantsSection from "./components/VariantsSection/variants-section";
 import ClassificationSection from "./components/ClassificationSection/classification-section";
 
 
-const Container = styled.div`
+const Container = styled.form`
 gap:2rem;
 padding:2rem;
 display: flex;
@@ -47,11 +47,11 @@ font-weight:500;
 border-radius:6px;
 padding:.5rem 1.5rem;
 font-size:var(--body);
-transition: background .3s;
+transition: background-color .3s;
 background-color: var(--main-color);
 
 &:hover{
-    background:#009BCC;
+    background-color:#009BCC;
 }
 `
 const DiscardChangesButton = styled.button`
@@ -84,10 +84,24 @@ display: flex;
 width:100%;
 gap:2rem;
 `
+
 export default function CreateProduct(){
     const location = useLocation();
+    
+    function handleFormSubmit (e){
+        e.preventDefault();
+        let formData = new FormData(e.currentTarget);
+
+        console.log(formData)
+        for(let [key,value] of formData.entries()){
+            console.log(key+"----->"+value)
+        }
+
+    }
+
+
     return(
-        <Container>
+        <Container onSubmit={handleFormSubmit}>
             <Header>
                 <HeaderText>
                     <PageTitle>Add Product</PageTitle>
@@ -95,7 +109,7 @@ export default function CreateProduct(){
                 </HeaderText>
                 <HeaderButtons>
                     <DiscardChangesButton>Discard</DiscardChangesButton>
-                    <AddProductButton>Add product</AddProductButton>
+                    <AddProductButton type="submit">Add product</AddProductButton>
                 </HeaderButtons>
             </Header>
             <Content>

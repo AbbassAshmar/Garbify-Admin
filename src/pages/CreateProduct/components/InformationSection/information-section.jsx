@@ -22,7 +22,7 @@ flex-direction:column;
 const InputContainer = styled.div`
 display: flex;
 flex-direction:column;
-gap:.5rem;
+gap:1rem;
 `
 const InputTitle = styled.label`
 font-size:var(--body);
@@ -72,6 +72,7 @@ font-size:var(--body);
 border: 2px solid var(--secondary-color);
 border-radius:3px;
 outline: none;
+cursor:pointer;
 transition: border .3s;
 &:focus {
     border:2px solid var(--main-color);
@@ -88,22 +89,22 @@ export default function InformationSection({error,formData}){
             <Title>Product Information</Title>
             <Content>
                 <InputContainer>
-                    <InputTitle for="name">Product name</InputTitle>
+                    <InputTitle htmlFor="name">Product name</InputTitle>
                     <InputField name="name" id="name" type="text" placeholder="name"/>
                     {error?.messages['name'] && <ErrorMessage>{error?.messages['name']}</ErrorMessage>}
                 </InputContainer>
                 <InputContainer>
-                    <InputTitle for="description">Description</InputTitle>
+                    <InputTitle htmlFor="description">Description</InputTitle>
                     <TextAreaField name="description" id="description" placeholder="describe your product"/>
                     {error?.messages['description'] && <ErrorMessage>{error?.messages['description']}</ErrorMessage>}
                 </InputContainer>
                 <InputContainer>
-                    <InputTitle for="quantity">Quantity</InputTitle>
+                    <InputTitle htmlFor="quantity">Quantity</InputTitle>
                     <InputField name="quantity" id="quantity" type="number" min="0" placeholder="0"/>
                     {error?.messages['quantity'] && <ErrorMessage>{error?.messages['quantity']}</ErrorMessage>}
                 </InputContainer>
                 <InputContainer>
-                    <InputTitle for="status">Status</InputTitle>
+                    <InputTitle htmlFor="status">Status</InputTitle>
                     <SelectField name="status" id="status">
                         <option value="in stock">in stock</option>
                         <option value="out of stock">out of stock</option>
