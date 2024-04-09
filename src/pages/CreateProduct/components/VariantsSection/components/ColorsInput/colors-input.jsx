@@ -1,34 +1,59 @@
 import styled from 'styled-components';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import PlusSign from '../../../../../../components/PlusSignCircle/plus-sign-circle';
 
-export default function ColorsInput({errors, formData}){
-    const [colors, setColors] = useState([{id:`${Date.now()}`}])
+export default function ColorsInput({errors, formData, colors,setColors}){
+    const [sameColorError,setSameColorError] = useState();
 
-    function handleDeleteColor(id){
-        setColors(colors.filter((color) => color.id !== id));
+    function handleDeleteColor(color){
+        setColors(colors.filter((_color) => _color !== color));
     }
 
-    function handleColorPlusClick(){
-        setColors([...colors,{id:`${Date.now()}`}]);
+    useEffect(()=>{
+        if (colors.length !== new Set(colors).size){
+            setSameColorError("Same colors are not allowed.");
+        }else{
+            setSameColorError('');
+        }
+    },[colors])
+
+    function handleColorChange(e,i){
+        let newColors = [...colors];
+        let newColor = e.currentTarget.value;
+
+        newColors[i] = newColor;
+        setColors(newColors)
+    }
+
+    function handleColorPlusClick(e){
+        let randomColor;
+        do {
+            randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+        } while (colors.some(color => color.color === randomColor));
+    
+        setColors(prevColors => [...prevColors,randomColor]);
     }
 
     return (
         <InputContainer>
             <InputTitle>Colors</InputTitle>
             <ColorsContainer>
-                {colors.map((color)=>(
-                    <ColorContainer key={color.id}>
-                        <XIconContainer onClick={(e)=>handleDeleteColor(color.id)}>
+                {colors.map((color,i)=>(
+                    <ColorContainer key={color}>
+                        <XIconContainer onClick={()=>handleDeleteColor(color)}>
                             <XIcon className="fa-solid fa-xmark" />
                         </XIconContainer>
                         <ColorsInputFieldContainer>
-                            <ColorsInputField name="colors[]" type="color"/>    
+                            <ColorsInputField 
+                            value={color} 
+                            name="colors[]" type="color"
+                            onChange={(e)=>handleColorChange(e,i)} />    
                         </ColorsInputFieldContainer>
                     </ColorContainer>
                 ))}
-                <PlusSign  onClick={handleColorPlusClick} />
+                <PlusSign onClick={handleColorPlusClick} />
             </ColorsContainer>
+            {sameColorError && <ErrorMessage>{sameColorError}</ErrorMessage>}
             {errors?.messages['colors'] && <ErrorMessage>{errors?.messages['colors']}</ErrorMessage>}
         </InputContainer>
     )

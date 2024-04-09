@@ -4,6 +4,8 @@ import InformationSection from "./components/InformationSection/information-sect
 import PricingSection from "./components/PricingSection/pricing-section";
 import VariantsSection from "./components/VariantsSection/variants-section";
 import ClassificationSection from "./components/ClassificationSection/classification-section";
+import MediaSection from "./components/MediaSection/media-section";
+import { useState } from "react";
 
 
 const Container = styled.form`
@@ -86,17 +88,12 @@ gap:2rem;
 `
 
 export default function CreateProduct(){
+    const [colors, setColors] = useState(["#000000"])
     const location = useLocation();
-    
+
     function handleFormSubmit (e){
         e.preventDefault();
         let formData = new FormData(e.currentTarget);
-
-        console.log(formData)
-        for(let [key,value] of formData.entries()){
-            console.log(key+"----->"+value)
-        }
-
     }
 
 
@@ -118,9 +115,10 @@ export default function CreateProduct(){
                     <PricingSection />
                 </InformationPricingContainer>
                 <VariantsClassificationContainer>
-                    <VariantsSection />
+                    <VariantsSection colors={colors} setColors={setColors} />
                     <ClassificationSection />
                 </VariantsClassificationContainer>
+                <MediaSection colors={colors}/>
             </Content>
         </Container>
     )

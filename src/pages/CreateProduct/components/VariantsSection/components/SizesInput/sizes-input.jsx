@@ -15,8 +15,8 @@ export default function SizesInput({errors,formData}){
     const [sizesUnit,setSizesUnit] = useState('');
     const [sizes,setSizes] = useState([])
 
-    const [tableHeadings, setTableHeadings] = useState(['']); //press the plusSign to add
-    const [sizesData,setSizesData] = useState([])
+    const [tableHeadings, setTableHeadings] = useState(['']);
+    const [sizesData,setSizesData] = useState([])  
 
     function handleSizesUnitInputChange(e){
         setSizesUnit(e.currentTarget.value)
