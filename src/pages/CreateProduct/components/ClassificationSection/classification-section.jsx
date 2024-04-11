@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import styled from "styled-components";
+import Input from "../Input/input";
 
 const Container = styled.section`
 flex:1;
@@ -21,15 +22,7 @@ gap:2rem;
 display: flex;
 flex-direction:column;
 `
-const InputContainer = styled.div`
-display: flex;
-flex-direction:column;
-gap:1rem;
-`
-const InputTitle = styled.label`
-font-size:var(--body);
-font-weight:600;
-`
+
 const InputField = styled.input`
 width:100%;
 padding:.5rem;
@@ -46,11 +39,6 @@ transition: border .3s;
     font-weight:400;
     color:#A8AAAE;
 }
-`
-const InputSubtitle= styled.p`
-font-size:var(--small-1);
-font-weight:600;
-color:#A8AAAE;
 `
 
 const SelectField = styled.select`
@@ -110,7 +98,7 @@ background-color: var(--secondary-color);
 const TYPE_SUBTITLE= "a hint to classify the product example 'long sleeves shirt'";
 const TAGS_SUBTITLE = "tags help us categories your product";
 
-export default function ClassificationSection(){
+export default function ClassificationSection({errors, formData}){
     const [isInputFocused, setInputFocused] = useState(false);
 
     const [tagsInputValue, setTagsInputValue] = useState("");
@@ -155,29 +143,18 @@ export default function ClassificationSection(){
         <Container>
             <Title>Classification</Title>
             <Content>
-                <InputContainer>
-                    <div style={{display:"flex",flexDirection:"column",gap:'.5rem'}}>
-                        <InputTitle htmlFor="type">Type</InputTitle>
-                        <InputSubtitle>{TYPE_SUBTITLE}</InputSubtitle>
-                    </div>
+                <Input label={"type"} title={"Type"} subtitle={TYPE_SUBTITLE} errors={errors?.messages['type']}>
                     <InputField name="type" id="type" type="text" placeholder="product type"/>
-                </InputContainer>
-
-                <InputContainer>
-                    <InputTitle htmlFor="category">Category</InputTitle>
+                </Input>
+                <Input label={"category"} title={"Category"} errors={errors?.messages['category']}>
                     <SelectField name="category" id="category">
                         <option value="volvo">Volvo</option>
                         <option value="saab">Saab</option>
                         <option value="opel">Opel</option>
                         <option value="audi">Audi</option>
                     </SelectField>
-                </InputContainer>
-
-                <InputContainer>
-                    <div style={{display:"flex",flexDirection:"column",gap:'.5rem'}}>
-                        <InputTitle htmlFor="tags">Tags</InputTitle>
-                        <InputSubtitle>{TAGS_SUBTITLE}</InputSubtitle>
-                    </div>  
+                </Input>
+                <Input label={"tags"} title={"Tags"} subtitle={TAGS_SUBTITLE} errors={errors?.messages['tags']}>
                     <TagsInputContainer $isFocused={isInputFocused} onClick={handleTagsInputContainerClick}>
                         {tags && tags.map((tag)=>(
                             <TagContainer key={tag}>
@@ -189,9 +166,8 @@ export default function ClassificationSection(){
                             </TagContainer>
                         ))}
                         <TagInput onChange={handleTagsInputChange} value={tagsInputValue} onBlur={handleTagsInputBlur} onKeyDown={handleKeyDown} ref={tagsInputFieldRef}/>
-                    </TagsInputContainer>              
-                </InputContainer>
-
+                    </TagsInputContainer>
+                </Input>
             </Content>
         </Container>
     )

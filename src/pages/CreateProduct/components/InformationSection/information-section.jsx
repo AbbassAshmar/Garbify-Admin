@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import Input from "../Input/input";
 
 const Container = styled.section`
 flex:1;
@@ -18,15 +19,6 @@ const Content = styled.div`
 gap:2rem;
 display: flex;
 flex-direction:column;
-`
-const InputContainer = styled.div`
-display: flex;
-flex-direction:column;
-gap:1rem;
-`
-const InputTitle = styled.label`
-font-size:var(--body);
-font-weight:600;
 `
 const InputField = styled.input`
 width:100%;
@@ -78,39 +70,27 @@ transition: border .3s;
     border:2px solid var(--main-color);
 }
 `
-const ErrorMessage = styled.p`
-color:red;
-font-weight:600; 
-font-size:var(--small-1);
-`
-export default function InformationSection({error,formData}){
+
+export default function InformationSection({errors,formData}){
     return (
         <Container>
             <Title>Product Information</Title>
             <Content>
-                <InputContainer>
-                    <InputTitle htmlFor="name">Product name</InputTitle>
+                <Input label={"name"} title={"Product name"} errors={errors?.messages['name']}>
                     <InputField name="name" id="name" type="text" placeholder="name"/>
-                    {error?.messages['name'] && <ErrorMessage>{error?.messages['name']}</ErrorMessage>}
-                </InputContainer>
-                <InputContainer>
-                    <InputTitle htmlFor="description">Description</InputTitle>
+                </Input>
+                <Input label={"description"} title={"Description"} errors={errors?.messages['description']}>
                     <TextAreaField name="description" id="description" placeholder="describe your product"/>
-                    {error?.messages['description'] && <ErrorMessage>{error?.messages['description']}</ErrorMessage>}
-                </InputContainer>
-                <InputContainer>
-                    <InputTitle htmlFor="quantity">Quantity</InputTitle>
+                </Input>
+                <Input label={"quantity"} title={"Quantity"} errors={errors?.messages['quantity']}>
                     <InputField name="quantity" id="quantity" type="number" min="0" placeholder="0"/>
-                    {error?.messages['quantity'] && <ErrorMessage>{error?.messages['quantity']}</ErrorMessage>}
-                </InputContainer>
-                <InputContainer>
-                    <InputTitle htmlFor="status">Status</InputTitle>
+                </Input>
+                <Input label={"status"} title={"Status"} errors={errors?.messages['status']}>
                     <SelectField name="status" id="status">
                         <option value="in stock">in stock</option>
                         <option value="out of stock">out of stock</option>
                     </SelectField>
-                    {error?.messages['status'] && <ErrorMessage>{error?.messages['status']}</ErrorMessage>}
-                </InputContainer>
+                </Input>
             </Content>
         </Container>
     )

@@ -13,10 +13,6 @@ export default function SizesTable({mainMeasurementUnit,tableSizes,sizesData,set
     const [buttonError,setButtonError] = useState('');
 
     useEffect(()=>{
-        console.log(sizesData);
-    },[sizesData])
-
-    useEffect(()=>{
         if (!tableSizes.length) 
         setShowTable(false);
     },[tableSizes])

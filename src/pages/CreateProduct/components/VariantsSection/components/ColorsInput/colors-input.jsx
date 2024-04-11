@@ -4,6 +4,7 @@ import PlusSign from '../../../../../../components/PlusSignCircle/plus-sign-circ
 
 export default function ColorsInput({errors, formData, colors,setColors}){
     const [sameColorError,setSameColorError] = useState();
+    const [colorInputValue, setColorInputValue] = useState();
 
     function handleDeleteColor(color){
         setColors(colors.filter((_color) => _color !== color));
@@ -16,10 +17,14 @@ export default function ColorsInput({errors, formData, colors,setColors}){
             setSameColorError('');
         }
     },[colors])
+    
+    function handleColorChange(e){
+        setColorInputValue(e.currentTarget.value)
+    }
 
-    function handleColorChange(e,i){
+    function handleColorBlur(e,i){
         let newColors = [...colors];
-        let newColor = e.currentTarget.value;
+        let newColor = colorInputValue;
 
         newColors[i] = newColor;
         setColors(newColors)
@@ -34,6 +39,7 @@ export default function ColorsInput({errors, formData, colors,setColors}){
         setColors(prevColors => [...prevColors,randomColor]);
     }
 
+
     return (
         <InputContainer>
             <InputTitle>Colors</InputTitle>
@@ -45,9 +51,11 @@ export default function ColorsInput({errors, formData, colors,setColors}){
                         </XIconContainer>
                         <ColorsInputFieldContainer>
                             <ColorsInputField 
+                            onClick={()=>console.log('click')}
+                            onBlur={(e)=>handleColorBlur(e,i)}
+                            onChange={handleColorChange}
                             value={color} 
-                            name="colors[]" type="color"
-                            onChange={(e)=>handleColorChange(e,i)} />    
+                            name="colors[]" type="color"/>    
                         </ColorsInputFieldContainer>
                     </ColorContainer>
                 ))}

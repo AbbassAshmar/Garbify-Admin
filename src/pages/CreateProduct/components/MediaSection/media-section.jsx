@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState,useRef } from "react"
 import styled from "styled-components"
-
-
-
+import ColorSelectory from "./components/ColorSelector/color-selector"
 
 const Container = styled.section`
 flex:1;
@@ -39,7 +37,11 @@ font-size:var(--small-1);
 font-weight:600;
 color:#A8AAAE;
 `
-
+const ErrorMessage = styled.p`
+color:red;
+font-weight:600; 
+font-size:var(--small-1);
+`
 const ThumbnailFieldContainer = styled.label`
 width: 32%;
 aspect-ratio:1/1.15;
@@ -117,6 +119,9 @@ width: fit-content;
 &:hover{
     background-color:#009BCC;
 }
+&:disabled{
+    background-color: grey;
+}
 `
 const ImageContainer = styled.div`
 width:30%;
@@ -170,17 +175,84 @@ const resp2 = [
 ]
 
 export default function MediaSection({colors}){
+    const prevColorsRef = useRef(colors);
+
     const [selectedColors, setSelectedColors] = useState([]);
     const [images, setImages] = useState([]); 
     const [thumbnail, setThumbnail] = useState({color:'' , image:{file:'',url:''}});
     
     useEffect(()=>{
+        if (colors.length)
+        thumbnail.color = colors[0];
+    },[colors])
+
+    useEffect(()=>{
         handleAddColoredImageInput();
     },[])
 
     useEffect(()=>{
-        // you can't add image input without an available color
+        let newColor = isElementAddedToArr(prevColorsRef.current, colors);
+        if (newColor){
+            for (let imageInput of images){
+                if (!imageInput.color){
+                    assignColorToColoredImageInput(newColor, imageInput.id)
+                    break;
+                }
+            }
+        }else{
+            const deletedColor = isElementDeletedFromArr(prevColorsRef.current, colors)
+            if (deletedColor){
+                unassignColorFromColoredImageInput(deletedColor);
+            }else{
+                const editedColors = isElementEditedInArr(prevColorsRef.current, colors);
+                if (editedColors){
+                    for (let imageInput of images){
+                        if (imageInput.color === editedColors[0]){
+                            unassignColorFromColoredImageInput(editedColors[0]);
+                            assignColorToColoredImageInput(editedColors[1], imageInput.id);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        prevColorsRef.current = colors;
     },[colors])
+
+
+    function isElementAddedToArr(prevArr,arr){
+        let result = null;
+        if (prevArr.length < arr.length){
+            const addedElement = arr.filter(color => !prevArr.includes(color));
+            result = addedElement.length ? addedElement[0] : null;
+        }
+
+        return result;
+    }
+
+    function isElementDeletedFromArr(prevArr,arr){
+        let result = null;
+        if (prevArr.length > arr.length){
+            const deletedElement = prevArr.filter(color => !arr.includes(color));
+            result = deletedElement.length ? deletedElement[0] : null;
+        }
+
+        return result;
+    }
+
+    function isElementEditedInArr(prevArr,arr){
+        let result = null;
+        if (prevArr.length === arr.length){
+            const oldElement = prevArr.filter(color => !arr.includes(color));
+            if (oldElement.length){
+                const newElement = colors.filter(color => !prevArr.includes(color));
+                result = [oldElement[0], newElement[0]];
+            }
+        }
+
+        return result;
+    }
 
     function handleThumbnailColorInputChange(e){
         setThumbnail({...thumbnail,color:e.currentTarget.value})
@@ -208,8 +280,6 @@ export default function MediaSection({colors}){
         setThumbnail({...thumbnail, image:newImage});
     }
 
-    //upload according to indexes , color might change at any index 
-    //without leading to images inconsistency
     function handleUploadColoredImage(e,id){
         let newImage = {
             file:e.currentTarget.files[0],
@@ -255,15 +325,21 @@ export default function MediaSection({colors}){
     }
 
     function handleDeleteColoredImageInput(id){
-        setImages(images.filter(image=>image.id != id))
+        setImages(images.filter(image=>{
+            if (image.id === id){
+                unassignColorFromColoredImageInput(image.color);
+            }
+            return image.id != id
+        }))
+        
     }
 
     function assignColorToColoredImageInput(color,inputId){
         if (isColorAvailableForInput(color, inputId)){
-            setSelectedColors([...selectedColors,[color,inputId]]);
             setImages([...images].map((imageInput)=>{
                 if (imageInput.id === inputId){
                     imageInput.color = color;
+                    setSelectedColors([...selectedColors,[color,inputId]]);
                 }
                 return imageInput;
             }))
@@ -274,13 +350,23 @@ export default function MediaSection({colors}){
         return false;
     }
 
+    function unassignColorFromColoredImageInput(color){
+        let result = false;
+        setImages([...images].map((imageInput) => {
+            if (imageInput.color == color && !result){
+                result = true;
+                imageInput.color = "";
+                setSelectedColors([...selectedColors].filter((_color) => _color[0] != color && _color[1] != imageInput.id));
+            }
+            return imageInput;
+        }))
+        
+        return result;
+    }
+
     function isColorAvailableForInput(color, inputId){
         return (selectedColors.length == 0 || !selectedColors.some(_color => (_color[0] == color && !(_color[0] == color && _color[1] == inputId))))
     }  
-
-    useEffect(()=>{
-        console.log(selectedColors)
-    },[selectedColors])
 
     return(
         <Container>
@@ -291,21 +377,23 @@ export default function MediaSection({colors}){
                         <InputTitle style={{fontSize:'var(--heading-6)'}}>Product Thumbnail</InputTitle>
                         <InputSubtitle>displayed in the product card.</InputSubtitle>
                     </div>
-                    <InputContainer>
-                        <InputTitle htmlFor="thumbnail_color">Color</InputTitle>
-                        <SelectField defaultValue={'Red'} onChange={handleThumbnailColorInputChange} id="thumbnail_color">
-                            {colors.map((color)=>(
-                                <option key={color} value={color}>{color}</option>
-                            ))}
-                        </SelectField>
-                    </InputContainer>
+                    <ColorSelectory 
+                    id={'thumbnail_color'}
+                    onChange={handleThumbnailColorInputChange}
+                    colors={colors}
+                    XClick={null}
+                    selectedColor={thumbnail.color}
+                    optionCondition={color=>(true)}
+                    />
                     <ThumbnailFieldContainer htmlFor="product_thumbnail">
                         <PlusIcon className="fa-solid fa-plus" />
                         {thumbnail.image.url &&
-                        <img style={{borderRadius:"6px",position:"relative",width:'100%',height:"100%",objectFit:"cover"}} src={thumbnail.image.url} />
-                        }
+                        <img style={{borderRadius:"6px",position:"relative",width:'100%',height:"100%",objectFit:"cover"}} src={thumbnail.image.url} />}
+                        <input accept=".jpg,.jpeg,.png" 
+                        onChange={handleThumbnailImageInputChange} 
+                        id="product_thumbnail" type="file" 
+                        style={{visibility:'hidden',width:'.2px',position:"absolute"}}/>
                     </ThumbnailFieldContainer>
-                    <input accept=".jpg,.jpeg,.png" onChange={handleThumbnailImageInputChange} id="product_thumbnail" type="file" style={{visibility:'hidden',width:'.2px',position:"absolute"}}/>
                 </InputContainer>
                 <InputContainer style={{gap:'2rem'}}>
                     <div style={{display:"flex",flexDirection:"column",gap:'.2rem'}}>
@@ -318,18 +406,14 @@ export default function MediaSection({colors}){
                     {images && images.map((imageColorObj)=>{ 
                         return(
                         <ImageColorContainer key={imageColorObj.id}>
-                            <InputContainer>
-                                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',overflow:'hidden'}}>
-                                    <InputTitle htmlFor={"images_color"+imageColorObj.id}>Color</InputTitle>
-                                    <XIcon onClick={e=>handleDeleteColoredImageInput(imageColorObj.id)} className="fa-solid fa-xmark" />
-                                </div>
-                                <SelectField onChange={(e)=>handleColoredImagesColorInputChange(e,imageColorObj.id)} id={"images_color"+imageColorObj.id}>
-                                    {colors.map((color)=>{
-                                        if (isColorAvailableForInput(color,imageColorObj.id))
-                                        return <option key={color} value={color}>{color}</option>
-                                    })}
-                                </SelectField>
-                            </InputContainer>
+                            <ColorSelectory 
+                            id={"images_color"+imageColorObj.id}
+                            onChange={(e)=>handleColoredImagesColorInputChange(e,imageColorObj.id)}
+                            colors={colors}
+                            selectedColor={imageColorObj.color}
+                            XClick={e=>handleDeleteColoredImageInput(imageColorObj.id)}
+                            optionCondition={color => isColorAvailableForInput(color,imageColorObj.id)}
+                            />
                             <ImagesAndFieldContainer>
                                 <ImageFieldContainer>
                                     <PlusIcon style={{color:"#A8AAAE"}} className="fa-solid fa-plus" />
@@ -348,9 +432,15 @@ export default function MediaSection({colors}){
                         </ImageColorContainer>
                     )})}
                     
-                    <AddImageButton onClick={handleAddColoredImageInput}>Add color and images</AddImageButton>
+                    <AddImageButton disabled={images.length >= colors.length? true :false} onClick={handleAddColoredImageInput}>
+                        {images.length >= colors.length?
+                         'No colors available': 'Add color and images'}
+                    </AddImageButton>
                 </InputContainer>
             </Content>
         </Container>
     )
 }   
+
+
+
