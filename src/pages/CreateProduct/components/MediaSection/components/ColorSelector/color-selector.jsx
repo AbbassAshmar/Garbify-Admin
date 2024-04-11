@@ -1,21 +1,5 @@
 import styled from "styled-components";
-
-const InputContainer = styled.div`
-display: flex;
-flex-direction:column;
-gap:1rem;
-`
-
-const InputTitle = styled.label`
-font-size:var(--body);
-font-weight:600;
-`
-
-const ErrorMessage = styled.p`
-color:red;
-font-weight:600; 
-font-size:var(--small-1);
-`
+import {InputTitle, ErrorMessage, InputContainer} from "../../../Input/input.jsx";
 
 const SelectField = styled.select`
 width:32%;

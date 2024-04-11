@@ -1,12 +1,56 @@
-import styled from "styled-components";
 import { useState } from "react";
+import styled from "styled-components";
+import Input from "../../../Input/input";
+import { TextInputField } from "../../../Input/input";
 import SizesTable from "./components/SizesTable/sizes-table";
 
-// a column is added (a heading is added to tableHeadings) ...
-// a row is added (a size is added to sizes)  ...
-// a row is deleted ...
-// value of a cell is changed (value of (size,heading) is changed)
-// a column is changed (value of heading is changed)
+const SizesInputContainer = styled.div`
+gap:1rem;
+display: flex;
+flex-direction:column;
+padding:1rem; 
+border-radius:6px;
+border: 3px solid var(--secondary-color);
+`
+const AddSizeButton = styled.button`
+border:none;
+padding:0 1rem;
+font-weight:500;
+cursor: pointer;
+border-radius: 4px;
+font-size:var(--body);
+transition: background-color .3s;
+background-color: var(--main-color);
+
+&:hover{
+    background-color:#009BCC;
+}
+`
+const SizesListContainer = styled.div`
+gap:1rem;
+display: flex;
+flex-wrap: wrap;
+min-height:65px;
+max-height: 160px;
+overflow-y:auto;
+align-items: flex-start;
+justify-content: flex-start;
+`
+const Size = styled.div`
+gap:4px;
+display: flex;
+font-weight:500;
+cursor: pointer;
+padding:4px 8px;
+border-radius:4px;
+align-items: center;
+justify-content: center;
+font-size:var(--small-1);
+background-color: var(--secondary-color);
+&:hover{
+    background-color: #c0c3c7;
+}
+`
 
 
 export default function SizesInput({errors,formData}){
@@ -68,16 +112,14 @@ export default function SizesInput({errors,formData}){
 
     return(
         <>
-            <InputContainer>
-                <InputTitle htmlFor="sizes_unit">Sizes unit</InputTitle>
-                <InputField onChange={handleSizesUnitInputChange} value={sizesUnit} name="sizes_unit" id="sizes_unit" type='text' placeholder="ex. inches" />   
-                {errors?.messages['sizes_unit'] && <ErrorMessage>{errors?.messages['sizes_unit']}</ErrorMessage>}
-            </InputContainer>
-            <InputContainer>
-                <InputTitle htmlFor="sizes">Sizes</InputTitle>
+            <Input label={"sizes_measurement_unit"} title={'Sizes measurement unit'} errors={errors?.messages['sizes_measurement_unit']}>
+                <TextInputField onChange={handleSizesUnitInputChange} value={sizesUnit} name="sizes_measurement_unit" id="sizes_measurement_unit" type='text' placeholder="ex. inches" />   
+            </Input>
+
+            <Input label={"sizes"} title={'Sizes'} errors={errors?.messages['sizes']}>
                 <SizesInputContainer>
                     <div style={{display:'flex',gap:'1rem'}}>
-                        <InputField value={sizeInputValue} onChange={(e)=> setSizeInputValue(e.target.value)} id="sizes" name="sizes" placeholder="enter a size" onBlur={handleBlur} onKeyDown={handleKeyDown}/>
+                        <TextInputField value={sizeInputValue} onChange={(e)=> setSizeInputValue(e.target.value)} id="sizes" name="sizes" placeholder="enter a size" onBlur={handleBlur} onKeyDown={handleKeyDown}/>
                         <AddSizeButton type="button" onClick={handleAddSizeButtonClick}>Add</AddSizeButton>
                     </div>
                     <SizesListContainer>
@@ -90,90 +132,12 @@ export default function SizesInput({errors,formData}){
                         ))}
                     </SizesListContainer>
                 </SizesInputContainer>  
-                {errors?.messages['sizes'] && <ErrorMessage>{errors?.messages['sizes']}</ErrorMessage>}        
-            </InputContainer>
+            </Input>
+
             <SizesTable mainMeasurementUnit={sizesUnit} tableSizes={sizes} setTableHeadings={setTableHeadings} tableHeadings={tableHeadings} sizesData={sizesData} setSizesData={setSizesData}/>
         </>
     )
 }
 
-const InputContainer = styled.div`
-display: flex;
-flex-direction:column;
-gap:1rem;
-`
-const InputTitle = styled.label`
-font-size:var(--body);
-font-weight:600;
-`
-const InputField = styled.input`
-width:100%;
-padding:.5rem;
-font-weight:500;
-font-size:var(--body);
-border: 2px solid var(--secondary-color);
-border-radius:3px;
-outline: none;
-transition: border .3s;
-&:focus {
-    border:2px solid var(--main-color);
-}
-&::placeholder{
-    font-weight:400;
-    color:#A8AAAE;
-}
-`
-const ErrorMessage = styled.p`
-color:red;
-font-weight:600; 
-font-size:var(--small-1);
-`
-const SizesInputContainer = styled.div`
-gap:1rem;
-display: flex;
-flex-direction:column;
-padding:1rem; 
-border-radius:6px;
-border: 3px solid var(--secondary-color);
-`
-const AddSizeButton = styled.button`
-border:none;
-padding:0 1rem;
-font-weight:500;
-cursor: pointer;
-border-radius: 4px;
-font-size:var(--body);
-transition: background-color .3s;
-background-color: var(--main-color);
-
-&:hover{
-    background-color:#009BCC;
-}
-`
-const SizesListContainer = styled.div`
-gap:1rem;
-display: flex;
-flex-wrap: wrap;
-min-height:65px;
-max-height: 160px;
-overflow-y:auto;
-align-items: flex-start;
-justify-content: flex-start;
-`
-const Size = styled.div`
-gap:4px;
-display: flex;
-font-weight:500;
-cursor: pointer;
-padding:4px 8px;
-border-radius:4px;
-align-items: center;
-justify-content: center;
-font-size:var(--small-1);
-background-color: var(--secondary-color);
-&:hover{
-    background-color: #c0c3c7;
-}
-`
 
 

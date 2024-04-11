@@ -1,49 +1,14 @@
-import { useEffect, useState } from "react";
+import {useState} from "react";
 import Input from "../Input/input";
 import styled from "styled-components";
+import { TextInputField } from "../Input/input";
+import SectionDefault from "../SectionDefault/section-default";
 
-const Container = styled.section`
-flex:1;
-gap:2rem;
-padding:2rem;
-display: flex;
-border-radius: 6px;
-flex-direction: column;
-background-color: white;
-box-shadow: 0px 0px 15px rgba(0,0,0,.11) ;
-`
-const Title = styled.h5`
-font-size:var(--heading-5);
-font-weight: 600;
-`
-const Content = styled.div`
-gap:2rem;
-display: flex;
-flex-direction:column;
-`
 const PriceInputsContainer = styled.div`
 gap:2rem;
 display: flex;
 align-items: center;
 justify-content: space-between;
-`
-
-const InputField = styled.input`
-width:100%;
-padding:.5rem;
-font-weight:500;
-font-size:var(--body);
-border: 2px solid var(--secondary-color);
-border-radius:3px;
-outline: none;
-transition: border .3s;
-&:focus {
-    border:2px solid var(--main-color);
-}
-&::placeholder{
-    font-weight:400;
-    color:#A8AAAE;
-}
 `
 const SaleHeader = styled.div`
 display: flex;
@@ -54,7 +19,7 @@ const SaleTitle = styled.h6`
 font-weight:600;
 transition:color .3s;
 font-size:var(--heading-6);
-color:${({$enabled})=>$enabled?"var(--main-color)":"black"};
+color:${({$enabled})=>$enabled?"var(--main-color)":"grey"};
 `
 
 const ColoredLabel = styled.span`
@@ -79,41 +44,37 @@ export default function PricingSection({errors,formData}){
     }
 
     return (
-        <Container>
-            <Title>Pricing</Title>
-            <Content>
-
-                <PriceInputsContainer>
-                    <Input label={"original_price"} title={<>Original Price <BlueSpan $enabled={true}>$</BlueSpan></>} errors={errors?.messages['original_price']}>
-                        <InputField name="original_price" id="original_price" type="number" min="0" placeholder="0"/>
-                    </Input>
-                    <Input label={"selling_price"} title={<>Selling Price <BlueSpan $enabled={true}>$</BlueSpan></>} errors={errors?.messages['selling_price']}>
-                        <InputField name="selling_price" id="selling_price" type="number" min="0" placeholder="0"/>
-                    </Input>
-                </PriceInputsContainer>
-
-                <SaleHeader>
-                    <SaleTitle $enabled={isSaleEnabled}>Sale</SaleTitle>
-                    <Toggle setState={setIsSaleEnabled} state={isSaleEnabled}/>
-                </SaleHeader>
-
-                <Input label={"sale_quantity"} title={renderColoredLabel('Sale quantity','(optional)')} errors={errors?.messages['sale_quantity']}>
-                    <InputField disabled={!isSaleEnabled} name="sale_quantity" id="sale_quantity" type="number" min="0" placeholder="0"/>
+        <SectionDefault title={"Pricing"}>
+            <PriceInputsContainer>
+                <Input label={"original_price"} title={<>Original Price <BlueSpan $enabled={true}>$</BlueSpan></>} errors={errors?.messages['original_price']}>
+                    <TextInputField name="original_price" id="original_price" type="number" min="0" placeholder="0"/>
                 </Input>
-
-                <Input label={"sale_start_date"} title={renderColoredLabel('Sale start date')} errors={errors?.messages['sale_start_date']}>
-                    <InputField disabled={!isSaleEnabled} style={{color:"grey"}} name="sale_start_date" id="sale_start_date" type="date" min="0" />
+                <Input label={"selling_price"} title={<>Selling Price <BlueSpan $enabled={true}>$</BlueSpan></>} errors={errors?.messages['selling_price']}>
+                    <TextInputField name="selling_price" id="selling_price" type="number" min="0" placeholder="0"/>
                 </Input>
+            </PriceInputsContainer>
 
-                <Input label={"sale_end_date"} title={renderColoredLabel('Sale end date','(optional)')} errors={errors?.messages['sale_end_date']}>
-                    <InputField disabled={!isSaleEnabled} style={{color:"grey"}} name="sale_end_date" id="sale_end_date" type="date" min="0"/>
-                </Input>
+            <SaleHeader>
+                <SaleTitle $enabled={isSaleEnabled}>Sale</SaleTitle>
+                <Toggle setState={setIsSaleEnabled} state={isSaleEnabled}/>
+            </SaleHeader>
 
-                <Input label={"discount_percentage"} title={renderColoredLabel('Discount percentage','%')} errors={errors?.messages['discount_percentage']}>
-                    <InputField disabled={!isSaleEnabled} name="discount_percentage" id="discount_percentage" type="number" min="0" placeholder="0"/>
-                </Input>
-            </Content>
-        </Container>
+            <Input label={"sale_quantity"} title={renderColoredLabel('Sale quantity','(optional)')} errors={errors?.messages['sale_quantity']}>
+                <TextInputField disabled={!isSaleEnabled} name="sale_quantity" id="sale_quantity" type="number" min="0" placeholder="0"/>
+            </Input>
+
+            <Input label={"sale_start_date"} title={renderColoredLabel('Sale start date')} errors={errors?.messages['sale_start_date']}>
+                <TextInputField disabled={!isSaleEnabled} style={{color:"grey"}} name="sale_start_date" id="sale_start_date" type="date" min="0" />
+            </Input>
+
+            <Input label={"sale_end_date"} title={renderColoredLabel('Sale end date','(optional)')} errors={errors?.messages['sale_end_date']}>
+                <TextInputField disabled={!isSaleEnabled} style={{color:"grey"}} name="sale_end_date" id="sale_end_date" type="date" min="0"/>
+            </Input>
+
+            <Input label={"discount_percentage"} title={renderColoredLabel('Discount percentage','%')} errors={errors?.messages['discount_percentage']}>
+                <TextInputField disabled={!isSaleEnabled} name="discount_percentage" id="discount_percentage" type="number" min="0" placeholder="0"/>
+            </Input>
+        </SectionDefault>
     )
 }
 

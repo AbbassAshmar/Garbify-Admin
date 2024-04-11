@@ -25,9 +25,26 @@ font-weight:600;
 font-size:var(--small-1);
 `
 
-export default function Input({label,title,subtitle,children,errors}){
+export const TextInputField = styled.input`
+width:100%;
+padding:.5rem;
+font-weight:500;
+font-size:var(--body);
+border: 2px solid var(--secondary-color);
+border-radius:3px;
+outline: none;
+transition: border .3s;
+&:focus {
+    border:2px solid var(--main-color);
+}
+&::placeholder{
+    font-weight:400;
+    color:#A8AAAE;
+}
+`
+export default function Input({label,title,subtitle,children,errors,style}){
     return (
-        <InputContainer>
+        <InputContainer style={style}>
             <TextContainer>
                 <InputTitle htmlFor={label}>{title}</InputTitle>
                 {subtitle && <InputSubtitle>{subtitle}</InputSubtitle>}

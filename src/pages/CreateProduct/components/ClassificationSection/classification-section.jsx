@@ -1,45 +1,8 @@
 import { useRef, useState } from "react";
 import styled from "styled-components";
 import Input from "../Input/input";
-
-const Container = styled.section`
-flex:1;
-gap:2rem;
-padding:2rem;
-display: flex;
-border-radius: 6px;
-min-width: 0;
-flex-direction: column;
-background-color: white;
-box-shadow: 0px 0px 15px rgba(0,0,0,.11) ;
-`
-const Title = styled.h5`
-font-size:var(--heading-5);
-font-weight: 600;
-`
-const Content = styled.div`
-gap:2rem;
-display: flex;
-flex-direction:column;
-`
-
-const InputField = styled.input`
-width:100%;
-padding:.5rem;
-font-weight:500;
-font-size:var(--body);
-border: 2px solid var(--secondary-color);
-border-radius:3px;
-outline: none;
-transition: border .3s;
-&:focus {
-    border:2px solid var(--main-color);
-}
-&::placeholder{
-    font-weight:400;
-    color:#A8AAAE;
-}
-`
+import { TextInputField } from "../Input/input";
+import SectionDefault from "../SectionDefault/section-default";
 
 const SelectField = styled.select`
 width:100%;
@@ -55,7 +18,6 @@ cursor:pointer;
     border:2px solid var(--main-color);
 }
 `
-
 const TagsInputContainer = styled.div`
 cursor: text;
 display: block;
@@ -95,6 +57,7 @@ background-color: var(--secondary-color);
     background-color: #c0c3c7;
 }
 `
+
 const TYPE_SUBTITLE= "a hint to classify the product example 'long sleeves shirt'";
 const TAGS_SUBTITLE = "tags help us categories your product";
 
@@ -140,35 +103,32 @@ export default function ClassificationSection({errors, formData}){
     }
     
     return (
-        <Container>
-            <Title>Classification</Title>
-            <Content>
-                <Input label={"type"} title={"Type"} subtitle={TYPE_SUBTITLE} errors={errors?.messages['type']}>
-                    <InputField name="type" id="type" type="text" placeholder="product type"/>
-                </Input>
-                <Input label={"category"} title={"Category"} errors={errors?.messages['category']}>
-                    <SelectField name="category" id="category">
-                        <option value="volvo">Volvo</option>
-                        <option value="saab">Saab</option>
-                        <option value="opel">Opel</option>
-                        <option value="audi">Audi</option>
-                    </SelectField>
-                </Input>
-                <Input label={"tags"} title={"Tags"} subtitle={TAGS_SUBTITLE} errors={errors?.messages['tags']}>
-                    <TagsInputContainer $isFocused={isInputFocused} onClick={handleTagsInputContainerClick}>
-                        {tags && tags.map((tag)=>(
-                            <TagContainer key={tag}>
-                                <Tag onClick={(e)=>handleTagClick(tag)}>
-                                    <p>{tag}</p>
-                                    <i style={{color:"#8D8E92"}} className="fa-solid fa-xmark" />
-                                    <input type="hidden" name="sizes[]" value={tag} />
-                                </Tag>
-                            </TagContainer>
-                        ))}
-                        <TagInput onChange={handleTagsInputChange} value={tagsInputValue} onBlur={handleTagsInputBlur} onKeyDown={handleKeyDown} ref={tagsInputFieldRef}/>
-                    </TagsInputContainer>
-                </Input>
-            </Content>
-        </Container>
+        <SectionDefault title={'Classification'}>
+            <Input label={"type"} title={"Type"} subtitle={TYPE_SUBTITLE} errors={errors?.messages['type']}>
+                <TextInputField name="type" id="type" type="text" placeholder="product type"/>
+            </Input>
+            <Input label={"category"} title={"Category"} errors={errors?.messages['category']}>
+                <SelectField name="category" id="category">
+                    <option value="volvo">Volvo</option>
+                    <option value="saab">Saab</option>
+                    <option value="opel">Opel</option>
+                    <option value="audi">Audi</option>
+                </SelectField>
+            </Input>
+            <Input label={"tags"} title={"Tags"} subtitle={TAGS_SUBTITLE} errors={errors?.messages['tags']}>
+                <TagsInputContainer $isFocused={isInputFocused} onClick={handleTagsInputContainerClick}>
+                    {tags && tags.map((tag)=>(
+                        <TagContainer key={tag}>
+                            <Tag onClick={(e)=>handleTagClick(tag)}>
+                                <p>{tag}</p>
+                                <i style={{color:"#8D8E92"}} className="fa-solid fa-xmark" />
+                                <input type="hidden" name="sizes[]" value={tag} />
+                            </Tag>
+                        </TagContainer>
+                    ))}
+                    <TagInput onChange={handleTagsInputChange} value={tagsInputValue} onBlur={handleTagsInputBlur} onKeyDown={handleKeyDown} ref={tagsInputFieldRef}/>
+                </TagsInputContainer>
+            </Input>
+        </SectionDefault>
     )
 }
