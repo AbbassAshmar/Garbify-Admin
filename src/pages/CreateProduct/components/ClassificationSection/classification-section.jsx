@@ -122,7 +122,7 @@ export default function ClassificationSection({errors, formData}){
                             <Tag onClick={(e)=>handleTagClick(tag)}>
                                 <p>{tag}</p>
                                 <i style={{color:"#8D8E92"}} className="fa-solid fa-xmark" />
-                                <input type="hidden" name="sizes[]" value={tag} />
+                                <input type="hidden" name="tags[]" value={tag} />
                             </Tag>
                         </TagContainer>
                     ))}

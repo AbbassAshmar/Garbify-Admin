@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Input from "../../../Input/input";
 import { TextInputField } from "../../../Input/input";
@@ -53,7 +53,7 @@ background-color: var(--secondary-color);
 `
 
 
-export default function SizesInput({errors,formData}){
+export default function SizesInput({errors,setFormData}){
     const [sizeInputValue,setSizeInputValue] = useState("");
     
     const [sizesUnit,setSizesUnit] = useState('');
@@ -61,6 +61,22 @@ export default function SizesInput({errors,formData}){
 
     const [tableHeadings, setTableHeadings] = useState(['']);
     const [sizesData,setSizesData] = useState([])  
+
+    useEffect(()=>console.log(sizesData),[sizesData])
+    useEffect(()=>{
+        setFormData((prev) => ({
+            ...prev,
+            sizes_data:sizesData,
+        }))
+    }, [sizesData])
+
+    useEffect(()=>{
+        setSizesData(sizesData.map(size=>{
+            size.measurement_unit = sizesUnit;
+            return size;
+        }))
+    }, [sizesUnit])
+
 
     function handleSizesUnitInputChange(e){
         setSizesUnit(e.currentTarget.value)
@@ -78,23 +94,23 @@ export default function SizesInput({errors,formData}){
     function handleAddSize(size){
         size = size.trim();
         if (!size) return;
+        if (sizes.includes(size)) return;
 
-        if (!sizes.includes(size)){
-            setSizes([...sizes,size])
-
-            setSizesData([...sizesData,{
-                value:size,
-                measurement_unit:sizesUnit,
-                attributes : tableHeadings.map((head)=>({
-                    value:'',
-                    measurement_unit:head
-                }))
-            }])
-        }
+        console.log(tableHeadings)
+        setSizes([...sizes,size])
+        setSizesData([...sizesData,{
+            value:size,
+            measurement_unit:sizesUnit,
+            attributes : tableHeadings.map((head)=>({
+                value:'',
+                measurement_unit:head
+            }))
+        }])
     }
 
     function handleKeyDown(e){
         if (e.key ==="Enter"){
+            e.preventDefault();
             handleAddSize(sizeInputValue)
             setSizeInputValue("")
         }
@@ -110,16 +126,22 @@ export default function SizesInput({errors,formData}){
         setSizeInputValue("")
     }
 
+    function handleSizesUnitInputKeyDown(e){
+        if (e.key === "Enter"){
+            e.preventDefault();
+        }
+    }
+
     return(
         <>
             <Input label={"sizes_measurement_unit"} title={'Sizes measurement unit'} errors={errors?.messages['sizes_measurement_unit']}>
-                <TextInputField onChange={handleSizesUnitInputChange} value={sizesUnit} name="sizes_measurement_unit" id="sizes_measurement_unit" type='text' placeholder="ex. inches" />   
+                <TextInputField onKeyDown={handleSizesUnitInputKeyDown} onChange={handleSizesUnitInputChange} value={sizesUnit} name="sizes_measurement_unit" id="sizes_measurement_unit" type='text' placeholder="ex. inches" />   
             </Input>
 
             <Input label={"sizes"} title={'Sizes'} errors={errors?.messages['sizes']}>
                 <SizesInputContainer>
                     <div style={{display:'flex',gap:'1rem'}}>
-                        <TextInputField value={sizeInputValue} onChange={(e)=> setSizeInputValue(e.target.value)} id="sizes" name="sizes" placeholder="enter a size" onBlur={handleBlur} onKeyDown={handleKeyDown}/>
+                        <TextInputField value={sizeInputValue} onChange={(e)=> setSizeInputValue(e.target.value)} id="sizes" placeholder="enter a size" onBlur={handleBlur} onKeyDown={handleKeyDown}/>
                         <AddSizeButton type="button" onClick={handleAddSizeButtonClick}>Add</AddSizeButton>
                     </div>
                     <SizesListContainer>

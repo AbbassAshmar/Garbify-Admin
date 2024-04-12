@@ -81,10 +81,12 @@ export default function SizesTable({mainMeasurementUnit,tableSizes,sizesData,set
         setShowTable(!showTable);
     }
 
+    useEffect(()=>console.log(tableHeadings),[tableHeadings])
     ///improve using debouncing
     function handleHeadingInputChange(e,index){
         setTableHeadings(tableHeadings.map((head,i)=>{
             if (i == index) head = e.currentTarget.value;
+            return head;
         }))
 
         let temp = [...sizesData];
@@ -197,7 +199,6 @@ gap: 2rem;
 width :calc(100% + 50px) ;
 height :calc(100% + 50px) ;
 display: flex;
-/* overflow: scroll; */
 justify-content: flex-start;
 align-items: flex-start;
 transition:max-height .3s, padding .3s;

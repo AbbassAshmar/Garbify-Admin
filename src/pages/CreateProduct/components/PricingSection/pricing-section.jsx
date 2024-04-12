@@ -74,6 +74,8 @@ export default function PricingSection({errors,formData}){
             <Input label={"discount_percentage"} title={renderColoredLabel('Discount percentage','%')} errors={errors?.messages['discount_percentage']}>
                 <TextInputField disabled={!isSaleEnabled} name="discount_percentage" id="discount_percentage" type="number" min="0" placeholder="0"/>
             </Input>
+
+            <input type="hidden" name='sale' value='true' disabled={!isSaleEnabled} style={{width:".2px", position:"absolute"}} />
         </SectionDefault>
     )
 }

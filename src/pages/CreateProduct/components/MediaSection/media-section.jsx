@@ -91,12 +91,26 @@ function renderTitle(title){
     return <span style={{fontSize:'var(--heading-6)'}}>{title}</span>;
 }
 
-export default function MediaSection({colors,errors,formData}){
+export default function MediaSection({colors,errors,setFormData}){
     const prevColorsRef = useRef(colors);
     const [selectedColors, setSelectedColors] = useState([]);
     const [images, setImages] = useState([]); 
     const [thumbnail, setThumbnail] = useState({color:'' , image:{file:'',url:''}});
+
+    useEffect(()=>{
+        setFormData((prev) => ({
+            ...prev,
+            thumbnail_data:thumbnail,
+        }))
+    },[thumbnail])
     
+    useEffect(()=>{
+        setFormData((prev) => ({
+            ...prev,
+            images_data:images,
+        }))
+    },[images])
+
     useEffect(()=>{
         if (colors.length)
         thumbnail.color = colors[0];
