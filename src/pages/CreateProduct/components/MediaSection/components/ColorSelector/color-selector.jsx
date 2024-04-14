@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import {InputTitle, ErrorMessage, InputContainer} from "../../../Input/input.jsx";
+import {InputTitle, ErrorMessage, InputContainer} from "../../../../../../components/Input/input.jsx";
 
 const SelectField = styled.select`
 width:32%;
@@ -25,7 +25,7 @@ font-size:1.25rem;
 `
 
 
-export default function ColorSelectory({ id, colors, selectedColor, onChange, optionCondition, XClick}){
+export default function ColorSelector({ id, colors, selectedColor, onChange, optionCondition, XClick}){
     return (
         <InputContainer>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',overflow:'hidden'}}>

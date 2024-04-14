@@ -1,13 +1,13 @@
 import SizesInput from "./components/SizesInput/sizes-input";
 import ColorsInput from "./components/ColorsInput/colors-input";
-import SectionDefault from "../SectionDefault/section-default";
+import FormDefaultSection from "../../../../components/FormDefaultSection/form-default-section";
 
-export default function VariantsSection({errors,setFormData, colors, setColors}){
+export default function VariantsSection({formResetClicked, errors,setFormData, colors, setColors}){
     return (
-        <SectionDefault title={"Variants"}>
-            <ColorsInput colors={colors} setColors={setColors} errors={errors}/>
-            <SizesInput errors={errors} setFormData={setFormData}/>
-        </SectionDefault>
+        <FormDefaultSection title={"Variants"}>
+            <ColorsInput formResetClicked={formResetClicked} colors={colors} setColors={setColors} errors={errors}/>
+            <SizesInput formResetClicked={formResetClicked} errors={errors} setFormData={setFormData}/>
+        </FormDefaultSection>
     )
 }
 

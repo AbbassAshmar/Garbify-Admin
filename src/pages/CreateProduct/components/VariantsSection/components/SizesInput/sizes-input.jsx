@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import Input from "../../../Input/input";
-import { TextInputField } from "../../../Input/input";
+import Input from "../../../../../../components/Input/input";
+import { TextInputField } from "../../../../../../components/Input/input";
 import SizesTable from "./components/SizesTable/sizes-table";
 
 const SizesInputContainer = styled.div`
@@ -53,7 +53,7 @@ background-color: var(--secondary-color);
 `
 
 
-export default function SizesInput({errors,setFormData}){
+export default function SizesInput({formResetClicked, errors,setFormData}){
     const [sizeInputValue,setSizeInputValue] = useState("");
     
     const [sizesUnit,setSizesUnit] = useState('');
@@ -62,7 +62,16 @@ export default function SizesInput({errors,setFormData}){
     const [tableHeadings, setTableHeadings] = useState(['']);
     const [sizesData,setSizesData] = useState([])  
 
-    useEffect(()=>console.log(sizesData),[sizesData])
+    useEffect(()=>{
+        if (formResetClicked){
+            setSizesData([]);
+            setTableHeadings(['']);
+            setSizesUnit('');
+            setSizes([])
+            setSizeInputValue('');
+        }
+    },[formResetClicked])
+   
     useEffect(()=>{
         setFormData((prev) => ({
             ...prev,
@@ -96,7 +105,6 @@ export default function SizesInput({errors,setFormData}){
         if (!size) return;
         if (sizes.includes(size)) return;
 
-        console.log(tableHeadings)
         setSizes([...sizes,size])
         setSizesData([...sizesData,{
             value:size,
@@ -156,7 +164,7 @@ export default function SizesInput({errors,setFormData}){
                 </SizesInputContainer>  
             </Input>
 
-            <SizesTable mainMeasurementUnit={sizesUnit} tableSizes={sizes} setTableHeadings={setTableHeadings} tableHeadings={tableHeadings} sizesData={sizesData} setSizesData={setSizesData}/>
+            <SizesTable formResetClicked={formResetClicked} mainMeasurementUnit={sizesUnit} tableSizes={sizes} setTableHeadings={setTableHeadings} tableHeadings={tableHeadings} sizesData={sizesData} setSizesData={setSizesData}/>
         </>
     )
 }

@@ -2,9 +2,17 @@ import styled from 'styled-components';
 import { useState,useEffect } from 'react';
 import PlusSign from '../../../../../../components/PlusSignCircle/plus-sign-circle';
 
-export default function ColorsInput({errors, formData, colors,setColors}){
+export default function ColorsInput({formResetClicked, errors, colors,setColors}){
     const [sameColorError,setSameColorError] = useState();
     const [colorInputValue, setColorInputValue] = useState();
+
+    useEffect(()=>{
+        if (formResetClicked){
+            setSameColorError("");
+            setColorInputValue("");
+            setColors([]);
+        }
+    },[formResetClicked])
 
     function handleDeleteColor(color){
         setColors(colors.filter((_color) => _color !== color));
@@ -51,7 +59,6 @@ export default function ColorsInput({errors, formData, colors,setColors}){
                         </XIconContainer>
                         <ColorsInputFieldContainer>
                             <ColorsInputField 
-                            onClick={()=>console.log('click')}
                             onBlur={(e)=>handleColorBlur(e,i)}
                             onChange={handleColorChange}
                             value={color} 

@@ -1,8 +1,8 @@
-import Input from "../Input/input";
+import Input from "../../../../components/Input/input";
 import styled from "styled-components";
 import { useEffect, useState,useRef } from "react";
-import SectionDefault from "../SectionDefault/section-default";
-import ColorSelectory from "./components/ColorSelector/color-selector";
+import FormDefaultSection from "../../../../components/FormDefaultSection/form-default-section";
+import ColorSelector from "./components/ColorSelector/color-selector";
 
 
 const ThumbnailFieldContainer = styled.label`
@@ -16,6 +16,13 @@ align-items: center;
 cursor: pointer;
 border-radius: 6px;
 border:3px dashed var(--main-color);
+`
+const ThumbnailImage = styled.img`
+border-radius:6px;
+position:relative;
+width:100%;
+height:100%;
+object-fit:cover;
 `
 const PlusIcon = styled.i`
 position: absolute;
@@ -91,11 +98,21 @@ function renderTitle(title){
     return <span style={{fontSize:'var(--heading-6)'}}>{title}</span>;
 }
 
-export default function MediaSection({colors,errors,setFormData}){
+export default function MediaSection({formResetClicked, colors,errors,setFormData}){
     const prevColorsRef = useRef(colors);
     const [selectedColors, setSelectedColors] = useState([]);
+
     const [images, setImages] = useState([]); 
     const [thumbnail, setThumbnail] = useState({color:'' , image:{file:'',url:''}});
+
+    useEffect(()=>{
+        if (formResetClicked){
+            prevColorsRef.current=[]
+            setImages([]);
+            setThumbnail({color:'' , image:{file:'',url:''}});
+            setSelectedColors([]);
+        }
+    },[formResetClicked])
 
     useEffect(()=>{
         setFormData((prev) => ({
@@ -112,8 +129,12 @@ export default function MediaSection({colors,errors,setFormData}){
     },[images])
 
     useEffect(()=>{
-        if (colors.length)
-        thumbnail.color = colors[0];
+        if (colors.length){
+            setThumbnail({...thumbnail, color:colors[0]})
+        }
+        else {
+            setThumbnail({...thumbnail, color:""})
+        }
     },[colors])
 
     useEffect(()=>{
@@ -299,9 +320,9 @@ export default function MediaSection({colors,errors,setFormData}){
     }  
 
     return(
-        <SectionDefault title={"Media"}>
+        <FormDefaultSection title={"Media"}>
             <Input style={{gap:'2rem'}} label={"thumbnail"} subtitle={'displayed in the product card.'} title={renderTitle('Product Thumbnail')} errors={errors?.messages['thumbnail']}>
-                <ColorSelectory 
+                <ColorSelector 
                 id={'thumbnail_color'}
                 onChange={handleThumbnailColorInputChange}
                 colors={colors}
@@ -312,7 +333,7 @@ export default function MediaSection({colors,errors,setFormData}){
                 <ThumbnailFieldContainer htmlFor="product_thumbnail">
                     <PlusIcon className="fa-solid fa-plus" />
                     {thumbnail.image.url &&
-                    <img style={{borderRadius:"6px",position:"relative",width:'100%',height:"100%",objectFit:"cover"}} src={thumbnail.image.url} />}
+                    <ThumbnailImage src={thumbnail.image.url} />}
                     <input accept=".jpg,.jpeg,.png" 
                     onChange={handleThumbnailImageInputChange} 
                     id="product_thumbnail" type="file" 
@@ -323,7 +344,7 @@ export default function MediaSection({colors,errors,setFormData}){
                 {images && images.map((imageColorObj)=>{ 
                     return(
                     <ImageColorContainer key={imageColorObj.id}>
-                        <ColorSelectory 
+                        <ColorSelector 
                         id={"images_color"+imageColorObj.id}
                         onChange={(e)=>handleColoredImagesColorInputChange(e,imageColorObj.id)}
                         colors={colors}
@@ -353,7 +374,7 @@ export default function MediaSection({colors,errors,setFormData}){
                         'No colors available': 'Add color and images'}
                 </AddImageButton>
             </Input>
-        </SectionDefault>
+        </FormDefaultSection>
     )
 }   
 

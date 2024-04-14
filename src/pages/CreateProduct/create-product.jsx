@@ -5,8 +5,7 @@ import PricingSection from "./components/PricingSection/pricing-section";
 import VariantsSection from "./components/VariantsSection/variants-section";
 import ClassificationSection from "./components/ClassificationSection/classification-section";
 import MediaSection from "./components/MediaSection/media-section";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 
 const Container = styled.form`
 gap:2rem;
@@ -90,19 +89,18 @@ gap:2rem;
 
 export default function CreateProduct(){
     const [formData, setFormData] = useState();
+    const [formResetClicked, setFormResetClicked] = useState(false);
+
     const [colors, setColors] = useState(["#000000"])
     const location = useLocation();
-
 
     function handleFormSubmit (e){
         e.preventDefault();
         let formObject = new FormData(e.currentTarget);
 
-
         // handle thumbnail data
         formObject.append('thumbnail_data[color]',formData['thumbnail_data'].color);
         formObject.append('thumbnail_data[image]',formData['thumbnail_data'].image.file);
-
 
         // handle images data
         for (let i in formData['images_data']){
@@ -148,6 +146,13 @@ export default function CreateProduct(){
         // make the request 
     }
 
+    function handleDiscardForm(e){
+        setFormResetClicked(true);
+    }
+
+    useEffect(()=>{
+        if (formResetClicked) setFormResetClicked(false);
+    },[formResetClicked])
 
     return(
         <Container onSubmit={handleFormSubmit}>
@@ -157,20 +162,20 @@ export default function CreateProduct(){
                     <PagePath>{location.pathname.split("/").join(" / ")}</PagePath>
                 </HeaderText>
                 <HeaderButtons>
-                    <DiscardChangesButton>Discard</DiscardChangesButton>
+                    <DiscardChangesButton type="reset" onClick={handleDiscardForm}>Discard</DiscardChangesButton>
                     <AddProductButton type="submit">Add product</AddProductButton>
                 </HeaderButtons>
             </Header>
             <Content>
                 <InformationPricingContainer>
                     <InformationSection />
-                    <PricingSection />
+                    <PricingSection formResetClicked={formResetClicked}/>
                 </InformationPricingContainer>
                 <VariantsClassificationContainer>
-                    <VariantsSection setFormData={setFormData} colors={colors} setColors={setColors} />
-                    <ClassificationSection />
+                    <VariantsSection formResetClicked={formResetClicked} setFormData={setFormData} colors={colors} setColors={setColors} />
+                    <ClassificationSection formResetClicked={formResetClicked}/>
                 </VariantsClassificationContainer>
-                <MediaSection setFormData={setFormData} colors={colors}/>
+                <MediaSection formResetClicked={formResetClicked} setFormData={setFormData} colors={colors}/>
             </Content>
         </Container>
     )

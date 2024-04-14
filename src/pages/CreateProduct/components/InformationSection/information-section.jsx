@@ -1,7 +1,7 @@
-import Input from "../Input/input";
+import Input from "../../../../components/Input/input";
 import styled from "styled-components";
-import { TextInputField } from "../Input/input";
-import SectionDefault from "../SectionDefault/section-default";
+import { TextInputField } from "../../../../components/Input/input";
+import FormDefaultSection from "../../../../components/FormDefaultSection/form-default-section";
 
 const TextAreaField = styled.textarea`
 resize: none;
@@ -39,22 +39,22 @@ transition: border .3s;
 
 export default function InformationSection({errors,formData}){
     return (
-        <SectionDefault title={'Product Information'}>
-            <Input label={"name"} title={"Product name"} errors={errors?.messages['name']}>
-                <TextInputField name="name" id="name" type="text" placeholder="name"/>
+        <FormDefaultSection title={'Product Information'}>
+            <Input label={"category_name_input"} title={"Product name"} errors={errors?.messages['name']}>
+                <TextInputField name="name" id="category_name_input" type="text" placeholder="name"/>
             </Input>
-            <Input label={"description"} title={"Description"} errors={errors?.messages['description']}>
-                <TextAreaField name="description" id="description" placeholder="describe your product"/>
+            <Input label={"product_description_input"} title={"Description"} errors={errors?.messages['description']}>
+                <TextAreaField name="description" id="product_description_input" placeholder="describe your product"/>
             </Input>
-            <Input label={"quantity"} title={"Quantity"} errors={errors?.messages['quantity']}>
-                <TextInputField name="quantity" id="quantity" type="number" min="0" placeholder="0"/>
+            <Input label={"product_quantity_input"} title={"Quantity"} errors={errors?.messages['quantity']}>
+                <TextInputField name="quantity" id="product_quantity_input" type="number" min="0" placeholder="0"/>
             </Input>
-            <Input label={"status"} title={"Status"} errors={errors?.messages['status']}>
-                <SelectField name="status" id="status">
+            <Input label={"product_status_input"} title={"Status"} errors={errors?.messages['status']}>
+                <SelectField name="status" id="product_status_input">
                     <option value="in stock">in stock</option>
                     <option value="out of stock">out of stock</option>
                 </SelectField>
             </Input>
-        </SectionDefault>
+        </FormDefaultSection>
     )
 }

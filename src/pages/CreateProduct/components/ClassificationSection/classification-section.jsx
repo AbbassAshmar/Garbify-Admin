@@ -1,8 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import Input from "../Input/input";
-import { TextInputField } from "../Input/input";
-import SectionDefault from "../SectionDefault/section-default";
+import Input from "../../../../components/Input/input";
+import { TextInputField } from "../../../../components/Input/input";
+import FormDefaultSection from "../../../../components/FormDefaultSection/form-default-section";
 
 const SelectField = styled.select`
 width:100%;
@@ -61,12 +61,19 @@ background-color: var(--secondary-color);
 const TYPE_SUBTITLE= "a hint to classify the product example 'long sleeves shirt'";
 const TAGS_SUBTITLE = "tags help us categories your product";
 
-export default function ClassificationSection({errors, formData}){
+export default function ClassificationSection({formResetClicked, errors}){
+    const tagsInputFieldRef = useRef();
     const [isInputFocused, setInputFocused] = useState(false);
 
+    const [tags,setTags] = useState(['shoes','sport']);
     const [tagsInputValue, setTagsInputValue] = useState("");
-    const tagsInputFieldRef = useRef();
-    const [tags,setTags] = useState(['shoes', 'nice', 'eat','drink','fuckk','howdy']);
+
+    useEffect(()=>{
+        if (formResetClicked){
+            setTags(['shoes','sport']);
+            setTagsInputValue("");
+        }
+    },[formResetClicked])
 
     function handleTagsInputContainerClick(){
         setInputFocused(true);
@@ -103,7 +110,7 @@ export default function ClassificationSection({errors, formData}){
     }
     
     return (
-        <SectionDefault title={'Classification'}>
+        <FormDefaultSection title={'Classification'}>
             <Input label={"type"} title={"Type"} subtitle={TYPE_SUBTITLE} errors={errors?.messages['type']}>
                 <TextInputField name="type" id="type" type="text" placeholder="product type"/>
             </Input>
@@ -129,6 +136,6 @@ export default function ClassificationSection({errors, formData}){
                     <TagInput onChange={handleTagsInputChange} value={tagsInputValue} onBlur={handleTagsInputBlur} onKeyDown={handleKeyDown} ref={tagsInputFieldRef}/>
                 </TagsInputContainer>
             </Input>
-        </SectionDefault>
+        </FormDefaultSection>
     )
 }

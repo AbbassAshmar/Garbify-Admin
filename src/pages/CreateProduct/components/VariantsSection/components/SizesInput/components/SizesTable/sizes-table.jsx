@@ -7,10 +7,17 @@ import PlusSignCircle from "../../../../../../../../components/PlusSignCircle/pl
 // tableSizes array ex : ['small', 'medium','large']
 // sizesData is sent to the backend (list of tableSizes objects)
 
-export default function SizesTable({mainMeasurementUnit,tableSizes,sizesData,setSizesData,tableHeadings,setTableHeadings}){
+export default function SizesTable({formResetClicked, mainMeasurementUnit,tableSizes,sizesData,setSizesData,tableHeadings,setTableHeadings}){
     const [isInputFocused, setInputFocused] = useState('');
     const [showTable,setShowTable] = useState(false);
     const [buttonError,setButtonError] = useState('');
+
+    useEffect(()=>{
+        if (formResetClicked){
+            setShowTable(false)
+            setButtonError('')
+        }
+    },[formResetClicked])
 
     useEffect(()=>{
         if (!tableSizes.length) 
@@ -81,7 +88,6 @@ export default function SizesTable({mainMeasurementUnit,tableSizes,sizesData,set
         setShowTable(!showTable);
     }
 
-    useEffect(()=>console.log(tableHeadings),[tableHeadings])
     ///improve using debouncing
     function handleHeadingInputChange(e,index){
         setTableHeadings(tableHeadings.map((head,i)=>{

@@ -1,8 +1,8 @@
-import {useState} from "react";
-import Input from "../Input/input";
+import {useEffect, useState} from "react";
+import Input from "../../../../components/Input/input";
 import styled from "styled-components";
-import { TextInputField } from "../Input/input";
-import SectionDefault from "../SectionDefault/section-default";
+import { TextInputField } from "../../../../components/Input/input";
+import SectionDefault from "../../../../components/FormDefaultSection/form-default-section";
 
 const PriceInputsContainer = styled.div`
 gap:2rem;
@@ -31,9 +31,14 @@ transition:color .3s;
 color:${({$enabled})=>$enabled?"var(--main-color)":"grey"};
 `
 
-export default function PricingSection({errors,formData}){
+export default function PricingSection({formResetClicked, errors,formData}){
     const [isSaleEnabled, setIsSaleEnabled] = useState(false)
 
+    useEffect(()=>{
+        if (formResetClicked){
+            setIsSaleEnabled(false);
+        }
+    },[formResetClicked])
 
     function renderColoredLabel(label,blueText){
         return (
