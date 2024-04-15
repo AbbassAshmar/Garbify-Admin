@@ -29,66 +29,108 @@ flex-direction:column;
 const CurrentPath = styled.p`
 font-weight:500;
 color : #A8AAAE;
-font-size:var(--body);
+font-size:var(--small-1);
 `
 const CategoriesList = styled.div`
-gap:1rem;
-padding:2rem;
+gap:1.25rem;
+padding:1.25rem;
 display: flex;
 flex-direction:column;
 align-items: flex-start;
 border:2px solid var(--secondary-color);
 `
 const BackButton = styled.button`
+gap:.25rem;
 border: none;
-font-weight:500;
+display: flex;
 cursor: pointer;
+font-weight:500;
+align-items: center;
+font-size:var(--body);
 background-color: white;
 `
 const CategoryContainer = styled.button`
 width: 100%;
+border:none;
 display: flex;
 cursor: pointer;
 border-radius: 4px;
 align-items: center;
-padding: .25rem .5rem;
+padding: .5rem 1rem;
 justify-content: space-between;
+transition: background-color .3s;
 background-color: var(--secondary-color);
+&:hover{
+	background-color: #d8dbe0;
+}
+`
+const CategoryName = styled.p`
+font-size:var(--body);
+font-weight:500;
+`
+const SubcategoriesCount = styled.p`
+color:#B2B4B8;
+font-weight:500;
+font-size:var(--small-1);
 `
 const AddHereButton = styled.button`
 width:100%;
 display: flex;
 cursor: pointer;
 border-radius:6px;
+font-size:var(--body);
+font-weight:500;
 align-items: center;
 background-color: white;
-border:2px solid #D0D3D8;
+border:2px solid #d8dbe0;
 justify-content: space-between;
-padding:.25rem;
+padding: .5rem .6rem .5rem 1rem;
+transition: background-color .3s;
+&:hover{
+	background-color: var(--secondary-color);
+}
+`
+const CheckBox = styled.div`
+width:22px;
+height:22px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius:4px;
+background-color: ${({$checked})=> ($checked? 'rgba(0,194,255,.35)':"white")};
+border: ${({$checked})=> ($checked? '' : '2px solid #d8dbe0')};
 `
 export default function CategoryParentPicker(){
-    const [isChecked, setIsChecked] = useState(false);
-    const [categories,setCategories] = useState(Categories.categories);
-    const [currentCategories,setCurrentCategories] = useState(Categories.categories);
+	const [path, setPath] = useState(['categories']);
 
+	const [currentCategories,setCurrentCategories] = useState({name:"categories", id : -1, children: Categories.categories});
     const [categoriesHistory,setCategoriesHistory] = useState([]);
 
-    useEffect(()=>{console.log(currentCategories)},[currentCategories])
-
+	// sent with the create request 
+	const [categoryParentID, setCategoryParentID] = useState(null); 
+	
     function updateCurrentCategories(category){
+		if (!category.children.length) return;
         //add to history the old state
-        setCategoriesHistory([...categories, currentCategories]);
+        setCategoriesHistory([...categoriesHistory, currentCategories]);
         // update currentCategories to children of category having id = categoryID
-        setCurrentCategories(category.children)
-
+        setCurrentCategories(category)
+		// update the path
+		setPath([...path,category.name]);
     }
 
     function backButtonClick(){
+        if (!categoriesHistory.length) return;
         let newCategoriesHistory = [...categoriesHistory];
         let latestInHistory = newCategoriesHistory.pop(-1)
         setCurrentCategories(latestInHistory);
         setCategoriesHistory(newCategoriesHistory);
+		setPath(path.slice(0,-1))
     }
+
+	function handleAddHereButtonClick(){
+		setCategoryParentID(currentCategories.id)
+	}
 
     return(
         <Container>
@@ -97,28 +139,29 @@ export default function CategoryParentPicker(){
                 <Subtitle>Decide the categorie’s position in the heirarchy</Subtitle>
             </TextContainer>
             <Content>
-                <CurrentPath>/ men / women</CurrentPath>
+                <CurrentPath>/ {path.join(" / ")}</CurrentPath>
                 <CategoriesList>
-                    <BackButton onClick={backButtonClick} type='button'>- back</BackButton>
-                    {currentCategories.length && currentCategories.map(category=>(
-                        <CategoryContainer type="button" onClick={e=>updateCurrentCategories(category)}>
-                            <div style={{display:'flex',gap:'.5rem', alignItems:"center"}}>
-                                <p>{category.name}</p>
-                                <p>({category.children.length} subcategories)</p>
+                    <BackButton disabled={!categoriesHistory.length} onClick={backButtonClick} type='button'>
+						<i style={{lineHeight:"16px"}} className="fa-solid fa-angle-left"/>
+						<span style={{lineHeight:"16px"}}>Back</span>
+                    </BackButton>
+                    {currentCategories.children.length && currentCategories.children.map(category=>(
+                        <CategoryContainer key={category.id} type="button" onClick={e=>updateCurrentCategories(category)}>
+                            <div style={{display:'flex',gap:'1rem', alignItems:"center"}}>
+                                <CategoryName>{category.name}</CategoryName>
+                                <SubcategoriesCount>({category.children.length} subcategories)</SubcategoriesCount>
                             </div>
-                            <i className="fa-solid fa-angle-right"/>
+                            {category.children.length > 0 && <i className="fa-solid fa-angle-right"/>}
                         </CategoryContainer>
                     ))}
-                    <AddHereButton type="button">
+                    <AddHereButton onClick={handleAddHereButtonClick} type="button">
                         <div style={{display:'flex', gap:".5rem"}}>
-                            <i className="fa-solid fa-plus"/>
-                            <p>Add here</p>
+                            <i style={{lineHeight:"16px"}} className="fa-solid fa-plus"/>
+                            <p style={{lineHeight:"16px"}}>Add here</p>
                         </div>
-                        <div style={{width:'22px', height:'22px', borderRadius:"4px",border:'2px solid black'}}>
-                            {isChecked && (
-                                <i className="fa-solid fa-check" />
-                            )}
-                        </div>
+                        <CheckBox $checked={categoryParentID == currentCategories.id}>
+                            {categoryParentID == currentCategories.id && <i style={{fontSize:"14px", color:'var(--main-color)'}} className="fa-solid fa-check" />}
+                        </CheckBox>
                     </AddHereButton>
                 </CategoriesList>
             </Content>
