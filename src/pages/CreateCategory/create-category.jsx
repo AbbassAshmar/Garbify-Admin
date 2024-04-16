@@ -1,6 +1,11 @@
 import styled from "styled-components";
 import MediaSection from "./components/MediaSection/media-section";
 import DetailsSection from "./components/DetailsSection/details-section";
+import { useEffect, useRef, useState } from "react";
+import {useSendRequest} from "../../hooks/use-send-request";
+import useUserState from "../../hooks/use-user-state";
+import SuccessOrErrorPopUp from "../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
+import CategoryCreatedPopUP from "./components/CategoryCreatedPopUp/category-created-pop-up";
 
 const Container = styled.form`
 gap:2rem;
@@ -49,6 +54,9 @@ background-color: var(--main-color);
 &:hover{
     background-color:#009BCC;
 }
+&:disabled{
+    background-color: grey;
+}
 `
 const DiscardChangesButton = styled.button`
 border:none;
@@ -73,13 +81,66 @@ background-color: white;
 justify-content: space-between;
 box-shadow: 0px 0px 15px rgba(0,0,0,.11) ;
 `
-export default function CreateCategory(){
 
-    function handleFormSubmit(){
-        e.preventDefault();
+export default function CreateCategory(){
+    const discardButtonRef = useRef();
+    const userState = useUserState();
+    const {sendRequest, serverError} = useSendRequest(userState);
+    const [isCreateSuccess,setIsCreateSuccess] = useState(true);
+
+    const [formResetClicked, setFormResetClicked] = useState(false);
+    const [errors,setErrors] = useState({fields : [] , messages : {}});
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(()=>{
+        if (formResetClicked) setFormResetClicked(false);
+    },[formResetClicked])
+
+
+    async function requestCreateCategory(formObject){
+        const url = "/api/categories";
+        const init = {
+            method:"POST",
+            data:formObject,
+            headers : {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + userState?.token
+            }
+        }
+       
+        const {request, response} = await sendRequest(url, init);
+        if (request){
+            if (request.status === 201){
+                discardButtonRef.current.click();
+                setIsCreateSuccess(true);
+                setErrors({fields:[], messages:{}});
+            }
+
+            if (request.status === 400){ // validation error
+                setErrors({fields:response.metadata.error_fields, message : response.error.details})
+            }
+        }else{
+            setErrors({fields:[], messages:{}});
+        }
+
+        setIsLoading(false);
     }
 
+
+    function handleFormSubmit(e){
+        e.preventDefault();
+        setIsLoading(true);
+        requestCreateCategory(new FormData(e.currentTarget));
+    }
+
+    function handleDiscardButtonClick(e){
+        setFormResetClicked(true);
+    }
+    
     return(
+        <>
+        <SuccessOrErrorPopUp serverError={serverError}/>
+        {isCreateSuccess && <CategoryCreatedPopUP show={isCreateSuccess} setShow={setIsCreateSuccess}/>}
         <Container onSubmit={handleFormSubmit}>
             <Header>
                 <HeaderText>
@@ -87,14 +148,17 @@ export default function CreateCategory(){
                     <PagePath>{location.pathname.split("/").join(" / ")}</PagePath>
                 </HeaderText>
                 <HeaderButtons>
-                    <DiscardChangesButton>Discard</DiscardChangesButton>
-                    <AddCategoryButton type="submit">Add category</AddCategoryButton>
+                    <DiscardChangesButton ref={discardButtonRef} type="reset" onClick={handleDiscardButtonClick}>Discard</DiscardChangesButton>
+                    <AddCategoryButton disabled={isLoading} type="submit">
+                        Add category
+                    </AddCategoryButton>
                 </HeaderButtons>
             </Header>
             <Content>   
-                <MediaSection />
-                <DetailsSection />
+                <MediaSection errors={errors} formResetClicked={formResetClicked}/>
+                <DetailsSection errors={errors} formResetClicked={formResetClicked}/>
             </Content>
         </Container>
+        </>
     )
 }

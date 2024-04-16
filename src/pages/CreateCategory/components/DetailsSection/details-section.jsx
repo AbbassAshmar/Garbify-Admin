@@ -9,11 +9,11 @@ display: flex;
 flex-direction: column;
 `
 
-export default function DetailsSection(){
+export default function DetailsSection({setFormData, formResetClicked, errors}){
     return(
         <Container>
-            <CategoryInformation />
-            <CategoryParentPicker />
+            <CategoryInformation errors={errors}/>
+            <CategoryParentPicker errors={errors} setFormData={setFormData} formResetClicked={formResetClicked} />
         </Container>
     )
 }

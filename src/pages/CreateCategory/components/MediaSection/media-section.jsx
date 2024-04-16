@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Container = styled.div`
 flex:1;
@@ -55,8 +55,14 @@ visibility: hidden;
 width: .2px;
 position: absolute;
 `
-export default function MediaSection(){
+
+export default function MediaSection({errors, formResetClicked}){
     const [categoryImageURL, setCategoryImageURL] = useState('');
+
+    useEffect(()=>{
+        if (formResetClicked)
+        setCategoryImageURL('');
+    },[formResetClicked])
 
     function handleCategoryImageInputChange(e){
         setCategoryImageURL(URL.createObjectURL(e.currentTarget.files[0]))
@@ -68,13 +74,14 @@ export default function MediaSection(){
                 <Title>Category Image</Title>
                 <Subtitle>Represents the category.</Subtitle>
             </TextContainer>
-            <ImageInputContainer>
+            <ImageInputContainer htmlFor="category_image">
                 <PlusIcon className="fa-solid fa-plus" />
                 {categoryImageURL && <CategoryImage src={categoryImageURL} />}
                 <HiddenImageInput accept=".jpg,.jpeg,.png" 
                 onChange={handleCategoryImageInputChange} 
-                id="product_thumbnail" type="file" name="category_image"/>
+                id="category_image" type="file" name="image"/>
             </ImageInputContainer>
+            {errors?.messages['image'] && <ErrorMessage>{errors.messages['image']}</ErrorMessage>}
         </Container>
     )
 }

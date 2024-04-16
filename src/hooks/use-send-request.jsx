@@ -31,23 +31,23 @@ export async function refreshAccessToken(userContext){
 
 
 // hook that sends a request and displays a PopUp component on server down error
-export const useSendRequest = (userContext) => {
+export function useSendRequest(userContext){
     const [isServerError, setIsServerError] = useState(false);
 
-    const sendRequest = async (uri, init={}) => {
-        let url = import.meta.env.VITE_API_DOMAIN + uri;
+    const sendRequest = async (url, init={}) => {
+        let _url = import.meta.env.VITE_API_DOMAIN + url;
         let defaultInit = {
             method: "GET",
             headers: {
-                'content-type': "application/json",
                 'accept': 'application/json',
+                'content-type': "application/json",
                 'Authorization': 'Bearer ' + userContext?.token
             },
             ...init
         };
 
         try {
-            let request = await fetch(url, defaultInit);
+            let request = await fetch(_url, defaultInit);
             let response = await request.json();
 
             // request a new access token 
@@ -56,7 +56,7 @@ export const useSendRequest = (userContext) => {
 
                 if (new_token){
                     defaultInit.headers['Authorization'] = 'Bearer ' + new_token;
-                    request = await fetch(url, defaultInit);
+                    request = await fetch(_url, defaultInit);
                     response = await request.json();
                 }
             }
