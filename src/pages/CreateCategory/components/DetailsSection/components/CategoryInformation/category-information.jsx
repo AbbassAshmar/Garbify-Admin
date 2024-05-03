@@ -49,8 +49,11 @@ export default function CategoryInformation({errors}){
                 <Title>Category Information</Title>
             </TextContainer>
             <Content>
-                <Input label={"category_name_input"} title={"Category name"} errors={errors?.messages['name']}>
-                    <TextInputField name="name" id="category_name_input" type="text" placeholder="name"/>
+                <Input label={"category_name_input"} title={"Category name"} subtitle={"name stored in the server"} errors={errors?.messages['name']}>
+                    <TextInputField name="name" id="category_name_input" type="text" placeholder="ex. shoes"/>
+                </Input>
+                <Input label={"category_display_name_input"} title={"Category display name"} subtitle={"name displayed for you"} errors={errors?.messages['display_name']}>
+                    <TextInputField name="display_name" id="category_display_name_input" type="text" placeholder="ex. women's best shoes"/>
                 </Input>
                 <Input label={"category_description_input"} title={"Category description"} errors={errors?.messages['description']}>
                     <TextAreaField name="description" id="category_description_input" type="text" placeholder="description"/>

@@ -1,6 +1,17 @@
 import ReactDOM from 'react-dom';
-import styled from "styled-components";
+import styled,{keyframes} from "styled-components";
 import { useEffect, useState } from "react";
+
+const slideIn = keyframes`
+from {
+    transform: translateX(30px);
+    opacity: 0;
+}
+to {
+    transform: translateX(0);
+    opacity: 1;
+}
+`;
 
 const Container = styled.div`
 width:50%;
@@ -8,12 +19,16 @@ min-width:250px;
 max-width:430px;
 background : white;
 border-radius:10px;
-box-shadow:0px 0px 10px ${({$color})=>$color};
 position:fixed;
 z-index:100;
 top:18vh;
 right:3%;
 padding:1% 1.3%;
+animation-duration: 0.3s; 
+animation-timing-function: ease-in-out; 
+box-shadow:0px 0px 10px ${({$color})=>$color};
+animation-name: ${({$animate}) => ($animate =='in' ? slideIn : '')};
+
 @media screen and (max-width:600px){
     right:15%;
 }
@@ -67,6 +82,14 @@ cursor:pointer;
 `
 
 function PopUp({color,text,status,setSettings,serverError,show}){
+    const [animate, setAnimate] = useState("out");
+
+    useEffect(()=>{
+        if (!show){
+            setAnimate("out");
+        }else {setAnimate("in")}
+    },[show])
+
     function handleCloseButtonClick(e){
         serverError.get() && serverError.set(false);
         setSettings((prevSettings) => ({ ...prevSettings, show: false, status: "", message: "" }));
@@ -76,7 +99,7 @@ function PopUp({color,text,status,setSettings,serverError,show}){
         <>
             {ReactDOM.createPortal(
                 <>
-                    {show && (<Container $color={color}>
+                    {show && (<Container $animate={animate} $color={color}>
                         <Content>
                             <div style={{display:'flex',gap:'20px',alignItems:"center"}}>
                                 <StatusCircle $color={color}>

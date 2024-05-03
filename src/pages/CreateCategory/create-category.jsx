@@ -86,7 +86,7 @@ export default function CreateCategory(){
     const discardButtonRef = useRef();
     const userState = useUserState();
     const {sendRequest, serverError} = useSendRequest(userState);
-    const [isCreateSuccess,setIsCreateSuccess] = useState(true);
+    const [isCreateSuccess,setIsCreateSuccess] = useState(false);
 
     const [formResetClicked, setFormResetClicked] = useState(false);
     const [errors,setErrors] = useState({fields : [] , messages : {}});
@@ -95,7 +95,6 @@ export default function CreateCategory(){
     useEffect(()=>{
         if (formResetClicked) setFormResetClicked(false);
     },[formResetClicked])
-
 
     async function requestCreateCategory(formObject){
         const url = "/api/categories";
@@ -125,7 +124,6 @@ export default function CreateCategory(){
 
         setIsLoading(false);
     }
-
 
     function handleFormSubmit(e){
         e.preventDefault();

@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import ReactDOM from 'react-dom';
 import {useNavigate} from "react-router-dom";
+import useClickOutside from "../../../../hooks/use-click-outside";
+import { useRef } from "react";
 
 const BGWrapper = styled.div`
 background-color: rgba(0,0,0,0.25);
@@ -81,25 +83,30 @@ and it can be used in you product
 `
 export default function CategoryCreatedPopUP({show, setShow}){
     const navigate = useNavigate();
+    const popUpRef = useRef();
+
     function handleClosePopUp(){
-        setShow(false);
+        setShow(true);
     }
 
     function handleViewCategoriesButtonClick(e){
         navigate("/categories")
     }
+
+    useClickOutside([popUpRef],show,()=>{
+        setShow(false)
+    })
+
     return(
         <>
             {ReactDOM.createPortal(
                 <BGWrapper>
-                    <Container>
+                    <Container ref={popUpRef}>
                         <Header>
                             <CheckCircle />
                             <SuccessWord>Success</SuccessWord>
                         </Header>
-                        
                         <TextMessage>{TEXT_MESSAGE}</TextMessage>
-
                         <ButtonsContainer>
                             <ViewCategoriesButton onClick={handleViewCategoriesButtonClick}>View categories</ViewCategoriesButton>
                             <ContinueButton onClick={handleClosePopUp}>Continue</ContinueButton>
