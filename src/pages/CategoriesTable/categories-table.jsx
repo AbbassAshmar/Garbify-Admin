@@ -77,21 +77,41 @@ padding:2rem 0;
 width:100%;
 `;
 
+const SortIcon = styled.i`
+color:${({$color})=>$color};
+transform:translateY(3px);
+rotate:${({$rotate})=>$rotate};
+transition:rotate .3s, color .3s;
+`
+
 const TableHeader = styled.th`
-padding:0 1rem 2rem 0;
+padding:1rem 1rem 2rem 0;
 text-align: left;
+cursor: pointer;
 
 &:nth-child(5){
-    padding:0 0 2rem 0;}
-`;
+    padding:1rem 0 2rem 0;
+}
 
+&:hover ${SortIcon}{
+    color:black;
+}
+`
+const TableHeaderContent = styled.div`
+gap:8px;
+display: flex;
+align-items: center;
+cursor: pointer;
+&:hover ${SortIcon}{
+    color:black;
+}
+`
 const TableCell = styled.td`
 text-align: left;
 padding:1.5rem .5rem;
-`;
-
+`
 const SubcategoriesCell = styled.div`
-
+padding-right:1rem;
 `
 const Subcategory = styled.div`
 display: inline-block;
@@ -101,9 +121,7 @@ background-color: var(--secondary-color);
 font-weight:400;
 color:var(--secondary-text);
 border-radius: 4px;
-
 `
-
 const AllButton = styled.button`
 display:inline;
 cursor:pointer;
@@ -119,12 +137,12 @@ background-color: white;
 font-size:var(--body);
 `
 
-const TABLE_HEADERS = ["Category","Subcategories","Total sales","Total products","Actions"];
+const TABLE_HEADERS = ["Category","Sub categories","Total sales","Total products","Actions"];
 
 export default function CategoriesTable(){
     const [children, setChildren] = useState({});
     const [categories, setCategories] = useState(FlatCategories);
-    const [sortBy, setSortBy] = useState("");
+    const [sortBy, setSortBy] = useState(['','']);
 
     useEffect(()=>{
         let childrenObj = {};
@@ -135,8 +153,57 @@ export default function CategoriesTable(){
         setChildren(childrenObj);
     },[categories])
 
+    useEffect(()=>{
+        if (sortBy[0] && sortBy[1])
+        setCategories([...categories].sort(compare(sortBy[0], sortBy[1])));
+    },[sortBy])
+
+    function compareChildren(a,b){
+        return (a.children.length < b.children.length) ? -1 : (a.children.length > b.children.length) ? 1 : 0;
+    }
+    
+    function compareName(a,b){
+        return (a.name[0] < b.name[0]) ? -1 : (a.name[0] > b.name[0]) ? 1 : 0;
+    }
+
+    function compareTotalSales(a,b){
+        return (a.total_sales < b.total_sales) ? -1 : (a.total_sales > b.total_sales) ? 1 : 0;
+    }
+
+    function compareTotalProducts(a,b){
+        return (a.total_products < b.total_products) ? -1 : (a.total_products > b.total_products) ? 1 : 0;
+    }
+
+    function comparisonFactor(factor){
+        let factors = {
+            "Category" : compareName,
+            "Total sales" : compareTotalSales,
+            "Sub categories"  : compareChildren,
+            "Total products" : compareTotalProducts,
+        }
+        
+        return factors[factor];
+    }
+
+    function compare(property, direction){
+        let sortDirection = direction === "ASC" ? 1 : -1;
+
+        return (a,b) =>{
+            let result = comparisonFactor(property);
+            return result(a,b) * sortDirection;
+        }
+    }
+
     function handleExtendChildren(id,childrenArray){
         setChildren({...children, [id]:childrenArray});
+    }
+
+    function handleSortBy(header){
+        if (header == sortBy[0]){
+            setSortBy([header, (sortBy[1] == "ASC" ? "DESC" : "ASC")]);
+        }else{
+            setSortBy([header, "ASC"]);
+        }
     }
 
     return(
@@ -156,22 +223,22 @@ export default function CategoriesTable(){
                 <Table>
                     <colgroup>
                         <col style={{width:"35%"}}/>
-                        <col style={{width:"25%"}} />
-                        <col style={{width:"20%"}} />
-                        <col style={{width:"20%"}} />
+                        <col style={{width:"27%"}} />
+                        <col style={{width:"19%"}} />
+                        <col style={{width:"19%"}} />
                         <col style={{width:"70px"}} />
                     </colgroup>
                     <TableHeaders>
                         <TableRow>
                             {TABLE_HEADERS.map((header,index) =>(
-                                <TableHeader key={index}>
-                                    <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+                                <TableHeader onClick={(e)=>handleSortBy(header)} key={index}>
+                                    <TableHeaderContent>
                                         <p style={{lineHeight:"1rem"}}>{header}</p>
-
-                                        <div style={{display:"flex",flexDirection:'column'}}>
-                                            <i style={{color:"var(--secondary-text)"}} className="fa-solid fa-sort" />
-                                        </div>
-                                    </div>
+                                        <SortIcon 
+                                        $rotate={sortBy[0] === header ? (sortBy[1] === "ASC" ? "0" : "180deg") : "0"}
+                                        $color={sortBy[0] === header ? "black":"var(--secondary-color)"} 
+                                        className="fa-solid fa-sort-up"/>                                       
+                                    </TableHeaderContent>
                                 </TableHeader>
                             ))}
                         </TableRow>
