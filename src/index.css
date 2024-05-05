@@ -8,6 +8,7 @@
 :root {
   --main-color:#00C2FF;
   --secondary-color: #F1F4F9;
+  --secondary-text: #A8AAAE;
   overscroll-behavior: none;
 
   --big-1 :95px;

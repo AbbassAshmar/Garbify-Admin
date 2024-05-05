@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
-
 const Container = styled.form`
 gap:2rem;
 padding:2rem;
@@ -114,7 +113,7 @@ border-radius: 50%;
 export default function ListCategories(){
 	const liRefs = useRef({});
 	const [liWidths,setLiWidths] = useState({});
-    const [categories , setCategories] = useState(Categories.categories);
+  	const [categories , setCategories] = useState(Categories.categories);
 
 	const borderLeftRight = (index, length)=>{
 		if (length <= 1) return "0";
@@ -190,8 +189,6 @@ export default function ListCategories(){
         </Container>
     )
 }
-
-
 
 const Categories ={
     categories: [

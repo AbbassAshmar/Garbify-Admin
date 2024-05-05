@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard/dashboard";
 import CreateProduct from "./pages/CreateProduct/create-product";
 import CreateCategory from "./pages/CreateCategory/create-category";
 import ListCategories from "./pages/ListCategories/list-categories";
+import CategoriesTable from "./pages/CategoriesTable/categories-table";
 
 export const Router = createBrowserRouter([
     {
@@ -25,9 +26,13 @@ export const Router = createBrowserRouter([
                 element:<CreateCategory />
             },
             { 
-                path:"/categories",
+                path:"/categories/tree",
                 element:<ListCategories />
             },
+            {
+                path:"/categories/table",
+                element:<CategoriesTable />
+            },  
             {
                 path:"*",
                 element :<div>Error 404 Not Found</div>

@@ -192,8 +192,12 @@ const pagesLinks = [
         icon:<i className="fa-solid fa-layer-group"/>,
         links:[
             {
-                name:"Category list",
-                to:"/categories"
+                name:"Category tree",
+                to:"/categories/tree"
+            },
+            {
+                name:"Category table",
+                to:"/categories/table"
             },
             {
                 name:"Add category",

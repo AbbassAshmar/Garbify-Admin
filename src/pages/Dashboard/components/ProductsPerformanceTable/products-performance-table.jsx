@@ -37,34 +37,35 @@ border-radius: 3px;
 ////// table ---------------------------
 const Table = styled.table`
 border-collapse: collapse;
-table-layout: fixed 
-`;
+table-layout: fixed;
+`
 
-const TableHead = styled.thead`
+const TableHeaders = styled.thead`
 border-bottom: 2px solid #F1F4F9;
-`;
+`
 
 const TableRow = styled.tr`
 border-bottom: 2px solid #F1F4F9;
 padding:2rem 0;
-`;
+`
 
 const TableHeader = styled.th`
-  padding:0 1rem 1.5rem 0;
-  text-align: left;
-`;
+padding:0 1rem 1.5rem 0;
+text-align: left;
+`
 
 const TableCell = styled.td`
-  text-align: left;
-  padding:1.5rem .5rem;
-`;
+text-align: left;
+padding:1.5rem .5rem;
+`
 
 const LineGraphContainer = styled.div`
-  width: 10vw;
-`;
+width: 10vw;
+`
 
 const productsData = [
   {
+    id:4,
     name : 'Product A',
     image : blueHoody,
     sold : 13,
@@ -74,6 +75,7 @@ const productsData = [
     performance : [292,222,211,394,124,343] // sold last three months
   },
   {
+    id:5,
     name : 'Product B',
     image : cartoonShirt,
     sold : 132,
@@ -83,6 +85,7 @@ const productsData = [
     performance : [292,222,211,394,124,343] // sold last three months
   },
   {
+    id:8,
     name : 'Product C',
     image : blueHoody,
     sold : 132,
@@ -92,6 +95,7 @@ const productsData = [
     performance : [292,222,211,394,124,343] // sold last three months
   },
   {
+    id:9,
     name : 'Product D',
     image : cartoonShirt,
     sold : 211,
@@ -131,7 +135,7 @@ export default function ProductsPerformanceTable() {
             </MonthButton>
         </TitleMonthContainer>
         <Table>
-            <TableHead>
+            <TableHeaders>
                 <TableRow>
                   <TableHeader>Products</TableHeader>
                   <TableHeader>Revenue</TableHeader>
@@ -139,10 +143,10 @@ export default function ProductsPerformanceTable() {
                   <TableHeader>Progress</TableHeader>
                   <TableHeader>Performance</TableHeader>
                 </TableRow>
-            </TableHead>
+            </TableHeaders>
             <tbody>
                 {productsData.map((product, index) => (
-                    <TableRow key={index}>
+                    <TableRow key={product.id}>
                         <TableCell style={{width:"25%"}}>
                           <ProductCardHorizontal name={product.name} image={product.image} price={product.price} />
                         </TableCell>

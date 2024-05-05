@@ -39,7 +39,7 @@ font-size:1rem;
 padding:.5rem 2.5rem .5rem 1rem;
 width:100%;
 border-radius:6px;
-border:2px solid var(--seconday-color);
+border:2px solid var(--secondary-color);
 font-weight:400;
 transition:border .3s;
 &::placeholder{
@@ -74,7 +74,7 @@ display:flex;
 align-items:center;
 justify-content:center;
 cursor:pointer;
-background:var(--seconday-color);
+background:var(--secondary-color);
 transition:background .3s;
 &:hover{
     background:var(--main-color);
