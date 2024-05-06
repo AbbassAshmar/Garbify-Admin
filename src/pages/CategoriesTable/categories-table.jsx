@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import SearchBar from "./components/SearchBar/search-bar";
-import FilterButton from "./components/FilterButton/filter-button";
 import { useEffect, useState } from "react";
 import CategoryCardHorizontal from "./components/CategoryCardHorizontal/category-card-horizontal";
 import { FlatCategories } from "../../dummy_data";
+import {Link} from "react-router-dom";
 
 const Container = styled.div`
 gap:2rem;
@@ -49,6 +49,26 @@ width: 100%;
 display: flex;
 align-items: stretch;
 justify-content: space-between;
+`
+
+const AddCategoryButton = styled(Link)`
+border:2px solid var(--main-color);
+color:var(--main-color);
+font-weight:600;
+font-size:var(--body);
+text-decoration:none;
+padding:0 1rem;
+border-radius: 4px;
+background-color: white;
+display: flex;
+align-items: center;
+gap: .5rem;
+cursor: pointer;
+transition:background-color .3s, color .3s;
+&:hover{
+    background-color: var(--main-color);
+    color:white;
+}
 `
 
 const TableContainer = styled.div`
@@ -121,6 +141,7 @@ background-color: var(--secondary-color);
 font-weight:400;
 color:var(--secondary-text);
 border-radius: 4px;
+font-size: var(--small-1);
 `
 const AllButton = styled.button`
 display:inline;
@@ -172,33 +193,32 @@ const TABLE_HEADERS = ["Category","Sub categories","Total sales","Total products
 export default function CategoriesTable(){
     const [children, setChildren] = useState({});
     const [categories, setCategories] = useState(FlatCategories);
+
     const [sortBy, setSortBy] = useState(['','']);
-
-    let TOTAL_PAGES = 21;
-    const CATEGORIES_PER_PAGE = 15;
     const [pageNumber, setPageNumber] = useState(1);
-    
-    let CATEGORIES_START_INDEX = CATEGORIES_PER_PAGE*(pageNumber-1);
-    let CATEGORIES_END_INDEX = CATEGORIES_START_INDEX + CATEGORIES_PER_PAGE;
+    const [searchValue,setSearchValue] = useState("");
+
+    const CATEGORIES_PER_PAGE = 10;
 
     useEffect(()=>{
-        TOTAL_PAGES = Math.ceil(categories.length / CATEGORIES_PER_PAGE);
-    },[categories])
-
-    useEffect(()=>{
-        let childrenObj = {};
+        let childrenObj= {};
         for (let category of categories) {
-            childrenObj[category.id] = category.children.slice(0,3);
+            childrenObj[category.id] = category.children.slice(0, 3);
         }
-
         setChildren(childrenObj);
     },[categories])
+    
+    let filteredCategories = categories.filter(category => {
+        const categoryName = category.name.toLowerCase();
+        const searchValueLowerCase = searchValue.toLowerCase();
 
-    useEffect(()=>{
-        if (sortBy[0] && sortBy[1])
-        setCategories([...categories].sort(compare(sortBy[0], sortBy[1])));
-    },[sortBy])
+        return [...searchValueLowerCase].every(letter => categoryName.includes(letter));
+    }).sort(compare(sortBy[0], sortBy[1]));
 
+    let TOTAL_PAGES = Math.ceil(filteredCategories.length / CATEGORIES_PER_PAGE);;
+    let CATEGORIES_START_INDEX = CATEGORIES_PER_PAGE*(pageNumber-1);
+    let CATEGORIES_END_INDEX = CATEGORIES_START_INDEX + CATEGORIES_PER_PAGE;
+    
     function compareChildren(a,b){
         return (a.children.length < b.children.length) ? -1 : (a.children.length > b.children.length) ? 1 : 0;
     }
@@ -217,6 +237,7 @@ export default function CategoriesTable(){
 
     function comparisonFactor(factor){
         let factors = {
+            "" : (a,b)=> 0,
             "Category" : compareName,
             "Total sales" : compareTotalSales,
             "Sub categories"  : compareChildren,
@@ -256,6 +277,7 @@ export default function CategoriesTable(){
         if (pageNumber < TOTAL_PAGES)
         setPageNumber(pageNumber+1)
     }
+    
     return(
         <Container>
             <Header>
@@ -266,8 +288,8 @@ export default function CategoriesTable(){
             </Header>
             <Content>   
                 <ContentHeader>
-                    <SearchBar />
-                    <FilterButton />
+                    <SearchBar setPageNumber={setPageNumber} searchValue={searchValue} setSearchValue={setSearchValue} />
+                    <AddCategoryButton to={"/categories/add"}><span style={{fontSize:"1.5rem"}}>+</span> Add category</AddCategoryButton>
                 </ContentHeader>
                 <TableContainer>
                     <Table>
@@ -294,7 +316,7 @@ export default function CategoriesTable(){
                             </TableRow>
                         </TableHeaders>
                         <tbody>
-                            {categories.length && categories.slice(CATEGORIES_START_INDEX,CATEGORIES_END_INDEX).map((category, index) => (
+                            {filteredCategories?.slice(CATEGORIES_START_INDEX,CATEGORIES_END_INDEX).map((category) => (
                                 <TableRow key={category.id}>
                                     <TableCell>
                                         <CategoryCardHorizontal name={category.name} image={category.image} description={category.description} />

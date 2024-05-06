@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import {useSearchParams} from "react-router-dom";
+import { useState } from "react";
 
 const SearchBarContainer = styled.form`
 position:relative;
@@ -34,18 +34,17 @@ ${SearchInput}:focus + &{
 }
 `
 
-export default function SearchBar(){
-    const [searchParams, setSearchParams] = useSearchParams();
+export default function SearchBar({searchValue, setSearchValue,setPageNumber}){
 
-    function handleSubmit(e){
-        e.preventDefault();
-        const data = new FormData(e.target); 
-        setSearchParams({q:data.get("q")})
+    function handleSearchInputChange(e){
+        setPageNumber(1);
+        setSearchValue(e.currentTarget.value);
     }
 
+
     return(
-        <SearchBarContainer onSubmit={handleSubmit}> 
-            <SearchInput name="q" type="text" placeholder="search..."/>
+        <SearchBarContainer onSubmit={(e)=>e.preventDefault()}> 
+            <SearchInput onChange={handleSearchInputChange} name="q" type="text" placeholder="search..."/>
             <SearchIcon className="fa-solid fa-magnifying-glass" />
         </SearchBarContainer>
     )
