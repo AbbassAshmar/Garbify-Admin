@@ -3,7 +3,7 @@ import SearchBar from "./components/SearchBar/search-bar";
 import FilterButton from "./components/FilterButton/filter-button";
 import { useEffect, useState } from "react";
 import CategoryCardHorizontal from "./components/CategoryCardHorizontal/category-card-horizontal";
-import { FlatCategories } from "../../../dummy_data";
+import { FlatCategories } from "../../dummy_data";
 
 const Container = styled.div`
 gap:2rem;
@@ -137,12 +137,53 @@ background-color: white;
 font-size:var(--body);
 `
 
+// Content footer 
+
+const ContentFooter = styled.div`
+width: 100%;
+display: flex;
+justify-content: flex-end;
+`
+const PaginationContainer = styled.div`
+gap:1rem;
+display: flex;
+`
+const PageBox = styled.button`
+height:32px;
+width:32px;
+background-color: var(--secondary-color);
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: var(--body);
+font-weight: 500;
+border:none;
+border-radius:4px;
+cursor: pointer;
+transition:background-color .3s;
+&:hover{
+    background-color: var(--secondary-text);
+}
+`
+
+
 const TABLE_HEADERS = ["Category","Sub categories","Total sales","Total products","Actions"];
 
 export default function CategoriesTable(){
     const [children, setChildren] = useState({});
     const [categories, setCategories] = useState(FlatCategories);
     const [sortBy, setSortBy] = useState(['','']);
+
+    let TOTAL_PAGES = 21;
+    const CATEGORIES_PER_PAGE = 15;
+    const [pageNumber, setPageNumber] = useState(1);
+    
+    let CATEGORIES_START_INDEX = CATEGORIES_PER_PAGE*(pageNumber-1);
+    let CATEGORIES_END_INDEX = CATEGORIES_START_INDEX + CATEGORIES_PER_PAGE;
+
+    useEffect(()=>{
+        TOTAL_PAGES = Math.ceil(categories.length / CATEGORIES_PER_PAGE);
+    },[categories])
 
     useEffect(()=>{
         let childrenObj = {};
@@ -206,6 +247,15 @@ export default function CategoriesTable(){
         }
     }
 
+    function handleShowPreviousPage(e){
+        if (pageNumber > 1)
+        setPageNumber(pageNumber-1)
+    }
+
+    function handleShowNextPage(e){
+        if (pageNumber < TOTAL_PAGES)
+        setPageNumber(pageNumber+1)
+    }
     return(
         <Container>
             <Header>
@@ -220,58 +270,67 @@ export default function CategoriesTable(){
                     <FilterButton />
                 </ContentHeader>
                 <TableContainer>
-                <Table>
-                    <colgroup>
-                        <col style={{width:"35%"}}/>
-                        <col style={{width:"27%"}} />
-                        <col style={{width:"19%"}} />
-                        <col style={{width:"19%"}} />
-                        <col style={{width:"70px"}} />
-                    </colgroup>
-                    <TableHeaders>
-                        <TableRow>
-                            {TABLE_HEADERS.map((header,index) =>(
-                                <TableHeader onClick={(e)=>handleSortBy(header)} key={index}>
-                                    <TableHeaderContent>
-                                        <p style={{lineHeight:"1rem"}}>{header}</p>
-                                        <SortIcon 
-                                        $rotate={sortBy[0] === header ? (sortBy[1] === "ASC" ? "0" : "180deg") : "0"}
-                                        $color={sortBy[0] === header ? "black":"var(--secondary-color)"} 
-                                        className="fa-solid fa-sort-up"/>                                       
-                                    </TableHeaderContent>
-                                </TableHeader>
-                            ))}
-                        </TableRow>
-                    </TableHeaders>
-                    <tbody>
-                        {categories.length && categories.map((category, index) => (
-                            <TableRow key={category.id}>
-                                <TableCell>
-                                    <CategoryCardHorizontal name={category.name} image={category.image} description={category.description} />
-                                </TableCell>
-                                <TableCell>
-                                    <SubcategoriesCell>
-                                        {children[category.id] && children[category.id].map((child)=>(
-                                            <Subcategory key={child + category.id}>{child}</Subcategory>
-                                        ))}
-                                        {children[category.id] && category.children.length >3 && category.children.length != children[category.id].length &&(
-                                            <AllButton onClick={(e)=> handleExtendChildren(category.id,category.children)} style={{color:"var(--main-color)", fontWeight:"500"}}>
-                                                all...
-                                            </AllButton>
-                                        )}
-                                    </SubcategoriesCell>
-                                </TableCell>
-                                <TableCell>{category.total_sales}</TableCell>
-                                <TableCell>{category.total_products}</TableCell>
-                                <TableCell style={{textAlign:'start'}}>
-                                    <ActionButton style={{marginRight:"10px"}}><i className="fa-regular fa-trash-can"/></ActionButton>
-                                    <ActionButton><i className="fa-regular fa-pen-to-square"/></ActionButton>
-                                </TableCell>
+                    <Table>
+                        <colgroup>
+                            <col style={{width:"35%"}}/>
+                            <col style={{width:"27%"}} />
+                            <col style={{width:"19%"}} />
+                            <col style={{width:"19%"}} />
+                            <col style={{width:"70px"}} />
+                        </colgroup>
+                        <TableHeaders>
+                            <TableRow>
+                                {TABLE_HEADERS.map((header,index) =>(
+                                    <TableHeader onClick={(e)=>handleSortBy(header)} key={index}>
+                                        <TableHeaderContent>
+                                            <p style={{lineHeight:"1rem"}}>{header}</p>
+                                            <SortIcon 
+                                            $rotate={sortBy[0] === header ? (sortBy[1] === "ASC" ? "0" : "180deg") : "0"}
+                                            $color={sortBy[0] === header ? "black":"var(--secondary-color)"} 
+                                            className="fa-solid fa-sort-up"/>                                       
+                                        </TableHeaderContent>
+                                    </TableHeader>
+                                ))}
                             </TableRow>
-                        ))}
-                    </tbody>
-                </Table>
+                        </TableHeaders>
+                        <tbody>
+                            {categories.length && categories.slice(CATEGORIES_START_INDEX,CATEGORIES_END_INDEX).map((category, index) => (
+                                <TableRow key={category.id}>
+                                    <TableCell>
+                                        <CategoryCardHorizontal name={category.name} image={category.image} description={category.description} />
+                                    </TableCell>
+                                    <TableCell>
+                                        <SubcategoriesCell>
+                                            {children[category.id] && children[category.id].map((child)=>(
+                                                <Subcategory key={child + category.id}>{child}</Subcategory>
+                                            ))}
+                                            {children[category.id] && category.children.length >3 && category.children.length != children[category.id].length &&(
+                                                <AllButton onClick={(e)=> handleExtendChildren(category.id,category.children)} style={{color:"var(--main-color)", fontWeight:"500"}}>
+                                                    all...
+                                                </AllButton>
+                                            )}
+                                        </SubcategoriesCell>
+                                    </TableCell>
+                                    <TableCell>{category.total_sales}</TableCell>
+                                    <TableCell>{category.total_products}</TableCell>
+                                    <TableCell style={{textAlign:'start'}}>
+                                        <ActionButton style={{marginRight:"10px"}}><i className="fa-regular fa-trash-can"/></ActionButton>
+                                        <ActionButton><i className="fa-regular fa-pen-to-square"/></ActionButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </tbody>
+                    </Table>
                 </TableContainer>
+                <ContentFooter>
+                    <PaginationContainer>
+                        {pageNumber > 1 && <PageBox onClick={handleShowPreviousPage}><i className="fa-solid fa-angle-left"/></PageBox> }
+                        {pageNumber > 1 && <PageBox onClick={handleShowPreviousPage}>{pageNumber - 1}</PageBox>}
+                        <PageBox style={{background:"var(--main-color)"}}>{pageNumber}</PageBox>
+                        {pageNumber < TOTAL_PAGES && <PageBox onClick={handleShowNextPage}>{pageNumber + 1}</PageBox>}
+                        {pageNumber < TOTAL_PAGES && <PageBox onClick={handleShowNextPage}><i className="fa-solid fa-angle-right"/></PageBox> }
+                    </PaginationContainer>
+                </ContentFooter>
             </Content>
         </Container>
     )
