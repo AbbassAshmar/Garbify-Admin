@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import CategoryCardHorizontal from "./components/CategoryCardHorizontal/category-card-horizontal";
 import { FlatCategories } from "../../dummy_data";
 import {Link} from "react-router-dom";
+import SuccessOrErrorPopUp from "../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
+
+import useUserState from "../../hooks/use-user-state";
+import useSendRequest from "../../hooks/use-send-request";
 
 const Container = styled.div`
 gap:2rem;
@@ -39,6 +43,7 @@ width: 100%;
 padding:2rem;
 display: flex;
 overflow: auto;
+border-radius: 6px;
 align-items: flex-start;
 flex-direction: column;
 background-color: white;
@@ -152,10 +157,19 @@ color:var(--main-color);
 font-size:var(--small-1);
 font-weight:500;
 `
-const ActionButton = styled.button`
+const DeleteButton = styled.button`
+border:none;
+margin-right:10px;
+background-color: white;
+font-size:var(--body);
+cursor: pointer;
+`
+const EditButton = styled(Link)`
 border:none;
 background-color: white;
 font-size:var(--body);
+color:black;
+cursor: pointer;
 `
 
 // Content footer 
@@ -198,7 +212,15 @@ export default function CategoriesTable(){
     const [pageNumber, setPageNumber] = useState(1);
     const [searchValue,setSearchValue] = useState("");
 
+    const userState = useUserState();
+    const {sendRequest, serverError} = useSendRequest(userState);
+
+    const [resultPopUp, setResultPopUp] = useState({show:false,status:"",message:""});
     const CATEGORIES_PER_PAGE = 10;
+
+    useEffect(()=>{
+        fetchCategories();
+    },[])
 
     useEffect(()=>{
         let childrenObj= {};
@@ -208,6 +230,28 @@ export default function CategoriesTable(){
         setChildren(childrenObj);
     },[categories])
     
+    async function fetchCategories(){
+        let url = "/api/categories/flat";
+        const {request, response} = await sendRequest(url);
+
+        if (request?.status == 200){
+            setCategories(response.data.categories);
+        }
+
+        if (request && !request.ok) {
+            setResultPopUp({
+                show: true,
+                status: 'Error',
+                message: response.error.message,
+            });
+        }
+
+        // if failure or server down, add the removed category back
+        if (!request || !request.ok){
+            setCategories([]);
+        }
+    }
+
     let filteredCategories = categories.filter(category => {
         const categoryName = category.name.toLowerCase();
         const searchValueLowerCase = searchValue.toLowerCase();
@@ -278,7 +322,46 @@ export default function CategoriesTable(){
         setPageNumber(pageNumber+1)
     }
     
+    async function handleDeleteCategory(categoryID){
+        let init = {method:"DELETE"};
+        let url = "/categories/" + categoryID;
+        
+        // remove category temporarily
+        let removedCategory = categories.find(category => category.id === categoryID);
+        setCategories((prev) => prev.filter((category) => category.id !== categoryID));
+
+        const {request, response} = await sendRequest(url,init);
+
+        // if success, don't add the removed category back
+        if (request?.ok) {
+            setResultPopUp({
+                show: true,
+                status: 'Success',
+                message: response.metadata.message,
+            });
+        }
+      
+        if (request && !request.ok) {
+            setResultPopUp({
+                show: true,
+                status: 'Error',
+                message: response.error.message,
+            });
+        }
+
+        // if failure or server down, add the removed category back
+        if (!request || !request.ok){
+            setCategories([...categories, removedCategory]);
+        }
+    }
+    
+    function handleDeleteButtonClick(categoryID){
+        handleDeleteCategory(categoryID);
+    }
+
     return(
+        <>
+        <SuccessOrErrorPopUp serverError={serverError} outerSettings={resultPopUp} setOuterSettings={setResultPopUp}/>
         <Container>
             <Header>
                 <HeaderText>
@@ -336,8 +419,8 @@ export default function CategoriesTable(){
                                     <TableCell>{category.total_sales}</TableCell>
                                     <TableCell>{category.total_products}</TableCell>
                                     <TableCell style={{textAlign:'start'}}>
-                                        <ActionButton style={{marginRight:"10px"}}><i className="fa-regular fa-trash-can"/></ActionButton>
-                                        <ActionButton><i className="fa-regular fa-pen-to-square"/></ActionButton>
+                                        <DeleteButton onClick={(e)=>handleDeleteButtonClick(category.id)}><i className="fa-regular fa-trash-can"/></DeleteButton>
+                                        <EditButton to={"/categories/edit/" + category.id}><i className="fa-regular fa-pen-to-square"/></EditButton>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -355,6 +438,7 @@ export default function CategoriesTable(){
                 </ContentFooter>
             </Content>
         </Container>
+        </>
     )
 }
 

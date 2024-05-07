@@ -31,7 +31,7 @@ export async function refreshAccessToken(userContext){
 
 
 // hook that sends a request and displays a PopUp component on server down error
-export function useSendRequest(userContext){
+export default function useSendRequest(userContext){
     const [isServerError, setIsServerError] = useState(false);
 
     const sendRequest = async (url, init={}) => {

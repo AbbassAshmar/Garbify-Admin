@@ -32,6 +32,9 @@ color : #A8AAAE;
 const Content = styled.div`
 width: 100%;
 overflow: auto;
+border-radius: 6px;
+background-color: white;
+padding-top:2rem;
 padding-bottom: 2rem;
 `
 
@@ -72,27 +75,26 @@ padding-top: 3rem;
 `
 const Li = styled.li`
 position: relative;
-/* border:1px solid red; */
 list-style-type: none;
 text-align:center;
 min-width: 150px;
 
 &::before{
-    content:"";
-	top: -26px;
-	box-sizing: border-box;
-	height: 26px;
-    position: absolute;
-	border-radius:${({$borderRadius})=>$borderRadius};
-    border-left: ${({$borderLeft})=> $borderLeft};
-    border-right: ${({$borderRight})=> $borderRight};
+content:"";
+top: -26px;
+box-sizing: border-box;
+height: 26px;
+position: absolute;
+border-radius:${({$borderRadius})=>$borderRadius};
+border-left: ${({$borderLeft})=> $borderLeft};
+border-right: ${({$borderRight})=> $borderRight};
 
-    left: ${({$left})=> $left};
-    right: ${({$right})=> $right};
-	width: ${({$width})=> $width};
+left: ${({$left})=> $left};
+right: ${({$right})=> $right};
+width: ${({$width})=> $width};
 
-    border-top:${({$borderTop})=> $borderTop};
-    transition: all var(--transition);
+border-top:${({$borderTop})=> $borderTop};
+transition: all var(--transition);
 }
 `
 

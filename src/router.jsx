@@ -6,6 +6,7 @@ import CreateProduct from "./pages/CreateProduct/create-product";
 import CreateCategory from "./pages/CreateCategory/create-category";
 import ListCategories from "./pages/ListCategories/list-categories";
 import CategoriesTable from "./pages/CategoriesTable/categories-table";
+import ListProducts from "./pages/ListProducts/list-products";
 
 export const Router = createBrowserRouter([
     {
@@ -32,6 +33,11 @@ export const Router = createBrowserRouter([
             {
                 path:"/categories/table",
                 element:<CategoriesTable />
+            },  
+            {
+                path:"/products",
+                element:<ListProducts />
+            
             },  
             {
                 path:"*",

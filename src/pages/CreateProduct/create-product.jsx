@@ -1,44 +1,14 @@
-import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import InformationSection from "./components/InformationSection/information-section";
 import PricingSection from "./components/PricingSection/pricing-section";
 import VariantsSection from "./components/VariantsSection/variants-section";
 import ClassificationSection from "./components/ClassificationSection/classification-section";
 import MediaSection from "./components/MediaSection/media-section";
-import { useEffect, useState } from "react";
-
-const Container = styled.form`
-gap:2rem;
-padding:2rem;
-display: flex;
-flex-direction:column;
-background-color: #F1F4F9;
-`
-const Header = styled.header`
-display: flex;
-justify-content: space-between;
-align-items: flex-start;
-`
-const HeaderText = styled.div`
-display: flex;
-flex-direction: column;
-gap:.5rem;
-`
-const PageTitle = styled.h5`
-font-size:var(--heading-5);
-font-weight: 600;
-`
-
-const PagePath = styled.p`
-font-size:var(--body);
-font-weight: 600;
-color : #A8AAAE;
-`
-
-const HeaderButtons = styled.div`
-display: flex;
-gap:1rem;
-`
+import { useEffect, useRef, useState } from "react";
+import DefaultPageHeader from "../DefaultPageHeader/default-page-header";
+import useUserState from "../../hooks/use-user-state";
+import useSendRequest from "../../hooks/use-send-request";
+import SuccessOrErrorPopUp from "../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
 
 const AddProductButton = styled.button`
 border:none;
@@ -79,22 +49,81 @@ display: flex;
 width:100%;
 gap:2rem;
 `
-
 const VariantsClassificationContainer = styled.div`
 display: flex;
 width:100%;
 gap:2rem;
 `
 
-
 export default function CreateProduct(){
+    const discardButtonRef = useRef();
     const [formData, setFormData] = useState();
     const [formResetClicked, setFormResetClicked] = useState(false);
 
+    const [isLoading, setIsLoading] = useState(false);
     const [colors, setColors] = useState(["#000000"])
-    const location = useLocation();
 
-    function handleFormSubmit (e){
+    const userState = useUserState();
+    const {sendRequest, serverError} = useSendRequest();
+    const [resultPopUp, setResultPopUp] = useState({show:false,status:"",message:""});
+
+    const [InputErorrs, setInputErrors] = useState({
+        fields:[] , 
+        messages:{} 
+    })
+
+    async function createProductRequest(data){
+        let url = "/api/products";
+        let init ={
+            method:"POST",
+            body:data,
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + userState.token
+            },
+        };
+
+        const {request , response} = await sendRequest(url, init);
+
+        if (request?.status == 200){
+            discardButtonRef.current.click();
+            setInputErrors({fileds:[], messages:{}});
+            setResultPopUp({
+                show:true,
+                status:"Success",
+                message:"Product created successfully"
+            })
+        }
+
+        //validation error
+        else if (request?.status == 400){
+            setInputErrors({fields:response.metadata.error_fields, messages: response.error.details})
+            setResultPopUp({
+                show: true,
+                status: 'Error',
+                message: response.error.message,
+            });
+        }
+
+        //other errors
+        else  {
+            setInputErrors({fileds:[], messages:{}});
+            setResultPopUp({
+                show: true,
+                status: 'Error',
+                message: response.error.message,
+            });
+        }
+
+        // if failure or server down, add the removed category back
+        if (!request || !request.ok){
+
+        }
+
+
+    }
+
+    async function handleFormSubmit(e){
         e.preventDefault();
         let formObject = new FormData(e.currentTarget);
 
@@ -142,8 +171,10 @@ export default function CreateProduct(){
                 }
             }
         }
-        
-        // make the request 
+
+        setIsLoading(true);
+        await createProduct(formObject);
+        setIsLoading(false);
     }
 
     function handleDiscardForm(e){
@@ -154,29 +185,31 @@ export default function CreateProduct(){
         if (formResetClicked) setFormResetClicked(false);
     },[formResetClicked])
 
+    const renderHeaderButtons = ()=>(
+        <>
+            <DiscardChangesButton ref={discardButtonRef} type="reset" onClick={handleDiscardForm}>Discard</DiscardChangesButton>
+            <AddProductButton disabled={isLoading} type="submit">Add product</AddProductButton>
+        </>
+    )
+
     return(
-        <Container onSubmit={handleFormSubmit}>
-            <Header>
-                <HeaderText>
-                    <PageTitle>Add Product</PageTitle>
-                    <PagePath>{location.pathname.split("/").join(" / ")}</PagePath>
-                </HeaderText>
-                <HeaderButtons>
-                    <DiscardChangesButton type="reset" onClick={handleDiscardForm}>Discard</DiscardChangesButton>
-                    <AddProductButton type="submit">Add product</AddProductButton>
-                </HeaderButtons>
-            </Header>
-            <Content>
-                <InformationPricingContainer>
-                    <InformationSection />
-                    <PricingSection formResetClicked={formResetClicked}/>
-                </InformationPricingContainer>
-                <VariantsClassificationContainer>
-                    <VariantsSection formResetClicked={formResetClicked} setFormData={setFormData} colors={colors} setColors={setColors} />
-                    <ClassificationSection formResetClicked={formResetClicked}/>
-                </VariantsClassificationContainer>
-                <MediaSection formResetClicked={formResetClicked} setFormData={setFormData} colors={colors}/>
-            </Content>
-        </Container>
+        <>
+            <SuccessOrErrorPopUp serverError={serverError} outerSettings={resultPopUp} setOuterSettings={setResultPopUp}/>
+            <form onSubmit={handleFormSubmit}>
+                <DefaultPageHeader title={"New Product"} renderButtons={renderHeaderButtons}>
+                        <Content>
+                            <InformationPricingContainer>
+                                <InformationSection errors={InputErorrs} />
+                                <PricingSection errors={InputErorrs} formResetClicked={formResetClicked}/>
+                            </InformationPricingContainer>
+                            <VariantsClassificationContainer>
+                                <VariantsSection errors={InputErorrs} formResetClicked={formResetClicked} setFormData={setFormData} colors={colors} setColors={setColors} />
+                                <ClassificationSection errors={InputErorrs} formResetClicked={formResetClicked}/>
+                            </VariantsClassificationContainer>
+                            <MediaSection errors={InputErorrs} formResetClicked={formResetClicked} setFormData={setFormData} colors={colors}/>
+                        </Content>
+                </DefaultPageHeader>    
+            </form>
+        </>
     )
 }

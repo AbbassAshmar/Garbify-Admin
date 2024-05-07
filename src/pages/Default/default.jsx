@@ -33,7 +33,9 @@ export default function Default(){
                     <SideBarNavigation />
                 </SideBarNavigationContainer>
                 <OutletContainer>
+
                     <Outlet />
+                    
                 </OutletContainer>
             </Body>
         </Container>

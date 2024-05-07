@@ -61,8 +61,6 @@ export default function Dashboard(){
                 <StatisticsBoxes />
                 <SalesGraph />
             </div>
-
-
             <ExtraGraphs>
                 <div style={{flex:'1'}}>
                     <VisitorsBarsGraph />
@@ -90,7 +88,6 @@ export default function Dashboard(){
                     </div>
                 </OverviewGraphsContainer>
             </TableOverviewGraphs>
-
         </Container>
     )
 }

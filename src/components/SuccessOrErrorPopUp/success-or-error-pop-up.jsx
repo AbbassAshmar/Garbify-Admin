@@ -61,7 +61,7 @@ const Text = styled.div`
 display:flex;
 flex-direction:column;
 align-items:start;
-gap:2px
+gap:2px;
 `
 const Header = styled.p`
 margin:0;
@@ -92,7 +92,7 @@ function PopUp({color,text,status,setSettings,serverError,show}){
 
     function handleCloseButtonClick(e){
         serverError.get() && serverError.set(false);
-        setSettings((prevSettings) => ({ ...prevSettings, show: false, status: "", message: "" }));
+        setSettings({show: false, status: "", message: "" });
     }
 
     return(
@@ -122,31 +122,35 @@ function PopUp({color,text,status,setSettings,serverError,show}){
 }
 
 // props are serverError , settings , setSettings
-export default function SuccessOrErrorPopUp(props){
-    const [settings ,setSettings] = useState(props.settings ?? {show:false,status:"",message:""})
+export default function SuccessOrErrorPopUp({serverError, outerSettings, setOuterSettings}){
+    const [settings ,setSettings] = useState({show:false,status:"",message:""})
 
     useEffect(()=>{
-        if (props?.settings && JSON.stringify(props.settings) !== JSON.stringify(settings))
-        setSettings(props.settings);
-    },[props])
+        if (outerSettings && JSON.stringify(outerSettings) !== JSON.stringify(settings))
+        setSettings(outerSettings);
+    },[outerSettings])
     
     useEffect(()=>{
-        if (props.settings  && JSON.stringify(props.settings) !== JSON.stringify(settings))
-        props.setSettings(settings)
+
+        if (outerSettings && JSON.stringify(outerSettings) !== JSON.stringify(settings)){
+        setOuterSettings(settings) 
+
+        console.log(JSON.stringify(outerSettings) + "_______"+  JSON.stringify(settings))
+
+        }
     },[settings])
 
     useEffect(()=>{
-        if (props.serverError.get()) {
-            setSettings((prevSettings) => ({
-              ...prevSettings,
+        if (serverError.get()) {
+            setSettings({
               show: true,
               status: "Error",
               message: "Oops...Looks like our servers are down!",
-            }));
+            });
         }else{
-            setSettings((prevSettings) => ({ ...prevSettings, show: false, status: "", message: "" }));
+            setSettings({show: false, status: "", message: "" });
         }
-    } , [props.serverError.get()])
+    } , [serverError.get()])
 
     return (
         <PopUp
@@ -155,7 +159,7 @@ export default function SuccessOrErrorPopUp(props){
         text={settings.message}
         color={settings.status === 'Error' ? 'rgba(255,0,0,0.8)' : 'rgba(0,255,0,.8)'}
         setSettings={setSettings}
-        serverError={props.serverError}
+        serverError={serverError}
         />
     );
 }

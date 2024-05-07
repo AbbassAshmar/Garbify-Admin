@@ -31,7 +31,7 @@ transition:color .3s;
 color:${({$enabled})=>$enabled?"var(--main-color)":"grey"};
 `
 
-export default function PricingSection({formResetClicked, errors,formData}){
+export default function PricingSection({formResetClicked, errors}){
     const [isSaleEnabled, setIsSaleEnabled] = useState(false)
 
     useEffect(()=>{

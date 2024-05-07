@@ -44,7 +44,7 @@ export default function SearchBar({searchValue, setSearchValue,setPageNumber}){
 
     return(
         <SearchBarContainer onSubmit={(e)=>e.preventDefault()}> 
-            <SearchInput onChange={handleSearchInputChange} name="q" type="text" placeholder="search..."/>
+            <SearchInput onChange={handleSearchInputChange} name="q" type="text" placeholder="Search..."/>
             <SearchIcon className="fa-solid fa-magnifying-glass" />
         </SearchBarContainer>
     )
