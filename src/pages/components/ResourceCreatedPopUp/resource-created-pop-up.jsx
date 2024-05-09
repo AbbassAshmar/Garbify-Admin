@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import ReactDOM from 'react-dom';
 import {useNavigate} from "react-router-dom";
-import useClickOutside from "../../../../hooks/use-click-outside";
+import useClickOutside from "../../../hooks/use-click-outside";
 import { useRef } from "react";
 
 const BGWrapper = styled.div`
@@ -77,11 +77,8 @@ transition: background-color .3s;
     background-color: #dddddd;
 }
 `
-const TEXT_MESSAGE = `
-Category Created Successfully
-and it can be used in you product
-`
-export default function CategoryCreatedPopUP({show, setShow}){
+
+export default function ResourceCreatedPopUP({show, setShow, message, redirect, button}){
     const navigate = useNavigate();
     const popUpRef = useRef();
 
@@ -90,11 +87,11 @@ export default function CategoryCreatedPopUP({show, setShow}){
     }
 
     function handleViewCategoriesButtonClick(e){
-        navigate("/categories")
+        navigate(redirect);
     }
 
     useClickOutside([popUpRef],show,()=>{
-        setShow(false)
+        setShow(false);
     })
 
     return(
@@ -106,9 +103,9 @@ export default function CategoryCreatedPopUP({show, setShow}){
                             <CheckCircle />
                             <SuccessWord>Success</SuccessWord>
                         </Header>
-                        <TextMessage>{TEXT_MESSAGE}</TextMessage>
+                        <TextMessage>{message}</TextMessage>
                         <ButtonsContainer>
-                            <ViewCategoriesButton onClick={handleViewCategoriesButtonClick}>View categories</ViewCategoriesButton>
+                            <ViewCategoriesButton onClick={handleViewCategoriesButtonClick}>{button}</ViewCategoriesButton>
                             <ContinueButton onClick={handleClosePopUp}>Continue</ContinueButton>
                         </ButtonsContainer>
                     </Container>

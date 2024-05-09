@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import useSendRequest from "../../hooks/use-send-request";
 import useUserState from "../../hooks/use-user-state";
 import SuccessOrErrorPopUp from "../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
-import CategoryCreatedPopUP from "./components/CategoryCreatedPopUp/category-created-pop-up";
-import DefaultPageHeader from "../DefaultPageHeader/default-page-header";
+import CategoryCreatedPopUP from "../components/ResourceCreatedPopUp/resource-created-pop-up";
+import DefaultPageHeader from "../components/DefaultPageHeader/default-page-header";
+import ResourceCreationWrapper from "../components/ResourceCreationWrapper/resource-creation-wrapper";
 
 
 
@@ -42,7 +43,7 @@ background-color: #f1f1f1;
     background-color: #dddddd;
 }
 `
-const Content = styled.main`
+export const MediaDetailsContent = styled.main`
 gap:max(13%, 7rem);
 padding:2rem;
 display: flex;
@@ -52,79 +53,32 @@ justify-content: space-between;
 box-shadow: 0px 0px 15px rgba(0,0,0,.11) ;
 `
 
+const CREATION_SUCCESS_TEXT_MESSAGE = `
+Category Created Successfully
+and it can be used in you product
+`
+
 export default function CreateCategory(){
-    const discardButtonRef = useRef();
-    const userState = useUserState();
-    const {sendRequest, serverError} = useSendRequest(userState);
-    const [isCreateSuccess,setIsCreateSuccess] = useState(false);
-
     const [formResetClicked, setFormResetClicked] = useState(false);
-    const [errors,setErrors] = useState({fields : [] , messages : {}});
-    const [isLoading, setIsLoading] = useState(false);
+    const [inputErrors,setInputErrors] = useState({fields : [] , messages : {}});
 
-    useEffect(()=>{
-        if (formResetClicked) setFormResetClicked(false);
-    },[formResetClicked])
 
-    async function requestCreateCategory(formObject){
-        const url = "/api/categories";
-        const init = {
-            method:"POST",
-            data:formObject,
-            headers : {
-                'accept': 'application/json',
-                'Authorization': 'Bearer ' + userState?.token
-            }
-        }
-       
-        const {request, response} = await sendRequest(url, init);
-        if (request){
-            if (request.status === 201){
-                discardButtonRef.current.click();
-                setIsCreateSuccess(true);
-                setErrors({fields:[], messages:{}});
-            }
-
-            if (request.status === 400){ // validation error
-                setErrors({fields:response.metadata.error_fields, message : response.error.details})
-            }
-        }else{
-            setErrors({fields:[], messages:{}});
-        }
-
-        setIsLoading(false);
+    function handleData(formEvent){
+        return new FormData(formEvent.currentTarget);
     }
 
-    function handleFormSubmit(e){
-        e.preventDefault();
-        setIsLoading(true);
-        requestCreateCategory(new FormData(e.currentTarget));
-    }
-
-    function handleDiscardButtonClick(e){
-        setFormResetClicked(true);
-    }
-
-    const renderHeaderButtons = ()=>(
-        <>
-            <DiscardChangesButton ref={discardButtonRef} onClick={handleDiscardButtonClick}>Discard</DiscardChangesButton>
-            <AddCategoryButton disabled={isLoading} type="submit">Add category</AddCategoryButton>
-        </>
-    )
-    
     return(
-        <>
-            <SuccessOrErrorPopUp serverError={serverError}/>
-            {isCreateSuccess && <CategoryCreatedPopUP show={isCreateSuccess} setShow={setIsCreateSuccess}/>}
-            <form onSubmit={handleFormSubmit}>
-                <DefaultPageHeader title="New category" renderButtons={renderHeaderButtons}>
-                        <Content>   
-                            <MediaSection errors={errors} formResetClicked={formResetClicked}/>
-                            <DetailsSection errors={errors} formResetClicked={formResetClicked}/>
-                        </Content>
-                </DefaultPageHeader>
-            </form>
-
-        </>
+        <ResourceCreationWrapper 
+        setInputErrors={setInputErrors}
+        setFormResetClicked={setFormResetClicked} 
+        formResetClicked={formResetClicked} 
+        endpointURL={"/api/categories"} 
+        resource={"category"} 
+        handleData={handleData}>
+            <MediaDetailsContent>   
+                <MediaSection errors={inputErrors} formResetClicked={formResetClicked}/>
+                <DetailsSection errors={inputErrors} formResetClicked={formResetClicked}/>
+            </MediaDetailsContent>
+        </ResourceCreationWrapper>
     )
 }

@@ -1,12 +1,13 @@
 import {createBrowserRouter} from "react-router-dom";
 
-import Default from "./pages/Default/default";
+import Default from "./pages/components/Default/default";
 import Dashboard from "./pages/Dashboard/dashboard";
 import CreateProduct from "./pages/CreateProduct/create-product";
 import CreateCategory from "./pages/CreateCategory/create-category";
 import ListCategories from "./pages/ListCategories/list-categories";
 import CategoriesTable from "./pages/CategoriesTable/categories-table";
 import ListProducts from "./pages/ListProducts/list-products";
+import CreateUser from "./pages/CreateUser/create-user";
 
 export const Router = createBrowserRouter([
     {
@@ -39,6 +40,10 @@ export const Router = createBrowserRouter([
                 element:<ListProducts />
             
             },  
+            {
+                path:"/users/add",
+                element:<CreateUser />
+            },
             {
                 path:"*",
                 element :<div>Error 404 Not Found</div>

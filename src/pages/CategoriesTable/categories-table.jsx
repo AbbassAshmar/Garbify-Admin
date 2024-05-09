@@ -5,37 +5,9 @@ import CategoryCardHorizontal from "./components/CategoryCardHorizontal/category
 import { FlatCategories } from "../../dummy_data";
 import {Link} from "react-router-dom";
 import SuccessOrErrorPopUp from "../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
-
 import useUserState from "../../hooks/use-user-state";
 import useSendRequest from "../../hooks/use-send-request";
-
-const Container = styled.div`
-gap:2rem;
-padding:2rem;
-display: flex;
-flex-direction:column;
-background-color: #F1F4F9;
-`
-const Header = styled.header`
-display: flex;
-justify-content: space-between;
-align-items: flex-start;
-`
-const HeaderText = styled.div`
-display: flex;
-flex-direction: column;
-gap:.5rem;
-`
-const PageTitle = styled.h5`
-font-size:var(--heading-5);
-font-weight: 600;
-`
-
-const PagePath = styled.p`
-font-size:var(--body);
-font-weight: 600;
-color : #A8AAAE;
-`
+import DefaultPageHeader from "../components/DefaultPageHeader/default-page-header";
 
 const Content = styled.div`
 gap:2rem;
@@ -362,13 +334,7 @@ export default function CategoriesTable(){
     return(
         <>
         <SuccessOrErrorPopUp serverError={serverError} outerSettings={resultPopUp} setOuterSettings={setResultPopUp}/>
-        <Container>
-            <Header>
-                <HeaderText>
-                    <PageTitle>All Categories</PageTitle>
-                    <PagePath>{location.pathname.split("/").join(" / ")}</PagePath>
-                </HeaderText>
-            </Header>
+        <DefaultPageHeader title={"All Categories"}>
             <Content>   
                 <ContentHeader>
                     <SearchBar setPageNumber={setPageNumber} searchValue={searchValue} setSearchValue={setSearchValue} />
@@ -437,7 +403,7 @@ export default function CategoriesTable(){
                     </PaginationContainer>
                 </ContentFooter>
             </Content>
-        </Container>
+        </DefaultPageHeader>
         </>
     )
 }

@@ -3,6 +3,7 @@ import styled from "styled-components";
 const Container = styled.section`
 flex:1;
 gap:2rem;
+width: 100%;
 padding:2rem;
 display: flex;
 border-radius: 6px;
@@ -24,20 +25,20 @@ color : #A8AAAE;
 font-weight:500;
 font-size:var(--body);
 `
+
 const Content = styled.div`
 gap:2rem;
 display: flex;
 flex-direction:column;
 `
 
-export default function FormDefaultSection({children,title,subtitle}){
+export default function FormDefaultSection({children,title,subtitle, style}){
     return (
-        <Container>
+        <Container style={style}>
             <TextContainer>
                 <Title>{title}</Title>
                 {subtitle && <Subtitle>{subtitle}</Subtitle>}
             </TextContainer>
-            
             <Content>
                 {children}
             </Content>

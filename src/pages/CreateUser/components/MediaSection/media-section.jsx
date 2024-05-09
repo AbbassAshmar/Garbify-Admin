@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
+import {ErrorMessage} from "../../../../components/Input/input";
 import FormDefaultSection from "../../../../components/FormDefaultSection/form-default-section";
 
 const Container = styled.div`
@@ -7,14 +8,14 @@ flex:1;
 `
 const ImageInputContainer = styled.label`
 width: 100%;
-aspect-ratio:1/1.15;
+border-radius: 50%;
+aspect-ratio: 1/1;
 overflow: hidden;
 position: relative;
 display: flex;
 justify-content: center;
 align-items: center;
 cursor: pointer;
-border-radius: 6px;
 border:3px dashed var(--main-color);
 `
 
@@ -39,28 +40,28 @@ position: absolute;
 `
 
 export default function MediaSection({errors, formResetClicked}){
-    const [categoryImageURL, setCategoryImageURL] = useState('');
+    const [userImageUrl, setUserImageUrl] = useState('');
 
     useEffect(()=>{
         if (formResetClicked)
-        setCategoryImageURL('');
+        setUserImageUrl('');
     },[formResetClicked])
 
     function handleCategoryImageInputChange(e){
-        setCategoryImageURL(URL.createObjectURL(e.currentTarget.files[0]))
+        setUserImageUrl(URL.createObjectURL(e.currentTarget.files[0]))
     }
 
     return(
         <Container>
-            <FormDefaultSection style={{padding:"0",boxShadow:"none"}} title={"Category image"} subtitle={"Represents the category"}>
-                <ImageInputContainer htmlFor="category_image">
+            <FormDefaultSection style={{padding:"0",boxShadow:"none"}} title={"User Profile Picture"} subtitle={"represents the user (optional)"}>
+                <ImageInputContainer htmlFor="user_profile_picture">
                     <PlusIcon className="fa-solid fa-plus" />
-                    {categoryImageURL && <CategoryImage src={categoryImageURL} />}
+                    {userImageUrl && <CategoryImage src={userImageUrl} />}
                     <HiddenImageInput accept=".jpg,.jpeg,.png" 
                     onChange={handleCategoryImageInputChange} 
-                    id="category_image" type="file" name="image"/>
+                    id="user_profile_picture" type="file" name="profile_picture"/>
                 </ImageInputContainer>
-                {errors?.messages['image'] && <ErrorMessage>{errors.messages['image']}</ErrorMessage>}
+                {errors?.messages['profile_picture'] && <ErrorMessage>{errors.messages['profile_picture']}</ErrorMessage>}
             </FormDefaultSection>
         </Container>
     )

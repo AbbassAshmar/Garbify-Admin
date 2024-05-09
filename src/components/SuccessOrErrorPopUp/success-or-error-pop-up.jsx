@@ -82,13 +82,7 @@ cursor:pointer;
 `
 
 function PopUp({color,text,status,setSettings,serverError,show}){
-    const [animate, setAnimate] = useState("out");
-
-    useEffect(()=>{
-        if (!show){
-            setAnimate("out");
-        }else {setAnimate("in")}
-    },[show])
+    const [animate, setAnimate] = useState("in");
 
     function handleCloseButtonClick(e){
         serverError.get() && serverError.set(false);
@@ -131,26 +125,23 @@ export default function SuccessOrErrorPopUp({serverError, outerSettings, setOute
     },[outerSettings])
     
     useEffect(()=>{
-
-        if (outerSettings && JSON.stringify(outerSettings) !== JSON.stringify(settings)){
+        if (outerSettings && JSON.stringify(outerSettings) !== JSON.stringify(settings))
         setOuterSettings(settings) 
-
-        console.log(JSON.stringify(outerSettings) + "_______"+  JSON.stringify(settings))
-
-        }
     },[settings])
 
     useEffect(()=>{
-        if (serverError.get()) {
-            setSettings({
-              show: true,
-              status: "Error",
-              message: "Oops...Looks like our servers are down!",
-            });
-        }else{
-            setSettings({show: false, status: "", message: "" });
+        if (serverError){
+            if (serverError.get()) {
+                setSettings({
+                show: true,
+                status: "Error",
+                message: "Oops...Looks like our servers are down!",
+                });
+            }else{
+                setSettings({show: false, status: "", message: "" });
+            }
         }
-    } , [serverError.get()])
+    } , [serverError?.get()])
 
     return (
         <PopUp

@@ -16,7 +16,7 @@ font-weight:600;
 `
 export const InputSubtitle= styled.p`
 font-size:var(--small-1);
-font-weight:600;
+font-weight:500;
 color:#A8AAAE;
 `
 export const ErrorMessage = styled.p`
@@ -38,6 +38,7 @@ transition: border .3s;
     border:2px solid var(--main-color);
 }
 &::placeholder{
+    font-size:var(--small-1);
     font-weight:400;
     color:#A8AAAE;
 }
