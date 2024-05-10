@@ -8,10 +8,19 @@ import ResourceCreationWrapper from "../components/ResourceCreationWrapper/resou
 export default function CreateUser(){
     const [formResetClicked, setFormResetClicked] = useState(false);
     const [inputErrors,setInputErrors] = useState({fields : [] , messages : {}});
-
+    const [userType, setUserType] = useState("Client");
 
     function handleData(formEvent){
         return new FormData(formEvent.currentTarget);
+    }
+
+    function setEndpoint(){
+        if (userType ==="Client"){
+            return "/api/register";
+        }
+        else if (userType === "Admin"){
+            return "/api/register/admin";
+        }
     }
 
     return (
@@ -19,12 +28,12 @@ export default function CreateUser(){
         setInputErrors={setInputErrors}
         setFormResetClicked={setFormResetClicked} 
         formResetClicked={formResetClicked} 
-        endpointURL={"/api/users"} 
+        endpointURL={setEndpoint()} 
         resource={"user"} 
         handleData={handleData}>
             <MediaDetailsContent>
                 <MediaSection errors={inputErrors} formResetClicked={formResetClicked}/>
-                <DetailsSection errors={inputErrors}/>
+                <DetailsSection userType={userType} setUserType={setUserType} formResetClicked={formResetClicked} errors={inputErrors}/>
             </MediaDetailsContent>
         </ResourceCreationWrapper>
     )

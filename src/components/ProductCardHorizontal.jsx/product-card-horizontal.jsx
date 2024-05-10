@@ -23,19 +23,18 @@ margin:0;
 border-radius: 17px 0 0 17px;
 `
 const DetailsContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap:.5rem;
+display: flex;
+flex-direction: column;
+justify-content: flex-start;
+gap:.5rem;
 `
 const Name = styled.p`
-    font-size:var(--body);
-    font-weight:600;
+font-size:var(--body);
+font-weight:600;
 `
 const Price = styled.p`
-    font-size:var(--small-1);
-    font-weight:400;
-
+font-size:var(--small-1);
+font-weight:400;
 `
 
 export default function ProductCardHorizontal({image, name, price}){

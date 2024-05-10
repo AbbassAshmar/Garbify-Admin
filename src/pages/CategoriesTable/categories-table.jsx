@@ -8,6 +8,8 @@ import SuccessOrErrorPopUp from "../../components/SuccessOrErrorPopUp/success-or
 import useUserState from "../../hooks/use-user-state";
 import useSendRequest from "../../hooks/use-send-request";
 import DefaultPageHeader from "../components/DefaultPageHeader/default-page-header";
+import ResourceTable from "../components/ResourceTable/resource-table";
+import useDeleteResource from "../../hooks/use-delete-resource";
 
 const Content = styled.div`
 gap:2rem;
@@ -48,7 +50,7 @@ transition:background-color .3s, color .3s;
 }
 `
 
-const TableContainer = styled.div`
+const ContentBody = styled.div`
 overflow: auto;
 width:100%;
 `
@@ -175,65 +177,16 @@ transition:background-color .3s;
 
 
 const TABLE_HEADERS = ["Category","Sub categories","Total sales","Total products","Actions"];
+const COLUMNS_WIDTHS = ["35%","27%", "19%", "19%", "70px"];
 
 export default function CategoriesTable(){
     const [children, setChildren] = useState({});
     const [categories, setCategories] = useState(FlatCategories);
 
-    const [sortBy, setSortBy] = useState(['','']);
-    const [pageNumber, setPageNumber] = useState(1);
-    const [searchValue,setSearchValue] = useState("");
-
     const userState = useUserState();
     const {sendRequest, serverError} = useSendRequest(userState);
 
     const [resultPopUp, setResultPopUp] = useState({show:false,status:"",message:""});
-    const CATEGORIES_PER_PAGE = 10;
-
-    useEffect(()=>{
-        fetchCategories();
-    },[])
-
-    useEffect(()=>{
-        let childrenObj= {};
-        for (let category of categories) {
-            childrenObj[category.id] = category.children.slice(0, 3);
-        }
-        setChildren(childrenObj);
-    },[categories])
-    
-    async function fetchCategories(){
-        let url = "/api/categories/flat";
-        const {request, response} = await sendRequest(url);
-
-        if (request?.status == 200){
-            setCategories(response.data.categories);
-        }
-
-        if (request && !request.ok) {
-            setResultPopUp({
-                show: true,
-                status: 'Error',
-                message: response.error.message,
-            });
-        }
-
-        // if failure or server down, add the removed category back
-        if (!request || !request.ok){
-            setCategories([]);
-        }
-    }
-
-    let filteredCategories = categories.filter(category => {
-        const categoryName = category.name.toLowerCase();
-        const searchValueLowerCase = searchValue.toLowerCase();
-
-        return [...searchValueLowerCase].every(letter => categoryName.includes(letter));
-    }).sort(compare(sortBy[0], sortBy[1]));
-
-    let TOTAL_PAGES = Math.ceil(filteredCategories.length / CATEGORIES_PER_PAGE);;
-    let CATEGORIES_START_INDEX = CATEGORIES_PER_PAGE*(pageNumber-1);
-    let CATEGORIES_END_INDEX = CATEGORIES_START_INDEX + CATEGORIES_PER_PAGE;
     
     function compareChildren(a,b){
         return (a.children.length < b.children.length) ? -1 : (a.children.length > b.children.length) ? 1 : 0;
@@ -251,69 +204,30 @@ export default function CategoriesTable(){
         return (a.total_products < b.total_products) ? -1 : (a.total_products > b.total_products) ? 1 : 0;
     }
 
-    function comparisonFactor(factor){
-        let factors = {
-            "" : (a,b)=> 0,
-            "Category" : compareName,
-            "Total sales" : compareTotalSales,
-            "Sub categories"  : compareChildren,
-            "Total products" : compareTotalProducts,
-        }
-        
-        return factors[factor];
+    const sortingMethods ={
+        "" : (a,b)=> 0,
+        "Category" : compareName,
+        "Total sales" : compareTotalSales,
+        "Sub categories"  : compareChildren,
+        "Total products" : compareTotalProducts,
     }
-
-    function compare(property, direction){
-        let sortDirection = direction === "ASC" ? 1 : -1;
-
-        return (a,b) =>{
-            let result = comparisonFactor(property);
-            return result(a,b) * sortDirection;
-        }
-    }
-
+   
     function handleExtendChildren(id,childrenArray){
         setChildren({...children, [id]:childrenArray});
     }
 
-    function handleSortBy(header){
-        if (header == sortBy[0]){
-            setSortBy([header, (sortBy[1] == "ASC" ? "DESC" : "ASC")]);
-        }else{
-            setSortBy([header, "ASC"]);
-        }
-    }
+    const {handleDeleteResource} = useDeleteResource(sendRequest,setCategories,categories,"/api/categories");
 
-    function handleShowPreviousPage(e){
-        if (pageNumber > 1)
-        setPageNumber(pageNumber-1)
-    }
-
-    function handleShowNextPage(e){
-        if (pageNumber < TOTAL_PAGES)
-        setPageNumber(pageNumber+1)
-    }
-    
     async function handleDeleteCategory(categoryID){
-        let init = {method:"DELETE"};
-        let url = "/categories/" + categoryID;
-        
-        // remove category temporarily
-        let removedCategory = categories.find(category => category.id === categoryID);
-        setCategories((prev) => prev.filter((category) => category.id !== categoryID));
-
-        const {request, response} = await sendRequest(url,init);
-
-        // if success, don't add the removed category back
-        if (request?.ok) {
+        const onSuccess = ()=>{
             setResultPopUp({
                 show: true,
                 status: 'Success',
                 message: response.metadata.message,
             });
         }
-      
-        if (request && !request.ok) {
+        
+        const onError = ()=>{
             setResultPopUp({
                 show: true,
                 status: 'Error',
@@ -321,89 +235,55 @@ export default function CategoriesTable(){
             });
         }
 
-        // if failure or server down, add the removed category back
-        if (!request || !request.ok){
-            setCategories([...categories, removedCategory]);
-        }
+        handleDeleteResource(categoryID, onSuccess, onError);
     }
     
     function handleDeleteButtonClick(categoryID){
         handleDeleteCategory(categoryID);
     }
 
+    function renderCategoryRow(category){
+        return (
+            <TableRow key={category.id}>
+                <TableCell>
+                    <CategoryCardHorizontal name={category.name} image={category.image} description={category.description} />
+                </TableCell>
+                <TableCell>
+                    <SubcategoriesCell>
+                        {children[category.id] && children[category.id].map((child)=>(
+                            <Subcategory key={child + category.id}>{child}</Subcategory>
+                        ))}
+                        {children[category.id] && category.children.length >3 && category.children.length != children[category.id].length &&(
+                            <AllButton onClick={(e)=> handleExtendChildren(category.id,category.children)} style={{color:"var(--main-color)", fontWeight:"500"}}>
+                                all...
+                            </AllButton>
+                        )}
+                    </SubcategoriesCell>
+                </TableCell>
+                <TableCell>{category.total_sales}</TableCell>
+                <TableCell>{category.total_products}</TableCell>
+                <TableCell style={{textAlign:'start'}}>
+                    <DeleteButton onClick={(e)=>handleDeleteButtonClick(category.id)}><i className="fa-regular fa-trash-can"/></DeleteButton>
+                    <EditButton to={"/categories/edit/" + category.id}><i className="fa-regular fa-pen-to-square"/></EditButton>
+                </TableCell>
+            </TableRow>
+        )
+    }
+
     return(
         <>
-        <SuccessOrErrorPopUp serverError={serverError} outerSettings={resultPopUp} setOuterSettings={setResultPopUp}/>
-        <DefaultPageHeader title={"All Categories"}>
-            <Content>   
-                <ContentHeader>
-                    <SearchBar setPageNumber={setPageNumber} searchValue={searchValue} setSearchValue={setSearchValue} />
-                    <AddCategoryButton to={"/categories/add"}><span style={{fontSize:"1.5rem"}}>+</span> Add category</AddCategoryButton>
-                </ContentHeader>
-                <TableContainer>
-                    <Table>
-                        <colgroup>
-                            <col style={{width:"35%"}}/>
-                            <col style={{width:"27%"}} />
-                            <col style={{width:"19%"}} />
-                            <col style={{width:"19%"}} />
-                            <col style={{width:"70px"}} />
-                        </colgroup>
-                        <TableHeaders>
-                            <TableRow>
-                                {TABLE_HEADERS.map((header,index) =>(
-                                    <TableHeader onClick={(e)=>handleSortBy(header)} key={index}>
-                                        <TableHeaderContent>
-                                            <p style={{lineHeight:"1rem"}}>{header}</p>
-                                            <SortIcon 
-                                            $rotate={sortBy[0] === header ? (sortBy[1] === "ASC" ? "0" : "180deg") : "0"}
-                                            $color={sortBy[0] === header ? "black":"var(--secondary-color)"} 
-                                            className="fa-solid fa-sort-up"/>                                       
-                                        </TableHeaderContent>
-                                    </TableHeader>
-                                ))}
-                            </TableRow>
-                        </TableHeaders>
-                        <tbody>
-                            {filteredCategories?.slice(CATEGORIES_START_INDEX,CATEGORIES_END_INDEX).map((category) => (
-                                <TableRow key={category.id}>
-                                    <TableCell>
-                                        <CategoryCardHorizontal name={category.name} image={category.image} description={category.description} />
-                                    </TableCell>
-                                    <TableCell>
-                                        <SubcategoriesCell>
-                                            {children[category.id] && children[category.id].map((child)=>(
-                                                <Subcategory key={child + category.id}>{child}</Subcategory>
-                                            ))}
-                                            {children[category.id] && category.children.length >3 && category.children.length != children[category.id].length &&(
-                                                <AllButton onClick={(e)=> handleExtendChildren(category.id,category.children)} style={{color:"var(--main-color)", fontWeight:"500"}}>
-                                                    all...
-                                                </AllButton>
-                                            )}
-                                        </SubcategoriesCell>
-                                    </TableCell>
-                                    <TableCell>{category.total_sales}</TableCell>
-                                    <TableCell>{category.total_products}</TableCell>
-                                    <TableCell style={{textAlign:'start'}}>
-                                        <DeleteButton onClick={(e)=>handleDeleteButtonClick(category.id)}><i className="fa-regular fa-trash-can"/></DeleteButton>
-                                        <EditButton to={"/categories/edit/" + category.id}><i className="fa-regular fa-pen-to-square"/></EditButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </tbody>
-                    </Table>
-                </TableContainer>
-                <ContentFooter>
-                    <PaginationContainer>
-                        {pageNumber > 1 && <PageBox onClick={handleShowPreviousPage}><i className="fa-solid fa-angle-left"/></PageBox> }
-                        {pageNumber > 1 && <PageBox onClick={handleShowPreviousPage}>{pageNumber - 1}</PageBox>}
-                        <PageBox style={{background:"var(--main-color)"}}>{pageNumber}</PageBox>
-                        {pageNumber < TOTAL_PAGES && <PageBox onClick={handleShowNextPage}>{pageNumber + 1}</PageBox>}
-                        {pageNumber < TOTAL_PAGES && <PageBox onClick={handleShowNextPage}><i className="fa-solid fa-angle-right"/></PageBox> }
-                    </PaginationContainer>
-                </ContentFooter>
-            </Content>
-        </DefaultPageHeader>
+            <SuccessOrErrorPopUp serverError={serverError} outerSettings={resultPopUp} setOuterSettings={setResultPopUp} />
+            <ResourceTable 
+                renderRow={renderCategoryRow}
+                endpointURL={"/categories/flat"}
+                resourceName={"categories"}
+                headers={TABLE_HEADERS}
+                columnsWidths={COLUMNS_WIDTHS}
+                sortingMethods={sortingMethods}
+                dummyData={FlatCategories}
+                resource={categories}
+                setResource={setCategories}
+            />
         </>
     )
 }

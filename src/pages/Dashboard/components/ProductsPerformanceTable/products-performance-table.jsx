@@ -5,7 +5,7 @@ import TitleAndSubTitle from "../TitleAndSubTitle/title-and-subtitle";
 
 import cartoonShirt from "../../../../assets/cartoonShirt.jpg";
 import blueHoody from "../../../../assets/blueHoody.png";
-import ProductCardHorizontal from "./components/ProductCardHorizontal.jsx/product-card-horizontal";
+import ProductCardHorizontal from "../../../../components/ProductCardHorizontal.jsx/product-card-horizontal";
 
 const Container = styled.div`
 gap:3rem;

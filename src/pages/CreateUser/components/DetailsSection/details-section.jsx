@@ -1,11 +1,54 @@
 import styled from "styled-components";
 import Input, { TextInputField } from "../../../../components/Input/input"
 import FormDefaultSection from "../../../../components/FormDefaultSection/form-default-section";
+import { useEffect } from "react";
 
 const Container = styled.div`
 flex:1.4;
 `
-export default function DetailsSection({errors}){
+
+const RadioInput = styled.input`
+visibility: hidden;
+position: absolute;
+`
+const FakeRadioInput = styled.div`
+width: 20px;
+height: 20px;
+border-radius: 50%;
+background-color: white;
+display: flex;
+align-items: center;
+justify-content: center;
+`
+const RadioInputContainer = styled.label`
+gap:.5rem;
+display: flex;
+cursor: pointer;
+font-weight:500;
+padding:.25rem .5rem;
+align-items: center;
+border-radius: 40px;
+justify-content: center;
+transition:border .3s, color .3s, background-color .3s;
+border:2px solid ${({$checked})=> $checked ? "var(--main-color)" : "var(--secondary-color)"};
+color:${({$checked})=> $checked ? "white" : "black"};
+background-color:${({$checked})=> $checked ? "var(--main-color)" : "var(--secondary-color)"};
+`
+
+const CheckIcon = styled.i`
+color:var(--main-color);
+font-size: 13px;
+`
+
+export default function DetailsSection({userType, setUserType, formResetClicked, errors}){
+    useEffect(()=>{
+        if (formResetClicked)
+        setUserType("Client");
+    }, [formResetClicked])
+
+    useEffect(()=>{
+        console.log(userType)
+    }, [userType])
     return(
         <Container>
             <FormDefaultSection title="User Information" style={{padding:"0", boxShadow:"none"}} >
@@ -22,7 +65,23 @@ export default function DetailsSection({errors}){
                     <TextInputField name="confirm_password" id="user_confirm_password_input" type="password" placeholder="JackTheRipper432"/>
                 </Input>
                 <Input label={"user_type_input"} title={"User Type"} subtitle={"Admin has permissions to add, delete and edit resources."} errors={errors?.messages['type']}>
-                    {/* <TextInputField name="type" id="user_type_input" type="password" placeholder="JackTheRipper432"/> */}
+                    <div style={{display:'flex',gap:"1rem"}}>
+                        <RadioInputContainer $checked={userType=="Admin"} htmlFor="user_type_input_admin">
+                            <RadioInput onChange={()=>setUserType("Admin")} checked={userType==="Admin"} type="radio" id="user_type_input_admin" value={"Admin"} />
+                            <FakeRadioInput $checked={userType=="Admin"}>
+                                {userType=="Admin" && <CheckIcon className="fa-solid fa-check"/> }
+                            </FakeRadioInput>
+                            <p>Admin</p>
+                        </RadioInputContainer>
+                        <RadioInputContainer  $checked={userType=="Client"} htmlFor="user_type_input_client">
+                            <RadioInput onChange={()=>setUserType("Client")} checked={userType==="Client"} type="radio" id="user_type_input_client" value={"Client"} />
+                            <FakeRadioInput $checked={userType=="Client"}>
+                                {userType=="Client" && <CheckIcon className="fa-solid fa-check"/> }
+                            </FakeRadioInput>
+                            <p>Client</p>
+                        </RadioInputContainer>
+                        
+                    </div>
                 </Input>
             </FormDefaultSection>
         </Container>

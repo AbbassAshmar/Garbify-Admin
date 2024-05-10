@@ -1,5 +1,58 @@
 import blueHoody from "../src/assets/blueHoody.png";
 
+export const Products = [
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category: {
+      id :45,
+      name:"running shoe",
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 2,
+    name:"work shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:434,
+    category: {
+      id :45,
+      name:"running shoe",
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 3,
+    name:"red shoes shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:900,
+    category: {
+      id :45,
+      name:"running shoe",
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  }
+]
 export const FlatCategories = [
     {
         id: 1,

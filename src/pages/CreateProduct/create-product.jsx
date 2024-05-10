@@ -86,8 +86,8 @@ export default function CreateProduct(){
         setInputErrors={setInputErrors}
         setFormResetClicked={setFormResetClicked} 
         formResetClicked={formResetClicked} 
-        endpointURL={"/api/categories"} 
-        resource={"category"} 
+        endpointURL={"/api/products"} 
+        resource={"product"} 
         handleData={handleData}>
             <Content>
                 <InformationPricingContainer>
