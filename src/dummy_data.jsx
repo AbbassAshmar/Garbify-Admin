@@ -1,5 +1,47 @@
 import blueHoody from "../src/assets/blueHoody.png";
 
+export const Users = [
+  {
+    id : 1,
+    name:"ABO SA3B",
+    email:"abosa3b@majleslnoweb.com",
+    created_at: "12-12-2004",
+    total_orders:434,
+    total_spent:9024,
+    role:"Admin",
+    profile_picture:{url : blueHoody},
+  },
+  {
+    id : 2,
+    name:"yahya kawthat",
+    email:"likesNa3Na3@jalDeeb.com",
+    created_at: "02-03-2018",
+    total_orders:94,
+    total_spent:1024,
+    role:"Admin",
+    profile_picture:{url : blueHoody},
+  },
+  {
+    id : 3,
+    name:"Ilias 3adel",
+    email:"Kan7ooty@lb.com",
+    created_at: "12-12-2004",
+    total_orders:12,
+    total_spent:124,
+    role:"Client",
+    profile_picture:{url : blueHoody},
+  },
+  {
+    id : 4,
+    name:"Ali Tony",
+    email:"3ayshMoshtarak@lebanon.com",
+    created_at: "12-02-2005",
+    total_orders:438,
+    total_spent:102801,
+    role:"Client",
+    profile_picture:{url : blueHoody},
+  },
+]
 export const Products = [
   {
     id : 43,

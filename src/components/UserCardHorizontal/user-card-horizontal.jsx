@@ -1,0 +1,52 @@
+import styled from "styled-components";
+
+const Container = styled.div`
+width:100%;
+display: flex;
+align-items: flex-start;
+gap:1rem;
+`
+
+const ImageContainer = styled.div`
+width:21%;
+aspect-ratio:1/1.04;
+position:relative;
+display:flex;
+max-width: 120px;
+`
+
+const Image = styled.img`
+object-fit: cover; 
+width: 100%;
+height: 100%;
+margin:0;
+border-radius: 50%;
+`
+const DetailsContainer = styled.div`
+display: flex;
+flex-direction: column;
+justify-content: flex-start;
+gap:.5rem;
+`
+const Name = styled.p`
+font-size:var(--body);
+font-weight:600;
+`
+const Price = styled.p`
+font-size:var(--small-1);
+font-weight:400;
+`
+
+export default function UserCardHorizontal({profile_picture, name, email}){
+    return(
+        <Container>
+            <ImageContainer>
+                <Image src={profile_picture} alt={`user ${name} profile picture`}/>
+            </ImageContainer>
+            <DetailsContainer>
+                <Name>{name}</Name>
+                <Price>{email}</Price>
+            </DetailsContainer>
+        </Container>
+    )
+}

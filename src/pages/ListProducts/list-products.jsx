@@ -4,6 +4,10 @@ import ResourceTable from "../components/ResourceTable/resource-table";
 import ProductCardHorizontal from "../../components/ProductCardHorizontal.jsx/product-card-horizontal";
 import { Products } from "../../dummy_data";
 import { useState } from "react";
+import useUserState from "../../hooks/use-user-state";
+import useSendRequest from "../../hooks/use-send-request";
+import useDeleteResource from "../../hooks/use-delete-resource";
+import SuccessOrErrorPopUp from "../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
 
 const TableRow = styled.tr`
 border-bottom: 2px solid #F1F4F9;
@@ -34,7 +38,13 @@ const COLUMNS_WIDTHS = ["35%","27%", "19%", "19%", "70px"];
 
 export default function ListProducts(){
     const [products, setProducts] = useState([]);
-    
+
+    const userState = useUserState();
+    const {sendRequest, serverError} = useSendRequest(userState);
+
+    const [resultPopUp, setResultPopUp] = useState({show:false,status:"",message:""});
+    const {handleDeleteResource} = useDeleteResource(sendRequest,setProducts,products,"/api/products");
+
     function compareName(a,b){
         return (a.name[0] < b.name[0]) ? -1 : (a.name[0] > b.name[0]) ? 1 : 0;
     }
@@ -59,8 +69,28 @@ export default function ListProducts(){
         "Quantity Sold" : compareQuantitySold,
     }
 
-    function handleDeleteButtonClick(productID){
+    async function deleteProduct(productID){
+        const onSuccess = ()=>{
+            setResultPopUp({
+                show: true,
+                status: 'Success',
+                message: response.metadata.message,
+            });
+        }
+        
+        const onError = ()=>{
+            setResultPopUp({
+                show: true,
+                status: 'Error',
+                message: response.error.message,
+            });
+        }
 
+        handleDeleteResource(productID, onSuccess, onError);
+    }
+    
+    function handleDeleteButtonClick(productID){
+        deleteProduct(productID);
     }
 
     function productRender(product){
@@ -81,16 +111,18 @@ export default function ListProducts(){
     }
 
     return(
-        <ResourceTable 
-        resourceName={"products"}
-        endpointURL={"/api/products"}
-        columnsWidths={COLUMNS_WIDTHS}
-        headers={TABLE_HEADERS}
-        renderRow={productRender}
-        sortingMethods={sortingMethods} 
-        dummyData={Products}
-        resource={products}
-        setResource={setProducts}/>
-
+        <>
+            <SuccessOrErrorPopUp serverError={serverError} outerSettings={resultPopUp} setOuterSettings={setResultPopUp} />
+            <ResourceTable 
+            resourceName={"products"}
+            endpointURL={"/api/products"}
+            columnsWidths={COLUMNS_WIDTHS}
+            headers={TABLE_HEADERS}
+            renderRow={productRender}
+            sortingMethods={sortingMethods} 
+            dummyData={Products}
+            resource={products}
+            setResource={setProducts}/>
+        </>
     )
 }

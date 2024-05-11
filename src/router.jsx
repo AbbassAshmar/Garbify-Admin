@@ -1,5 +1,4 @@
 import {createBrowserRouter} from "react-router-dom";
-
 import Default from "./pages/components/Default/default";
 import Dashboard from "./pages/Dashboard/dashboard";
 import CreateProduct from "./pages/CreateProduct/create-product";
@@ -8,6 +7,7 @@ import ListCategories from "./pages/ListCategories/list-categories";
 import CategoriesTable from "./pages/CategoriesTable/categories-table";
 import ListProducts from "./pages/ListProducts/list-products";
 import CreateUser from "./pages/CreateUser/create-user";
+import UsersTable from "./pages/UsersTable/users-table";
 
 export const Router = createBrowserRouter([
     {
@@ -43,6 +43,10 @@ export const Router = createBrowserRouter([
             {
                 path:"/users/add",
                 element:<CreateUser />
+            },
+            {
+                path:"/users",
+                element:<UsersTable />
             },
             {
                 path:"*",

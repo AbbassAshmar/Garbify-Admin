@@ -83,9 +83,9 @@ transition:rotate .3s, color .3s;
 const TableHeader = styled.th`
 padding:1rem 1rem 2rem 0;
 text-align: left;
-cursor: pointer;
+cursor: ${({$cursor}) => $cursor};
 
-&:nth-child(5){
+&:last-child(5){
     padding:1rem 0 2rem 0;
 }
 
@@ -97,7 +97,7 @@ const TableHeaderContent = styled.div`
 gap:8px;
 display: flex;
 align-items: center;
-cursor: pointer;
+/* cursor: pointer; */
 &:hover ${SortIcon}{
     color:black;
 }
@@ -180,6 +180,7 @@ export default function ResourceTable({resourceName, endpointURL, headers, colum
     }
 
     function handleSortByClick(header){
+        if (!sortingMethods[header]) return;
         if (header == sortBy[0]){
             setSortBy([header, (sortBy[1] == "ASC" ? "DESC" : "ASC")]);
         }else{
@@ -224,19 +225,19 @@ export default function ResourceTable({resourceName, endpointURL, headers, colum
                         <Table>
                         <colgroup>
                             {columnsWidths.map((width, index) => (
-                                <col key={index} style={{width:width}} />
+                                <col key={index} style={{width:width,minWidth:"0"}} />
                             ))}
                         </colgroup>
                         <TableHeaders>
                             <TableRow>
                                 {headers.map((header,index) =>(
-                                    <TableHeader onClick={(e)=>handleSortByClick(header)} key={index}>
+                                    <TableHeader $cursor={header in sortingMethods ? "pointer" : "text"} onClick={(e)=>handleSortByClick(header)} key={index}>
                                         <TableHeaderContent>
                                             <p style={{lineHeight:"1rem"}}>{header}</p>
-                                            <SortIcon 
+                                            {header in sortingMethods && <SortIcon 
                                             $rotate={sortBy[0] === header ? (sortBy[1] === "ASC" ? "0" : "180deg") : "0"}
                                             $color={sortBy[0] === header ? "black":"var(--secondary-color)"} 
-                                            className="fa-solid fa-sort-up"/>                                       
+                                            className="fa-solid fa-sort-up"/>}                                    
                                         </TableHeaderContent>
                                     </TableHeader>
                                 ))}

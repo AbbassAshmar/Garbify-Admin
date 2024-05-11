@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import SearchBar from "./components/SearchBar/search-bar";
 import { useEffect, useState } from "react";
 import CategoryCardHorizontal from "./components/CategoryCardHorizontal/category-card-horizontal";
 import { FlatCategories } from "../../dummy_data";
@@ -7,68 +6,10 @@ import {Link} from "react-router-dom";
 import SuccessOrErrorPopUp from "../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
 import useUserState from "../../hooks/use-user-state";
 import useSendRequest from "../../hooks/use-send-request";
-import DefaultPageHeader from "../components/DefaultPageHeader/default-page-header";
 import ResourceTable from "../components/ResourceTable/resource-table";
 import useDeleteResource from "../../hooks/use-delete-resource";
 
-const Content = styled.div`
-gap:2rem;
-width: 100%;
-padding:2rem;
-display: flex;
-overflow: auto;
-border-radius: 6px;
-align-items: flex-start;
-flex-direction: column;
-background-color: white;
-`
-
-const ContentHeader = styled.div`
-width: 100%;
-display: flex;
-align-items: stretch;
-justify-content: space-between;
-`
-
-const AddCategoryButton = styled(Link)`
-border:2px solid var(--main-color);
-color:var(--main-color);
-font-weight:600;
-font-size:var(--body);
-text-decoration:none;
-padding:0 1rem;
-border-radius: 4px;
-background-color: white;
-display: flex;
-align-items: center;
-gap: .5rem;
-cursor: pointer;
-transition:background-color .3s, color .3s;
-&:hover{
-    background-color: var(--main-color);
-    color:white;
-}
-`
-
-const ContentBody = styled.div`
-overflow: auto;
-width:100%;
-`
 ////// table ---------------------------
-
-const Table = styled.table`
-border-collapse: collapse;
-table-layout: fixed;
-border-spacing: 0 0 0 2rem;
-width:100%;
-min-width: 850px;
-overflow: hidden;
-`
-
-const TableHeaders = styled.thead`
-border-bottom: 2px solid #F1F4F9;
-width:100%;
-`;
 
 const TableRow = styled.tr`
 border-bottom: 2px solid #F1F4F9;
@@ -76,35 +17,6 @@ padding:2rem 0;
 width:100%;
 `;
 
-const SortIcon = styled.i`
-color:${({$color})=>$color};
-transform:translateY(3px);
-rotate:${({$rotate})=>$rotate};
-transition:rotate .3s, color .3s;
-`
-
-const TableHeader = styled.th`
-padding:1rem 1rem 2rem 0;
-text-align: left;
-cursor: pointer;
-
-&:nth-child(5){
-    padding:1rem 0 2rem 0;
-}
-
-&:hover ${SortIcon}{
-    color:black;
-}
-`
-const TableHeaderContent = styled.div`
-gap:8px;
-display: flex;
-align-items: center;
-cursor: pointer;
-&:hover ${SortIcon}{
-    color:black;
-}
-`
 const TableCell = styled.td`
 text-align: left;
 padding:1.5rem .5rem;
@@ -146,36 +58,6 @@ color:black;
 cursor: pointer;
 `
 
-// Content footer 
-
-const ContentFooter = styled.div`
-width: 100%;
-display: flex;
-justify-content: flex-end;
-`
-const PaginationContainer = styled.div`
-gap:1rem;
-display: flex;
-`
-const PageBox = styled.button`
-height:32px;
-width:32px;
-background-color: var(--secondary-color);
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: var(--body);
-font-weight: 500;
-border:none;
-border-radius:4px;
-cursor: pointer;
-transition:background-color .3s;
-&:hover{
-    background-color: var(--secondary-text);
-}
-`
-
-
 const TABLE_HEADERS = ["Category","Sub categories","Total sales","Total products","Actions"];
 const COLUMNS_WIDTHS = ["35%","27%", "19%", "19%", "70px"];
 
@@ -187,7 +69,16 @@ export default function CategoriesTable(){
     const {sendRequest, serverError} = useSendRequest(userState);
 
     const [resultPopUp, setResultPopUp] = useState({show:false,status:"",message:""});
-    
+    const {handleDeleteResource} = useDeleteResource(sendRequest,setCategories,categories,"/api/categories");
+
+    useEffect(()=>{
+        let childrenObj= {};
+        for (let category of categories) {
+            childrenObj[category.id] = category.children.slice(0, 3);
+        }
+        setChildren(childrenObj);
+    },[categories])
+
     function compareChildren(a,b){
         return (a.children.length < b.children.length) ? -1 : (a.children.length > b.children.length) ? 1 : 0;
     }
@@ -216,9 +107,7 @@ export default function CategoriesTable(){
         setChildren({...children, [id]:childrenArray});
     }
 
-    const {handleDeleteResource} = useDeleteResource(sendRequest,setCategories,categories,"/api/categories");
-
-    async function handleDeleteCategory(categoryID){
+    async function deleteCategory(categoryID){
         const onSuccess = ()=>{
             setResultPopUp({
                 show: true,
@@ -239,7 +128,7 @@ export default function CategoriesTable(){
     }
     
     function handleDeleteButtonClick(categoryID){
-        handleDeleteCategory(categoryID);
+        deleteCategory(categoryID);
     }
 
     function renderCategoryRow(category){

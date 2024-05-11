@@ -21,7 +21,7 @@ export default function useDeleteResource(sendRequest, setResource, resource,end
 
         // if failure or server down, add the removed category back
         if (!request || !request.ok){
-            setResource([...resource, removedElement]);
+            setResource((prev) => ([...prev, removedElement]));
         }
     }
 
