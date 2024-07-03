@@ -34,7 +34,7 @@ ${SearchInput}:focus + &{
 }
 `
 
-export default function SearchBar({searchValue, setSearchValue,setPageNumber}){
+export default function SearchBarClientSide({setSearchValue,setPageNumber}){
 
     function handleSearchInputChange(e){
         setPageNumber(1);

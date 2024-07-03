@@ -4,6 +4,7 @@ const Container = styled.section`
 flex:1;
 gap:2rem;
 width: 100%;
+min-width: 0px;
 padding:2rem;
 display: flex;
 border-radius: 6px;

@@ -20,6 +20,8 @@ export default function useCreateResource({sendRequest,userState}) {
 
         const {request,response} = await sendRequest(url, init);
 
+        console.log(data)
+        console.log(response)
         if (request?.status == 201){
             setInputErrors({fields:[] , messages:{}});
             setIsSuccess(true);
@@ -35,8 +37,10 @@ export default function useCreateResource({sendRequest,userState}) {
         //other errors
         else  {
             setInputErrors({fileds:[], messages:{}});
-            if (response){
+            if (response?.error?.message){
                 onError(response.error.message)
+            }else{
+                onError("Unexpected error... try again later")
             }
         }
 

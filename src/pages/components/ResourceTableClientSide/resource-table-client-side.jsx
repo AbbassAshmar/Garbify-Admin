@@ -2,11 +2,10 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import SuccessOrErrorPopUp from "../../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
-import SearchBar from "../../CategoriesTable/components/SearchBar/search-bar";
 import DefaultPageHeader from "../DefaultPageHeader/default-page-header";
 import useUserState from "../../../hooks/use-user-state";
 import useSendRequest from "../../../hooks/use-send-request";
-import { Products } from "../../../dummy_data";
+import SearchBarClientSide from "./components/SearchBarClientSide/search-bar-client-side";
 
 const Content = styled.div`
 gap:2rem;
@@ -19,7 +18,6 @@ align-items: flex-start;
 flex-direction: column;
 background-color: white;
 `
-
 const ContentHeader = styled.div`
 width: 100%;
 display: flex;
@@ -133,7 +131,7 @@ transition:background-color .3s;
 `
 
 
-export default function ResourceTable({resourceName, endpointURL, headers, columnsWidths, renderRow, sortingMethods, dummyData, resource, setResource}){
+export default function ResourceTableClientSide({resourceName, endpointURL, headers, columnsWidths, renderRow, sortingMethods, dummyData, resource, setResource}){
     const [sortBy, setSortBy] = useState(['','']);
     const [pageNumber, setPageNumber] = useState(1);
     const [searchValue,setSearchValue] = useState("");
@@ -218,7 +216,7 @@ export default function ResourceTable({resourceName, endpointURL, headers, colum
             <DefaultPageHeader title={`All ${resourceName}`}>
                 <Content>   
                     <ContentHeader>
-                        <SearchBar setPageNumber={setPageNumber} searchValue={searchValue} setSearchValue={setSearchValue} />
+                        <SearchBarClientSide setPageNumber={setPageNumber} searchValue={searchValue} setSearchValue={setSearchValue} />
                         <AddCategoryButton to={`/${resourceName}/add`}><span style={{fontSize:"1.5rem"}}>+</span> Add {resourceName}</AddCategoryButton>
                     </ContentHeader>
                     <ContentBody>

@@ -17,6 +17,7 @@ overflow:clip;
 transition:flex .3s;
 flex:${({$flex})=> $flex};
 border-right: 2px solid rgba(190, 200, 208,.5);
+min-width: 0;
 `
 const OutletContainer = styled.div`
 flex:5;

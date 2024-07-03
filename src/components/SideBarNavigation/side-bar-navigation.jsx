@@ -5,7 +5,7 @@ const Container = styled.div`
 width:100%;
 background:black;
 max-height:calc(100vh - 70px);
-overflow:auto;
+overflow:clip;
 position:sticky;
 top:70px;
 `
@@ -27,6 +27,7 @@ gap:1rem;
 `
 const Dashboard = styled(Link)`
 display:flex;
+white-space: nowrap;
 gap:.5rem;
 text-decoration:none;
 color:black;
@@ -49,6 +50,7 @@ align-items:flex-start;
 
 const PagesTitle =styled.p`
 font-size:var(--body);
+white-space: nowrap;
 font-weight:600;
 color:#C0C3C7;
 
@@ -69,6 +71,7 @@ display:flex;
 cursor:pointer;
 align-items:center;
 width:100%;
+min-width: 100%;
 border-radius:6px;
 text-decoration:none;
 position:relative;
@@ -111,6 +114,9 @@ const PagesBlockTitle = styled.div`
 display:flex;
 gap:1rem;
 width:100%;
+white-space: nowrap;
+width:100%;
+min-width: 100%;
 text-decoration:none;
 font-size:var(--body);
 font-weight:600;
@@ -236,30 +242,25 @@ export default function SideBarNavigation(){
                 <AllPages>
                     <PagesTitle>All pages</PagesTitle>
                     <AllPagesWrapper>
-                        {
-                            pagesLinks && pagesLinks.map((page)=>{
-                                return (
-                                <PagesBlocks key={page.name}>
-                                    <PagesBlockTitleContainer onClick={()=> handlePageClick(page)} $selected={expanded==page}> 
-                                        <PagesBlockTitle>
-                                            {page.icon}
-                                            <p>{page.name}</p>
-                                        </PagesBlockTitle>
-                                        <AngleIcon $selected={expanded==page} className="fa-solid fa-angle-down"/>
-                                    </PagesBlockTitleContainer>
-                                    <PagesLinksContainer $selected={expanded==page}>
-                                        {
-                                            page?.links && page.links.map((link)=>(
-                                                <PageLink key={link.name} to={link.to} $color={location.pathname == link.to ? "var(--main-color)":"#A8AAAE"}>
-                                                    <i style={{fontSize:"4px"}} className="fa-solid fa-circle"/> 
-                                                    <p>{link.name}</p>
-                                                </PageLink>
-                                            ))
-                                        }
-                                    </PagesLinksContainer>
-                                </PagesBlocks>)
-                            })
-                        }
+                        {pagesLinks && pagesLinks.map((page)=>(
+                            <PagesBlocks key={page.name}>
+                                <PagesBlockTitleContainer onClick={()=> handlePageClick(page)} $selected={expanded==page}> 
+                                    <PagesBlockTitle>
+                                        {page.icon}
+                                        <p style={{whiteSpace:"nowrap"}}>{page.name}</p>
+                                    </PagesBlockTitle>
+                                    <AngleIcon $selected={expanded==page} className="fa-solid fa-angle-down"/>
+                                </PagesBlockTitleContainer>
+                                <PagesLinksContainer $selected={expanded==page}>
+                                    {page?.links && page.links.map((link)=>(
+                                        <PageLink key={link.name} to={link.to} $color={location.pathname == link.to ? "var(--main-color)":"#A8AAAE"}>
+                                            <i style={{fontSize:"4px"}} className="fa-solid fa-circle"/> 
+                                            <p style={{whiteSpace:"nowrap"}}>{link.name}</p>
+                                        </PageLink>
+                                    ))}
+                                </PagesLinksContainer>
+                            </PagesBlocks>
+                        ))}
                     </AllPagesWrapper>
                 </AllPages>
             </Content>

@@ -8,6 +8,7 @@ import CategoriesTable from "./pages/CategoriesTable/categories-table";
 import ListProducts from "./pages/ListProducts/list-products";
 import CreateUser from "./pages/CreateUser/create-user";
 import UsersTable from "./pages/UsersTable/users-table";
+import OrdersTable from "./pages/OrdersTable/orders-table";
 
 export const Router = createBrowserRouter([
     {
@@ -48,6 +49,10 @@ export const Router = createBrowserRouter([
                 path:"/users",
                 element:<UsersTable />
             },
+            {
+                path:"/orders",
+                element:<OrdersTable />
+            },  
             {
                 path:"*",
                 element :<div>Error 404 Not Found</div>

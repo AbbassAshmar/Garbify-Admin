@@ -1,5 +1,61 @@
 import blueHoody from "../src/assets/blueHoody.png";
 
+export const Orders = [
+  {
+      id : 1,
+      created_at:"2023-10-10", 
+      status:'Canceled',
+      amount_total:1000, 
+      canceled_at:null,
+      shipping_state : "shipping in 4 days",
+      recipiant_name:"abbass ashmar",
+      user:{
+        id:1,
+        name:"AHMMEEED",
+      },
+      order_details:[
+          {
+              id:1,
+              thumbnail:blueHoody,
+              name:'shoes ultra shit',
+              ordered_quantity:2,
+              return_cancellation_info:"return available till 2/2/2022" // calculated
+          },
+          {
+              id:2,
+              thumbnail:blueHoody,
+              name:'some shoe made by utilizing child labor and it sucks ultra shit',
+              ordered_quantity:2,
+              return_cancellation_info:"return available till 2/2/2022" // calculated
+          }
+      ]
+  },
+  {
+      id : 3,
+      created_at:"2023/10/10", 
+      status:'Declined',
+      amount_total:1000, 
+      canceled_at:null,
+      shipping_state : "Delivered since 9/11/2001",
+      recipiant_name:"mahmood lsoory",
+      user:{
+        id:1,
+        name:"AHMMEEED",
+      },
+      order_details:[
+          {
+              id:1,
+              thumbnail:blueHoody,
+              name:'shoes ultra shit fake name goes wild i hate black people',
+              ordered_quantity:2,
+              return_cancellation_info:"return available till 9/4/2022" // calculated
+          },
+          
+      ]
+  },
+  
+]
+
 export const Users = [
   {
     id : 1,
@@ -50,9 +106,247 @@ export const Products = [
     quantity_sold:12,
     total_sales:430,
     price:535,
-    category: {
-      id :45,
-      name:"running shoe",
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
+    },
+    thumbnail : {
+      url : blueHoody,
+      color:"#00ffff",
+      description:"cool image",
+    }
+  },
+  {
+    id : 43,
+    name:"work product shite",
+    quantity:45,
+    quantity_sold:12,
+    total_sales:430,
+    price:535,
+    category:{
+      category:"Running",
+      id:4
     },
     thumbnail : {
       url : blueHoody,
@@ -67,9 +361,9 @@ export const Products = [
     quantity_sold:12,
     total_sales:430,
     price:434,
-    category: {
-      id :45,
-      name:"running shoe",
+    category:{
+      category:"Running",
+      id:4
     },
     thumbnail : {
       url : blueHoody,
@@ -84,9 +378,9 @@ export const Products = [
     quantity_sold:12,
     total_sales:430,
     price:900,
-    category: {
-      id :45,
-      name:"running shoe",
+    category:{
+      category:"Running",
+      id:4
     },
     thumbnail : {
       url : blueHoody,

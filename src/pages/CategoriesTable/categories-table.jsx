@@ -6,7 +6,7 @@ import {Link} from "react-router-dom";
 import SuccessOrErrorPopUp from "../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
 import useUserState from "../../hooks/use-user-state";
 import useSendRequest from "../../hooks/use-send-request";
-import ResourceTable from "../components/ResourceTable/resource-table";
+import ResourceTableClientSide from "../components/ResourceTableClientSide/resource-table-client-side";
 import useDeleteResource from "../../hooks/use-delete-resource";
 
 ////// table ---------------------------
@@ -20,6 +20,8 @@ width:100%;
 const TableCell = styled.td`
 text-align: left;
 padding:1.5rem .5rem;
+font-weight:500;
+color:#5D5F60;
 `
 const SubcategoriesCell = styled.div`
 padding-right:1rem;
@@ -120,7 +122,7 @@ export default function CategoriesTable(){
             setResultPopUp({
                 show: true,
                 status: 'Error',
-                message: response.error.message,
+                message: response?.error?.message || "something bad happended !",
             });
         }
 
@@ -162,7 +164,7 @@ export default function CategoriesTable(){
     return(
         <>
             <SuccessOrErrorPopUp serverError={serverError} outerSettings={resultPopUp} setOuterSettings={setResultPopUp} />
-            <ResourceTable 
+            <ResourceTableClientSide 
                 renderRow={renderCategoryRow}
                 endpointURL={"/categories/flat"}
                 resourceName={"categories"}

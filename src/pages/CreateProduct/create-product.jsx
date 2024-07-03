@@ -77,7 +77,11 @@ export default function CreateProduct(){
                 }
             }
         }
-
+        
+        console.log(formObject)
+        for (let obj of formObject.entries()){
+            console.log(obj)
+        }
         return formObject;
     }
 

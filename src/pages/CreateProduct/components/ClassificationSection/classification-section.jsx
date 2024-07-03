@@ -104,6 +104,7 @@ export default function ClassificationSection({formResetClicked, errors}){
 
     function handleKeyDown(e){
         if (e.key === "Enter"){
+            e.preventDefault();
             handleAddTag(tagsInputValue);
             setTagsInputValue("");
         }

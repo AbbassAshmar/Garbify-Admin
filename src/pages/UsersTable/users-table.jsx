@@ -1,10 +1,7 @@
-
-
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import ResourceTable from "../components/ResourceTable/resource-table";
-import ProductCardHorizontal from "../../components/ProductCardHorizontal.jsx/product-card-horizontal";
-import { Products, Users } from "../../dummy_data";
+import ResourceTableClientSide from "../components/ResourceTableClientSide/resource-table-client-side";
+import { Users } from "../../dummy_data";
 import { useEffect, useState } from "react";
 import UserCardHorizontal from "../../components/UserCardHorizontal/user-card-horizontal";
 import useUserState from "../../hooks/use-user-state";
@@ -19,7 +16,9 @@ width:100%;
 `
 const TableCell = styled.td`
 text-align: left;
-padding:1.5rem 1rem 1.5rem 0;
+padding:1.5rem .5rem;
+font-weight:500;
+color:#5D5F60;
 `
 const DeleteButton = styled.button`
 border:none;
@@ -104,7 +103,7 @@ export default function UsersTable(){
             setResultPopUp({
                 show: true,
                 status: 'Error',
-                message: response.error.message,
+                message: response?.error?.message || "something bad happended !",
             });
         }
 
@@ -138,7 +137,7 @@ export default function UsersTable(){
     return(
         <>
             <SuccessOrErrorPopUp serverError={serverError} outerSettings={resultPopUp} setOuterSettings={setResultPopUp} />
-            <ResourceTable 
+            <ResourceTableClientSide 
             resourceName={"users"}
             endpointURL={"/api/users"}
             columnsWidths={COLUMNS_WIDTHS}
