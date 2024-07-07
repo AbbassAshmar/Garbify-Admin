@@ -8,6 +8,7 @@ import useUserState from "../../hooks/use-user-state";
 import useSendRequest from "../../hooks/use-send-request";
 import ResourceTableClientSide from "../components/ResourceTableClientSide/resource-table-client-side";
 import useDeleteResource from "../../hooks/use-delete-resource";
+import useGetCategories from "../../hooks/use-get-categories";
 
 ////// table ---------------------------
 
@@ -65,7 +66,7 @@ const COLUMNS_WIDTHS = ["35%","27%", "19%", "19%", "70px"];
 
 export default function CategoriesTable(){
     const [children, setChildren] = useState({});
-    const [categories, setCategories] = useState(FlatCategories);
+    const [categories,setCategories] = useGetCategories("flat");
 
     const userState = useUserState();
     const {sendRequest, serverError} = useSendRequest(userState);
@@ -86,7 +87,7 @@ export default function CategoriesTable(){
     }
     
     function compareName(a,b){
-        return (a.name[0] < b.name[0]) ? -1 : (a.name[0] > b.name[0]) ? 1 : 0;
+        return (a.display_name[0] < b.display_name[0]) ? -1 : (a.display_name[0] > b.display_name[0]) ? 1 : 0;
     }
 
     function compareTotalSales(a,b){
@@ -137,12 +138,12 @@ export default function CategoriesTable(){
         return (
             <TableRow key={category.id}>
                 <TableCell>
-                    <CategoryCardHorizontal name={category.name} image={category.image} description={category.description} />
+                    <CategoryCardHorizontal name={category.display_name} image={category.image_url} description={category.description} />
                 </TableCell>
                 <TableCell>
                     <SubcategoriesCell>
                         {children[category.id] && children[category.id].map((child)=>(
-                            <Subcategory key={child + category.id}>{child}</Subcategory>
+                            <Subcategory key={child.id}>{child.category}</Subcategory>
                         ))}
                         {children[category.id] && category.children.length >3 && category.children.length != children[category.id].length &&(
                             <AllButton onClick={(e)=> handleExtendChildren(category.id,category.children)} style={{color:"var(--main-color)", fontWeight:"500"}}>
@@ -166,14 +167,12 @@ export default function CategoriesTable(){
             <SuccessOrErrorPopUp serverError={serverError} outerSettings={resultPopUp} setOuterSettings={setResultPopUp} />
             <ResourceTableClientSide 
                 renderRow={renderCategoryRow}
-                endpointURL={"/categories/flat"}
                 resourceName={"categories"}
+                nameField = {"category"}
                 headers={TABLE_HEADERS}
                 columnsWidths={COLUMNS_WIDTHS}
                 sortingMethods={sortingMethods}
-                dummyData={FlatCategories}
                 resource={categories}
-                setResource={setCategories}
             />
         </>
     )

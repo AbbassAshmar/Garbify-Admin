@@ -1,4 +1,4 @@
-import Input from "../../../../components/Input/input";
+import Input, { ErrorMessage } from "../../../../components/Input/input";
 import styled from "styled-components";
 import { useEffect, useState,useRef } from "react";
 import FormDefaultSection from "../../../../components/FormDefaultSection/form-default-section";
@@ -15,7 +15,7 @@ justify-content: center;
 align-items: center;
 cursor: pointer;
 border-radius: 6px;
-border:3px dashed var(--main-color);
+border:3px dashed ${({$color}) => $color};
 `
 const ThumbnailImage = styled.img`
 border-radius:6px;
@@ -26,7 +26,7 @@ object-fit:cover;
 `
 const PlusIcon = styled.i`
 position: absolute;
-color:var(--main-color);
+color:${({$color}) => $color};
 font-size:var(--heading-3);
 z-index: 0;
 `
@@ -43,7 +43,7 @@ width: 100%;
 height:100%;
 cursor: pointer;
 border-radius: 6px;
-border:3px dashed #A8AAAE;
+border:3px dashed ${({$color}) => $color};
 `
 const ImagesAndFieldContainer=  styled.div`
 gap:2rem;
@@ -321,8 +321,9 @@ export default function MediaSection({formResetClicked, colors,errors,setFormDat
 
     return(
         <FormDefaultSection title={"Media"}>
-            <Input style={{gap:'2rem'}} label={"thumbnail"} subtitle={'displayed in the product card.'} title={renderTitle('Product Thumbnail')} errors={errors?.messages['thumbnail']}>
+            <Input style={{gap:'2rem'}} label={"thumbnail"} subtitle={'displayed in the product card.'} title={renderTitle('Product Thumbnail')} errors={errors?.messages['thumbnail_data.image']}>
                 <ColorSelector 
+                errors={errors?.messages['thumbnail_data.color']}
                 id={'thumbnail_color'}
                 onChange={handleThumbnailColorInputChange}
                 colors={colors}
@@ -330,8 +331,8 @@ export default function MediaSection({formResetClicked, colors,errors,setFormDat
                 selectedColor={thumbnail.color}
                 optionCondition={color=>(true)}
                 />
-                <ThumbnailFieldContainer htmlFor="product_thumbnail">
-                    <PlusIcon className="fa-solid fa-plus" />
+                <ThumbnailFieldContainer $color={errors?.messages['thumbnail_data.image'] ? "red" : "var(--main-color)"} htmlFor="product_thumbnail">
+                    <PlusIcon $color={errors?.messages['thumbnail_data.image'] ? "red" : "var(--main-color)"}  className="fa-solid fa-plus" />
                     {thumbnail.image.url &&
                     <ThumbnailImage src={thumbnail.image.url} />}
                     <input accept=".jpg,.jpeg,.png" 
@@ -340,11 +341,12 @@ export default function MediaSection({formResetClicked, colors,errors,setFormDat
                     style={{visibility:'hidden',width:'.2px',position:"absolute"}}/>
                 </ThumbnailFieldContainer>
             </Input>
-            <Input style={{gap:'2rem'}} label={"product_images"} subtitle={IMAGES_SUBTITLE} title={renderTitle('Product Images')} errors={errors?.messages['original_price']}>
-                {images && images.map((imageColorObj)=>{ 
+            <Input style={{gap:'2rem'}} label={"product_images"} subtitle={IMAGES_SUBTITLE} title={renderTitle('Product Images')}>
+                {images && images.map((imageColorObj,index)=>{ 
                     return(
                     <ImageColorContainer key={imageColorObj.id}>
-                        <ColorSelector 
+                        <ColorSelector
+                        errors={errors?.messages[`images_data.${index}.color`]} 
                         id={"images_color"+imageColorObj.id}
                         onChange={(e)=>handleColoredImagesColorInputChange(e,imageColorObj.id)}
                         colors={colors}
@@ -354,12 +356,13 @@ export default function MediaSection({formResetClicked, colors,errors,setFormDat
                         />
                         <ImagesAndFieldContainer>
                             <ImageFieldContainer>
-                                <PlusIcon style={{color:"#A8AAAE"}} className="fa-solid fa-plus" />
-                                <ImageField htmlFor={"product_image" + imageColorObj.id}/>
+                                <PlusIcon $color={errors?.messages[`images_data.${index}.image`] ? "red" : "#A8AAAE"} className="fa-solid fa-plus" />
+                                <ImageField $color={errors?.messages[`images_data.${index}.image`] ? "red" : "#A8AAAE"} htmlFor={"product_image" + imageColorObj.id}/>
                                 <input accept=".jpg,.jpeg,.png" 
                                 onChange={(e)=> handleUploadColoredImage(e,imageColorObj.id)} 
                                 id={"product_image" + imageColorObj.id} type="file" 
                                 style={{visibility:'hidden',width:'.2px'}}/>
+                                {errors?.messages[`images_data.${index}.image`] && <ErrorMessage>{errors?.messages[`images_data.${index}.images`]}</ErrorMessage>}
                             </ImageFieldContainer>
                             {imageColorObj.images.map((image)=>(
                                 <ImageContainer onClick={(e)=>handleDeleteColoredImage(e,imageColorObj.id,image.url)} key={image.url}>

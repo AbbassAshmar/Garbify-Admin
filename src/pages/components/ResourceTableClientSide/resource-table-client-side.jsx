@@ -131,7 +131,7 @@ transition:background-color .3s;
 `
 
 
-export default function ResourceTableClientSide({resourceName, endpointURL, headers, columnsWidths, renderRow, sortingMethods, dummyData, resource, setResource}){
+export default function ResourceTableClientSide({resourceName, headers, columnsWidths, renderRow, sortingMethods,  resource, nameField}){
     const [sortBy, setSortBy] = useState(['','']);
     const [pageNumber, setPageNumber] = useState(1);
     const [searchValue,setSearchValue] = useState("");
@@ -140,12 +140,8 @@ export default function ResourceTableClientSide({resourceName, endpointURL, head
     const {sendRequest, serverError} = useSendRequest(userState);
     const [resultPopUp, setResultPopUp] = useState({show:false,status:"",message:""});
 
-    useEffect(()=>{
-        fetchResource();
-    },[])
-
     const filteredResource = resource.filter(element => {
-        const elementName = element.name.toLowerCase();
+        const elementName = element[nameField].toLowerCase();
         const searchValueLowerCase = searchValue.toLowerCase();
 
         return [...searchValueLowerCase].every(letter => elementName.includes(letter));
@@ -155,27 +151,6 @@ export default function ResourceTableClientSide({resourceName, endpointURL, head
     const TOTAL_PAGES = Math.ceil(filteredResource.length / CATEGORIES_PER_PAGE);;
     const CATEGORIES_START_INDEX = CATEGORIES_PER_PAGE*(pageNumber-1);
     const CATEGORIES_END_INDEX = CATEGORIES_START_INDEX + CATEGORIES_PER_PAGE;
-    
-    async function fetchResource(){
-        const {request, response} = await sendRequest(endpointURL);
-
-        if (request?.status == 200){
-            setResource(response.data[resourceName]);
-        }
-
-        if (request && !request.ok) {
-            setResultPopUp({
-                show: true,
-                status: 'Error',
-                message: response.error.message,
-            });
-        }
-
-        // if failure or server down, add the removed category back
-        if (!request || !request.ok){
-            setResource(dummyData);
-        }
-    }
 
     function handleSortByClick(header){
         if (!sortingMethods[header]) return;

@@ -30,7 +30,7 @@ width:100%;
 padding:.5rem;
 font-weight:500;
 font-size:var(--body);
-border: 2px solid var(--secondary-color);
+border: 2px solid ${({$error}) => $error ? "red" : "var(--secondary-color)"};
 border-radius:3px;
 outline: none;
 transition: border .3s;

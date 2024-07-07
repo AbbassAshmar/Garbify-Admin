@@ -39,6 +39,8 @@ export default function CreateProduct(){
 
         // handle images data
         for (let i in formData['images_data']){
+            if (formData['images_data'][i].images.length == 0) continue;
+            
             formObject.append('images_data['+i+']'+'[color]',formData['images_data'][i].color);
             for (let j in formData['images_data'][i].images){
                 formObject.append('images_data['+i+']'+'[images][]',formData['images_data'][i].images[j].file);
@@ -63,10 +65,7 @@ export default function CreateProduct(){
         for (let i in formData['sizes_data']){
             let size_object = formData['sizes_data'][i];
 
-            let hasAttributesWithValue = size_object['attributes'].some(attribute => attribute.value.trim() !== '');
-            if (!hasAttributesWithValue) continue;
-
-            for (let j in size_object['attributes']){
+            for (let j in size_object['attributes']){                   
                 if (!attributeWithValue[j]) continue;
                 if (attributeWithValue[j]) {
                     let attribute = size_object['attributes'][j];

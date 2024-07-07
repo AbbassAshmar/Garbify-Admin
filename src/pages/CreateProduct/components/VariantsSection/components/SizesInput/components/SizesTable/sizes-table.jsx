@@ -117,7 +117,7 @@ export default function SizesTable({formResetClicked, mainMeasurementUnit,tableS
 
     return(
         <Container>
-            <TableWrapper>
+            <TableWrapper $padding={showTable?"2rem" : "0"}>
             <TableContainer $show={showTable} $maxHeight={showTable?"70vh" : "0"}>
                 <Table>
                     <thead>
@@ -177,7 +177,6 @@ export default function SizesTable({formResetClicked, mainMeasurementUnit,tableS
 const Container = styled.div`
 display:flex;
 flex-direction:column;
-gap:2rem;
 `
 const SizesTableButton = styled.button`
 border:none;
@@ -199,6 +198,8 @@ width :100%;
 height: 100%;
 overflow: hidden;
 max-height: calc(70vh - 50px);
+transition:padding .3s;
+padding-bottom: ${({$padding}) => $padding};
 `
 const TableContainer = styled.div`
 gap: 2rem;
@@ -211,7 +212,6 @@ transition:max-height .3s, padding .3s;
 overflow:${({$show})=>($show?'auto':'hidden')};
 max-height:${({$show})=>($show?'70vh':'0')};
 padding:${({$show})=>($show?'0 50px 50px 0':'0')};
-
 `
 const Table = styled.table`
 border-collapse: collapse;

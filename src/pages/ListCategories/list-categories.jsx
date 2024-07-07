@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useEffect, useRef, useState } from "react";
 import { NestedCategories } from "../../dummy_data";
 import DefaultPageHeader from "../components/DefaultPageHeader/default-page-header";
+import useGetCategories from "../../hooks/use-get-categories";
 
 const Content = styled.div`
 width: 100%;
@@ -88,7 +89,7 @@ border-radius: 50%;
 export default function ListCategories(){
 	const liRefs = useRef({});
 	const [liWidths,setLiWidths] = useState({});
-  	const [categories , setCategories] = useState(NestedCategories.categories);
+	const [categories] = useGetCategories("nested");
 
 	useEffect(()=>{
 		for (const refId in liRefs.current) {
@@ -97,7 +98,7 @@ export default function ListCategories(){
 				[refId]: width(liRefs.current[refId])
 			}))
 		};
-	},[liRefs,liRefs.current])
+	},[liRefs,liRefs.current,categories])
 	
 	const borderLeftRight = (index, length)=>{
 		if (length <= 1) return "0";
@@ -132,7 +133,7 @@ export default function ListCategories(){
 	
     const renderCategory = (category,index,length) => (
         <Li ref={ref => liRefs.current[category.id] = ref} $width={`${liWidths[category.id]}px`} key={category.id} $borderTop={borderTop(index,length)} {...borderLeftRight(index,length)} {...position(index,length)} $borderRadius={borderRadius(index,length)}>
-            <Node>{category.name}</Node>
+            <Node>{category.category}</Node>
             {category.children.length > 0 && (
                 <UL $borderHeight={category.children.length == 1 ? "3rem": "22px"}>
                     {category.children.map((child,index) => renderCategory(child,index,category.children.length))}

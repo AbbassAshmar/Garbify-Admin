@@ -10,7 +10,7 @@ min-height: 200px;
 padding:.5rem;
 font-weight:500;
 font-size:var(--body);
-border: 2px solid var(--secondary-color);
+border: 2px solid ${({$error}) => $error ? "red" : "var(--secondary-color)"};
 border-radius:3px;
 outline: none;
 transition: border .3s;
@@ -41,13 +41,13 @@ export default function InformationSection({errors,formData}){
     return (
         <FormDefaultSection title={'Product Information'}>
             <Input label={"category_name_input"} title={"Product name"} errors={errors?.messages['name']}>
-                <TextInputField name="name" id="category_name_input" type="text" placeholder="name"/>
+                <TextInputField $error={errors?.messages['name']} name="name" id="category_name_input" type="text" placeholder="name"/>
             </Input>
             <Input label={"product_description_input"} title={"Description"} errors={errors?.messages['description']}>
-                <TextAreaField name="description" id="product_description_input" placeholder="describe your product"/>
+                <TextAreaField $error={errors?.messages['description']} name="description" id="product_description_input" placeholder="describe your product"/>
             </Input>
             <Input label={"product_quantity_input"} title={"Quantity"} errors={errors?.messages['quantity']}>
-                <TextInputField name="quantity" id="product_quantity_input" type="number" min="0" placeholder="0"/>
+                <TextInputField $error={errors?.messages['quantity']} name="quantity" id="product_quantity_input" type="number" min="0" placeholder="0"/>
             </Input>
             <Input label={"product_status_input"} title={"Status"} errors={errors?.messages['status']}>
                 <SelectField name="status" id="product_status_input">

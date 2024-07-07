@@ -3,21 +3,9 @@ import styled from "styled-components";
 import Input from "../../../../components/Input/input";
 import { TextInputField } from "../../../../components/Input/input";
 import FormDefaultSection from "../../../../components/FormDefaultSection/form-default-section";
+import CategoryInput from "./components/CategoryInput/category-input";
 
-const SelectField = styled.select`
-width:100%;
-padding:.5rem;
-font-weight:500;
-font-size:var(--body);
-border: 2px solid var(--secondary-color);
-border-radius:3px;
-outline: none;
-transition: border .3s;
-cursor:pointer;
-&:focus {
-    border:2px solid var(--main-color);
-}
-`
+
 const TagsInputContainer = styled.div`
 cursor: text;
 display: block;
@@ -27,7 +15,7 @@ min-height: 60px;
 padding:0 0 1rem 1rem;
 border-radius:6px;
 transition: border .3s;
-border: 3px solid ${({ $isFocused }) => ($isFocused ? 'var(--main-color)': 'var(--secondary-color)')};
+border: 3px solid ${({ $error, $isFocused }) => ($error ? 'red' : $isFocused ? 'var(--main-color)': 'var(--secondary-color)')};
 `
 const TagContainer = styled.span`
 display: inline-block;
@@ -113,18 +101,13 @@ export default function ClassificationSection({formResetClicked, errors}){
     return (
         <FormDefaultSection title={'Classification'}>
             <Input label={"type"} title={"Type"} subtitle={TYPE_SUBTITLE} errors={errors?.messages['type']}>
-                <TextInputField name="type" id="type" type="text" placeholder="product type"/>
+                <TextInputField $error={errors?.messages['type']}  name="type" id="type" type="text" placeholder="product type"/>
             </Input>
-            <Input label={"category"} title={"Category"} errors={errors?.messages['category']}>
-                <SelectField name="category" id="category">
-                    <option value="volvo">Volvo</option>
-                    <option value="saab">Saab</option>
-                    <option value="opel">Opel</option>
-                    <option value="audi">Audi</option>
-                </SelectField>
-            </Input>
+
+            <CategoryInput errors={errors}/>
+
             <Input label={"tags"} title={"Tags"} subtitle={TAGS_SUBTITLE} errors={errors?.messages['tags']}>
-                <TagsInputContainer $isFocused={isInputFocused} onClick={handleTagsInputContainerClick}>
+                <TagsInputContainer $error={errors?.messages['tags']}  $isFocused={isInputFocused} onClick={handleTagsInputContainerClick}>
                     {tags && tags.map((tag)=>(
                         <TagContainer key={tag}>
                             <Tag onClick={(e)=>handleTagClick(tag)}>

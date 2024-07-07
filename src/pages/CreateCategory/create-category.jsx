@@ -62,7 +62,6 @@ export default function CreateCategory(){
     const [formResetClicked, setFormResetClicked] = useState(false);
     const [inputErrors,setInputErrors] = useState({fields : [] , messages : {}});
 
-
     function handleData(formEvent){
         return new FormData(formEvent.currentTarget);
     }

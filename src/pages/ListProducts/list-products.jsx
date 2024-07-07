@@ -90,7 +90,7 @@ export default function ListProducts(){
         return(
             <TableRow key={product.id}>
                 <TableCell>
-                    <ProductCardHorizontal name={product.name} image={product.thumbnail.url} price={product.price} />
+                    <ProductCardHorizontal name={product.name} image={product.thumbnail?.url} price={product.price} />
                 </TableCell>
                 <TableCell><Category>{product?.category?.category}</Category></TableCell>
                 <TableCell>{product.total_sales}</TableCell>
@@ -113,7 +113,6 @@ export default function ListProducts(){
             columnsWidths={COLUMNS_WIDTHS}
             headers={TABLE_HEADERS}
             renderRow={renderProductRow}
-            dummyData={Products}
             resource={products}
             setResource={setProducts}
             sortingDictionary={sortingDictionary}/>

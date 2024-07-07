@@ -10,7 +10,7 @@ display: flex;
 flex-direction:column;
 padding:1rem; 
 border-radius:6px;
-border: 3px solid var(--secondary-color);
+border: 2px solid ${({$error}) => $error ? "red" : "var(--secondary-color)"};
 `
 const AddSizeButton = styled.button`
 border:none;
@@ -143,11 +143,11 @@ export default function SizesInput({formResetClicked, errors,setFormData}){
     return(
         <>
             <Input label={"sizes_measurement_unit"} title={'Sizes measurement unit'} errors={errors?.messages['sizes_measurement_unit']}>
-                <TextInputField onKeyDown={handleSizesUnitInputKeyDown} onChange={handleSizesUnitInputChange} value={sizesUnit} name="sizes_measurement_unit" id="sizes_measurement_unit" type='text' placeholder="ex. inches" />   
+                <TextInputField $error={errors?.messages['sizes_measurement_unit']} onKeyDown={handleSizesUnitInputKeyDown} onChange={handleSizesUnitInputChange} value={sizesUnit} name="sizes_measurement_unit" id="sizes_measurement_unit" type='text' placeholder="ex. inches" />   
             </Input>
 
             <Input label={"sizes"} title={'Sizes'} errors={errors?.messages['sizes']}>
-                <SizesInputContainer>
+                <SizesInputContainer $error={errors?.messages['sizes']}>
                     <div style={{display:'flex',gap:'1rem'}}>
                         <TextInputField value={sizeInputValue} onChange={(e)=> setSizeInputValue(e.target.value)} id="sizes" placeholder="enter a size" onBlur={handleBlur} onKeyDown={handleKeyDown}/>
                         <AddSizeButton type="button" onClick={handleAddSizeButtonClick}>Add</AddSizeButton>

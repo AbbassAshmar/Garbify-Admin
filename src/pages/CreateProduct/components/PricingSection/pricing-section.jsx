@@ -52,10 +52,10 @@ export default function PricingSection({formResetClicked, errors}){
         <SectionDefault title={"Pricing"}>
             <PriceInputsContainer>
                 <Input label={"original_price"} title={<>Original Price <BlueSpan $enabled={true}>$</BlueSpan></>} errors={errors?.messages['original_price']}>
-                    <TextInputField name="original_price" id="original_price" type="number" min="0" placeholder="0"/>
+                    <TextInputField $error={errors?.messages['original_price']} name="original_price" id="original_price" type="number" min="0" placeholder="0"/>
                 </Input>
                 <Input label={"selling_price"} title={<>Selling Price <BlueSpan $enabled={true}>$</BlueSpan></>} errors={errors?.messages['selling_price']}>
-                    <TextInputField name="selling_price" id="selling_price" type="number" min="0" placeholder="0"/>
+                    <TextInputField $error={errors?.messages['selling_price']} name="selling_price" id="selling_price" type="number" min="0" placeholder="0"/>
                 </Input>
             </PriceInputsContainer>
 
@@ -65,19 +65,19 @@ export default function PricingSection({formResetClicked, errors}){
             </SaleHeader>
 
             <Input label={"sale_quantity"} title={renderColoredLabel('Sale quantity','(optional)')} errors={errors?.messages['sale_quantity']}>
-                <TextInputField disabled={!isSaleEnabled} name="sale_quantity" id="sale_quantity" type="number" min="0" placeholder="0"/>
+                <TextInputField $error={errors?.messages['sale_quantity']} disabled={!isSaleEnabled} name="sale_quantity" id="sale_quantity" type="number" min="0" placeholder="0"/>
             </Input>
 
             <Input label={"sale_start_date"} title={renderColoredLabel('Sale start date')} errors={errors?.messages['sale_start_date']}>
-                <TextInputField disabled={!isSaleEnabled} style={{color:"grey"}} name="sale_start_date" id="sale_start_date" type="date" min="0" />
+                <TextInputField $error={errors?.messages['sale_start_date']} disabled={!isSaleEnabled} style={{color:"grey"}} name="sale_start_date" id="sale_start_date" type="date" min="0" />
             </Input>
 
             <Input label={"sale_end_date"} title={renderColoredLabel('Sale end date','(optional)')} errors={errors?.messages['sale_end_date']}>
-                <TextInputField disabled={!isSaleEnabled} style={{color:"grey"}} name="sale_end_date" id="sale_end_date" type="date" min="0"/>
+                <TextInputField $error={errors?.messages['sale_end_date']} disabled={!isSaleEnabled} style={{color:"grey"}} name="sale_end_date" id="sale_end_date" type="date" min="0"/>
             </Input>
 
             <Input label={"discount_percentage"} title={renderColoredLabel('Discount percentage','%')} errors={errors?.messages['discount_percentage']}>
-                <TextInputField disabled={!isSaleEnabled} name="discount_percentage" id="discount_percentage" type="number" min="0" placeholder="0"/>
+                <TextInputField $error={errors?.messages['discount_percentage']} disabled={!isSaleEnabled} name="discount_percentage" id="discount_percentage" type="number" min="0" placeholder="0"/>
             </Input>
 
             <input type="hidden" name='sale' value='true' disabled={!isSaleEnabled} style={{width:".2px", position:"absolute"}} />

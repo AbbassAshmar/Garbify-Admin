@@ -111,7 +111,7 @@ display: flex;
 justify-content: flex-end;
 `
 
-export default function ResourceTableServerSide({resourceName, endpointURL, headers, columnsWidths, renderRow, sortingDictionary, dummyData, resource, setResource}){
+export default function ResourceTableServerSide({resourceName, endpointURL, headers, columnsWidths, renderRow, sortingDictionary, resource, setResource}){
     const [sortBy, setSortBy] = useState(['','']);
     const [resultPopUp, setResultPopUp] = useState({show:false,status:"",message:""});
 
@@ -120,7 +120,6 @@ export default function ResourceTableServerSide({resourceName, endpointURL, head
 
     const [searchParams, setSearchParams] = useSearchParams();
     const [totalPages, setTotalPages] = useState(2);
-
 
     useEffect(()=>{
         fetchResource(endpointURL);
@@ -143,7 +142,6 @@ export default function ResourceTableServerSide({resourceName, endpointURL, head
         }
 
         for (let key of searchParams.entries()){
-            console.log(key[1])
             queryStrings += `${encodeURIComponent(key[0])}=${encodeURIComponent(key[1])}&`;
         }
 
@@ -165,11 +163,6 @@ export default function ResourceTableServerSide({resourceName, endpointURL, head
                 status: 'Error',
                 message: response?.error?.message || "Something bad happened !",
             });
-        }
-
-        // if failure or server down, add the removed category back
-        if (!request || !request.ok){
-            setResource(dummyData);
         }
     }
 
@@ -214,7 +207,7 @@ export default function ResourceTableServerSide({resourceName, endpointURL, head
                             </TableRow>
                         </TableHeaders>
                         <tbody>
-                            {resource.map(renderRow)}
+                            {resource.length > 0 && resource.map(renderRow)}
                         </tbody>
                         </Table>
                     </ContentBody>

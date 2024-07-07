@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { ErrorMessage } from "../../../../../../components/Input/input";
+import { NestedCategories } from "../../../../../../dummy_data";
+import useGetCategories from "../../../../../../hooks/use-get-categories";
 
 const Container = styled.div`
 gap:2rem;
@@ -27,21 +29,38 @@ gap:1rem;
 display: flex;
 flex-direction:column;
 `
-const CurrentPath = styled.p`
-font-weight:500;
-color : #A8AAAE;
-font-size:var(--small-1);
-`
-const CategoriesList = styled.div`
+
+export const CategoriesPickerContainer = styled.div`
 gap:1.25rem;
-padding:1.25rem;
+padding:0 1.25rem 1.25rem 1.25rem;
 display: flex;
 flex-direction:column;
 border-radius: 6px;
 align-items: flex-start;
-border:2px solid var(--secondary-color);
+border:2px solid ${({$error}) => $error ? 'red' : 'var(--secondary-color)'};
+max-height: 80vh;
+overflow-y: auto;
 `
-const BackButton = styled.button`
+export const BackButtonAndPath = styled.div`
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+justify-content: flex-start;
+padding-top:1.25rem;
+padding-bottom: .5rem;
+gap:.5rem;
+flex-wrap: wrap;
+position: sticky;
+top:0;
+background-color: white;
+width: 100%;
+`
+export const CurrentPathText = styled.p`
+font-weight:500;
+color : #A8AAAE;
+font-size:var(--small-1);
+`
+export const BackButton = styled.button`
 gap:.25rem;
 border: none;
 display: flex;
@@ -51,7 +70,7 @@ align-items: center;
 font-size:var(--body);
 background-color: white;
 `
-const CategoryContainer = styled.button`
+export const CategoryContainer = styled.button`
 width: 100%;
 border:none;
 display: flex;
@@ -66,11 +85,11 @@ background-color: var(--secondary-color);
 	background-color: #d8dbe0;
 }
 `
-const CategoryName = styled.p`
+export const CategoryName = styled.p`
 font-size:var(--body);
 font-weight:500;
 `
-const SubcategoriesCount = styled.p`
+export const SubcategoriesCount = styled.p`
 color:#B2B4B8;
 font-weight:500;
 font-size:var(--small-1);
@@ -102,7 +121,7 @@ border-radius:4px;
 background-color: ${({$checked})=> ($checked? 'rgba(0,194,255,.35)':"white")};
 border: ${({$checked})=> ($checked? '' : '2px solid #d8dbe0')};
 `
-const SelectedParentsContainer = styled.div`
+export const SelectedPathContainer = styled.div`
 gap:.5rem;
 display: flex;
 font-weight:600;
@@ -110,7 +129,7 @@ font-size:var(--body);
 flex-direction: column;
 padding-top:1rem;
 `
-const SelectedParents = styled.div`
+export const SelectedPathText = styled.div`
 font-weight:500;
 color : #A8AAAE;
 font-size:var(--small-1);
@@ -118,19 +137,23 @@ width: fit-content;
 border-bottom: 2px solid var(--secondary-color);
 `
 export default function CategoryParentPicker({formResetClicked, errors}){
-	const [path, setPath] = useState(['categories']);
+    const [categories, setCategories] = useGetCategories("nested");
+	const [categoryParentID, setCategoryParentID] = useState(""); 
+
+	const [currentPath, setCurrentPath] = useState(['categories']);
 	const [selectedPath,setSelectedPath] = useState('');
 
-	const [currentCategories,setCurrentCategories] = useState({name:"categories", id : -1, children: Categories.categories});
-    const [categoriesHistory,setCategoriesHistory] = useState([]);
+	const [currentCategories,setCurrentCategories] = useState({display_name:"categories", id : -1, children: []});
+  	const [categoriesHistory,setCategoriesHistory] = useState([]);
 
-	// sent with the create request 
-	const [categoryParentID, setCategoryParentID] = useState(""); 
-	
 	useEffect(()=>{
-		if (formResetClicked)
-		setCategoryParentID("");
-	}, [formResetClicked])
+        setCurrentCategories((prev) => ({...prev,children:categories}));
+    },[categories])
+
+    useEffect(()=>{
+        if (formResetClicked)
+        setCategoryParentID("");
+    }, [formResetClicked])
 
     function updateCurrentCategories(category){
         //add to history the old state
@@ -138,22 +161,28 @@ export default function CategoryParentPicker({formResetClicked, errors}){
         // update currentCategories to children of category having id = categoryID
         setCurrentCategories(category)
 		// update the path
-		setPath([...path,category.name]);
-    }
+		setCurrentPath([...currentPath,category.display_name]);
+  	}
 
     function backButtonClick(){
         if (!categoriesHistory.length) return;
+
         let newCategoriesHistory = [...categoriesHistory];
         let latestInHistory = newCategoriesHistory.pop(-1)
+
         setCurrentCategories(latestInHistory);
         setCategoriesHistory(newCategoriesHistory);
-		setPath(path.slice(0,-1))
+		setCurrentPath((prev) => prev.slice(0,-1))
     }
 
 	function handleAddHereButtonClick(){
 		setCategoryParentID(currentCategories.id);
-		setSelectedPath(`/ ${path.join(" / ")}`);
+		setSelectedPath(`/ ${currentPath.join(" / ")}`);
 	}
+
+    useEffect(()=>{
+        console.log(currentCategories)
+    },[currentCategories])
 
     return(
         <Container>
@@ -162,19 +191,21 @@ export default function CategoryParentPicker({formResetClicked, errors}){
                 <Subtitle>Decide the categorie’s position in the heirarchy</Subtitle>
             </TextContainer>
             <Content>
-                <CurrentPath>/ {path.join(" / ")}</CurrentPath>
-                <CategoriesList>
-                    <BackButton disabled={!categoriesHistory.length} onClick={backButtonClick} type='button'>
-						<i style={{lineHeight:"16px"}} className="fa-solid fa-angle-left"/>
-						<span style={{lineHeight:"16px"}}>Back</span>
-                    </BackButton>
+                <CategoriesPickerContainer>
+					<BackButtonAndPath>
+						<BackButton disabled={!categoriesHistory.length} onClick={backButtonClick} type='button'>
+							<i style={{lineHeight:"16px"}} className="fa-solid fa-angle-left"/>
+							<span style={{lineHeight:"16px"}}>Back</span>
+						</BackButton>
+						<CurrentPathText>/ {currentPath.join(" / ")}</CurrentPathText>
+					</BackButtonAndPath>
                     {currentCategories.children.length > 0 && currentCategories.children.map(category=>(
                         <CategoryContainer key={category.id} type="button" onClick={e=>updateCurrentCategories(category)}>
                             <div style={{display:'flex',gap:'1rem', alignItems:"center"}}>
-                                <CategoryName>{category.name}</CategoryName>
-                                <SubcategoriesCount>({category.children.length} subcategories)</SubcategoriesCount>
+                                <CategoryName>{category.display_name}</CategoryName>
+                                <SubcategoriesCount>({category.children?.length} subcategories)</SubcategoriesCount>
                             </div>
-                            {category.children.length > 0 && <i className="fa-solid fa-angle-right"/>}
+                            <i className="fa-solid fa-angle-right"/>
                         </CategoryContainer>
                     ))}
                     <AddHereButton onClick={handleAddHereButtonClick} type="button">
@@ -187,75 +218,16 @@ export default function CategoryParentPicker({formResetClicked, errors}){
                         </CheckBox>
                     </AddHereButton>
 					<input name="parent_id" type="hidden" value={categoryParentID} style={{width:'.2px', position:"absolute"}} />
-                </CategoriesList>
+                </CategoriesPickerContainer>
 				{errors?.messages['parent_id'] && <ErrorMessage>{errors.messages['parent_id']}</ErrorMessage>}
-				<SelectedParentsContainer>
+				<SelectedPathContainer>
 					<p>Selected parents</p>
-					<SelectedParents>
+					<SelectedPathText>
 						{selectedPath || 'not chosen yet'}
-					</SelectedParents>
-				</SelectedParentsContainer>
+					</SelectedPathText>
+				</SelectedPathContainer>
             </Content>
         </Container>
     )
 }
 
-const Categories ={
-    categories: [
-      {
-        id: 1,
-        name: "Men",
-        parent_id: null,
-        children: [
-          {
-            id: 2,
-            name: "Sports",
-            parent_id: 1,
-            children: [
-              {
-                id: 3,
-                name: "Shoes",
-                parent_id: 2,
-                children: [
-                  {
-                    id: 4,
-                    name: "Brand",
-                    parent_id: 3,
-                    children: []
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 5,
-        name: "Women",
-        parent_id: null,
-        children: [
-          {
-            id: 6,
-            name: "Sports",
-            parent_id: 5,
-            children: [
-              {
-                id: 7,
-                name: "Shoes",
-                parent_id: 6,
-                children: [
-                  {
-                    id: 8,
-                    name: "Brand",
-                    parent_id: 7,
-                    children: []
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ]
-}
-  

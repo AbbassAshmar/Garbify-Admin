@@ -51,7 +51,7 @@ export default function ColorsInput({formResetClicked, errors, colors,setColors}
     return (
         <InputContainer>
             <InputTitle>Colors</InputTitle>
-            <ColorsContainer>
+            <ColorsContainer $error={errors?.messages['colors']}>
                 {colors.map((color,i)=>(
                     <ColorContainer key={color}>
                         <XIconContainer onClick={()=>handleDeleteColor(color)}>
@@ -98,7 +98,7 @@ margin-top: 4px;
 border-radius: 5px;
 align-items: center;
 flex-wrap: wrap;
-border:3px solid var(--secondary-color);
+border: 2px solid ${({$error}) => $error ? "red" : "var(--secondary-color)"};
 `
 const ColorContainer = styled.div`
 position:relative;
