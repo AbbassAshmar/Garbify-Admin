@@ -83,6 +83,8 @@ const ImageContainer = styled.div`
 width:30%;
 overflow: hidden;
 aspect-ratio:1/1.15;
+border:3px solid ${({$color}) => $color};
+border-radius: 6px;
 `
 const Image = styled.img`
 height:100%;
@@ -98,75 +100,65 @@ function renderTitle(title){
     return <span style={{fontSize:'var(--heading-6)'}}>{title}</span>;
 }
 
-export default function MediaSection({formResetClicked, colors,errors,setFormData}){
-    const prevColorsRef = useRef(colors);
-    const [selectedColors, setSelectedColors] = useState([]);
-
-    const [images, setImages] = useState([]); 
-    const [thumbnail, setThumbnail] = useState({color:'' , image:{file:'',url:''}});
+export default function MediaSection({formResetClicked, formData,errors,setFormData}){
+    const prevColorsRef = useRef(formData.colors);
 
     useEffect(()=>{
         if (formResetClicked){
             prevColorsRef.current=[]
-            setImages([]);
-            setThumbnail({color:'' , image:{file:'',url:''}});
-            setSelectedColors([]);
         }
     },[formResetClicked])
-
-    useEffect(()=>{
-        setFormData((prev) => ({
-            ...prev,
-            thumbnail_data:thumbnail,
-        }))
-    },[thumbnail])
     
     useEffect(()=>{
-        setFormData((prev) => ({
-            ...prev,
-            images_data:images,
-        }))
-    },[images])
-
-    useEffect(()=>{
-        if (colors.length){
-            setThumbnail({...thumbnail, color:colors[0]})
+        if (formData.images_data.length == 0){
+            let inputId = `${Date.now()}`;
+            let color = formData.colors[0];
+            
+            setFormData(prev => ({
+                ...prev,
+                images_data : [{id:inputId,color:color, images:[]}]
+            }))
         }
-        else {
-            setThumbnail({...thumbnail, color:""})
-        }
-    },[colors])
-
-    useEffect(()=>{
-        handleAddColoredImageInput();
     },[])
 
     useEffect(()=>{
-        handleColorChanges();
-        prevColorsRef.current = colors;
-    },[colors])
+        setFormData(prev => ({
+            ...prev,
+            thumbnail_data :{
+                ...prev.thumbnail_data,
+                color:prev.colors[0] || ""
+            }
+        }))
+    },[JSON.stringify(formData.colors)])
 
+    useEffect(()=>{
+        handleColorChanges();
+        prevColorsRef.current = formData.colors;
+    },[JSON.stringify(formData.colors)])
 
     function handleColorChanges() {
-        const newColor = findAddedElement(prevColorsRef.current, colors);
+        // if a new color is added, assign it to an images group without a color
+        const newColor = findAddedElement(prevColorsRef.current, formData.colors);
         if (newColor) {
-            const addedColor = images.find(imageInput => !imageInput.color);
-            if (addedColor) {
-                assignColorToColoredImageInput(newColor, addedColor.id);
+            const colorlessInput = formData.images_data.find(imageInput => !imageInput.color);
+            if (colorlessInput) {
+                assignColorToColoredImageInput(newColor, colorlessInput.id);
                 return;
             }
         }
       
-        const deletedColor = findDeletedElement(prevColorsRef.current, colors);
+        // if a color is deleted, unassign it from the images group using it
+        const deletedColor = findDeletedElement(prevColorsRef.current, formData.colors);
         if (deletedColor) {
             unassignColorFromColoredImageInput(deletedColor);
             return; 
         }
       
-        const editedColors = findEditedElements(prevColorsRef.current, colors);
+        // if a color is changed, update the color of the images group using it.
+        const editedColors = findEditedElements(prevColorsRef.current, formData.colors);
         if (editedColors) {
             const [oldColor, newColor] = editedColors;
-            const imageInputWithOldColor = images.find(imageInput => imageInput.color === oldColor);
+            const imageInputWithOldColor = formData.images_data.find(imageInput => imageInput.color === oldColor);
             if (imageInputWithOldColor) {
                 unassignColorFromColoredImageInput(oldColor);
                 assignColorToColoredImageInput(newColor, imageInputWithOldColor.id);
@@ -197,19 +189,20 @@ export default function MediaSection({formResetClicked, colors,errors,setFormDat
     }
 
     function handleThumbnailColorInputChange(e){
-        setThumbnail({...thumbnail,color:e.currentTarget.value})
+        setFormData(prev =>({
+            ...prev, 
+            thumbnail_data : {...prev.thumbnail_data, color :e.target.value}
+        }))
     }
 
     function handleColoredImagesColorInputChange(e,inputId){
         let color = e.currentTarget.value;
-        let newSelectColors = [...selectedColors].filter((_color => _color[0] != color && _color[1] !=inputId));
-
-        setSelectedColors([...newSelectColors,[color,inputId]]);
-        setImages([...images].map((imageInput)=>{
-            if (imageInput.id === inputId){
-                imageInput.color = color;
-            }
-            return imageInput;
+        setFormData(prev => ({
+            ...prev,
+            images_data : prev.images_data.map(imageInput => {
+                if (imageInput.id === inputId) imageInput.color = color;
+                return imageInput;
+            })
         }))
     }
     
@@ -219,7 +212,10 @@ export default function MediaSection({formResetClicked, colors,errors,setFormDat
             url:URL.createObjectURL(e.currentTarget.files[0]), 
         };
 
-        setThumbnail({...thumbnail, image:newImage});
+        setFormData(prev =>({
+            ...prev, 
+            thumbnail_data : {...prev.thumbnail_data, image:newImage}
+        }))
     }
 
     function handleUploadColoredImage(e, id) {
@@ -230,94 +226,140 @@ export default function MediaSection({formResetClicked, colors,errors,setFormDat
         if (isImageAlreadyUploaded(newImageFile.name, newImageFile.size)) return;
     
         // Add the new image to the appropriate image object
-        const updatedImages = images.map(obj => {
-            if (obj.id === id) {
-                obj.images = [...obj.images, { file: newImageFile, url: newImageUrl }];
-            }
+        const updatedImages = formData.images_data.map(obj => {
+            if (obj.id === id) 
+            obj.images = [...obj.images, { file: newImageFile, url: newImageUrl }];
+            
             return obj;
         });
-    
-        setImages(updatedImages);
+        
+        setFormData(prev => ({...prev, images_data : updatedImages}));
     }
     
     function isImageAlreadyUploaded(fileName, fileSize) {
-        for (const obj of images) {
+        for (const obj of formData.images_data) {
             for (const image of obj.images) {
-                if (image.file.name === fileName && image.file.size === fileSize) {
-                    return true;
-                }
+                if (image.file.name === fileName 
+                && image.file.size === fileSize) return true;
             }
         }
         return false;
     }
     
     function handleDeleteColoredImage(e,id,url){  
-        setImages(images.map((obj)=>{
-            if (id === obj.id)
-            obj.images = obj.images.filter((image)=>(image.url != url));
-            return obj;
+        setFormData(prev => ({
+            ...prev,
+            images_data : prev.images_data.map(imageInput => {
+                if (imageInput.id === id) 
+                imageInput.images = imageInput.images.filter((image)=>(image.url != url));
+                return imageInput;
+            })
         }))
     }
     
     function handleAddColoredImageInput(){
         let inputId = `${Date.now()}`;
-        let selectedColor = '';
-        for (let color of colors){
+        for (let color of formData.colors){
             if (isColorAvailableForInput(color,inputId)){
-                selectedColor = color;
-                setSelectedColors([...selectedColors,[color,inputId]]);
-                break;
+                setFormData(prev => ({
+                    ...prev,
+                    images_data : [...prev.images_data,{id:inputId,color:color, images:[]}]
+                }))
+                return true;
             }
         }
-
-        setImages([...images,{id:inputId,color:selectedColor, images:[]}]);
+        return false;
     }
 
     function handleDeleteColoredImageInput(id){
-        setImages(images.filter(image=>{
-            if (image.id === id){
-                unassignColorFromColoredImageInput(image.color);
-            }
-            return image.id != id
-        }))
+        let images_data = [...formData.images_data].filter(input => {
+            if (input.id === id) unassignColorFromColoredImageInput(input.color);
+            return input.id != id
+        });
         
+        setFormData(prev => ({
+            ...prev,
+            images_data :images_data
+        }))
     }
 
-    function assignColorToColoredImageInput(color,inputId){
-        if (!isColorAvailableForInput(color, inputId)) return false;
+    function assignColorToColoredImageInput(color,inputID){
+        if (!isColorAvailableForInput(color, inputID)) return false;
 
-        setImages(images.map((imageInput)=>{
-            if (imageInput.id === inputId){
-                imageInput.color = color;
-                setSelectedColors([...selectedColors,[color,inputId]]);
-            }
-            return imageInput;
+        setFormData(prev => ({
+            ...prev,
+            images_data : prev.images_data.map(imageInput => {
+                if (imageInput.id === inputID) {
+                    imageInput.color = color;
+                }
+                return imageInput;
+            })
         }))
- 
+        
         return true;
     }
 
     function unassignColorFromColoredImageInput(color){
         let isColorUnassigned = false;
 
-        let updatedSelectedColors = selectedColors;
-        const updatedImages = images.map((imageInput) => {
+        const updatedImages = formData.images_data.map(imageInput => {
             if (imageInput.color == color && !isColorUnassigned){
                 isColorUnassigned = true;
                 imageInput.color = "";
-                updatedSelectedColors = updatedSelectedColors.filter((_color) => _color[0] != color && _color[1] != imageInput.id);
             }
             return imageInput;
         })
 
-        setImages(updatedImages);
-        setSelectedColors(updatedSelectedColors);
+        setFormData(prev => ({
+            ...prev ,
+            images_data : updatedImages
+        }));
+
         return isColorUnassigned;
     }
 
+
+    function getSelectedColors(){
+        let selected = [];
+        formData.colors.forEach(color => {
+            formData.images_data.forEach(input =>{
+                if (color == input.color)
+                selected.push([color, input.id])
+            })
+        })
+    
+        return selected;
+    }
+
     function isColorAvailableForInput(color, inputId){
-        return (selectedColors.length == 0 || !selectedColors.some(_color => (_color[0] == color && !(_color[0] == color && _color[1] == inputId))))
+        let selected = getSelectedColors();
+        let available = (selected.length == 0 || !selected.some(_color => (
+            _color[0] == color && _color[1] != inputId
+        )))
+
+        return available;
     }  
+
+    function isSubStringKeyInErrors(substring){
+        if (!errors?.messages) return false;
+        for (const key in errors.messages) {
+            if (key.startsWith(substring)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function showErrorMessagesOfSubStrings(substring){
+        if (!errors?.messages) return [];
+        let messages = [];
+        for (const key in errors.messages) {
+            if (key.startsWith(substring)) {
+                messages.push(errors.messages[key]);
+            }
+        }
+        return messages;
+    }
 
     return(
         <FormDefaultSection title={"Media"}>
@@ -326,15 +368,15 @@ export default function MediaSection({formResetClicked, colors,errors,setFormDat
                 errors={errors?.messages['thumbnail_data.color']}
                 id={'thumbnail_color'}
                 onChange={handleThumbnailColorInputChange}
-                colors={colors}
+                colors={formData.colors}
                 XClick={null}
-                selectedColor={thumbnail.color}
+                selectedColor={formData.thumbnail_data.color}
                 optionCondition={color=>(true)}
                 />
                 <ThumbnailFieldContainer $color={errors?.messages['thumbnail_data.image'] ? "red" : "var(--main-color)"} htmlFor="product_thumbnail">
                     <PlusIcon $color={errors?.messages['thumbnail_data.image'] ? "red" : "var(--main-color)"}  className="fa-solid fa-plus" />
-                    {thumbnail.image.url &&
-                    <ThumbnailImage src={thumbnail.image.url} />}
+                    {formData.thumbnail_data.image.url &&
+                    <ThumbnailImage src={formData.thumbnail_data.image.url} />}
                     <input accept=".jpg,.jpeg,.png" 
                     onChange={handleThumbnailImageInputChange} 
                     id="product_thumbnail" type="file" 
@@ -342,38 +384,44 @@ export default function MediaSection({formResetClicked, colors,errors,setFormDat
                 </ThumbnailFieldContainer>
             </Input>
             <Input style={{gap:'2rem'}} label={"product_images"} subtitle={IMAGES_SUBTITLE} title={renderTitle('Product Images')}>
-                {images && images.map((imageColorObj,index)=>{ 
+                {formData.images_data && formData.images_data.map((imageColorObj,index)=>{ 
                     return(
                     <ImageColorContainer key={imageColorObj.id}>
                         <ColorSelector
                         errors={errors?.messages[`images_data.${index}.color`]} 
                         id={"images_color"+imageColorObj.id}
                         onChange={(e)=>handleColoredImagesColorInputChange(e,imageColorObj.id)}
-                        colors={colors}
+                        colors={formData.colors}
                         selectedColor={imageColorObj.color}
                         XClick={e=>handleDeleteColoredImageInput(imageColorObj.id)}
                         optionCondition={color => isColorAvailableForInput(color,imageColorObj.id)}
                         />
                         <ImagesAndFieldContainer>
                             <ImageFieldContainer>
-                                <PlusIcon $color={errors?.messages[`images_data.${index}.image`] ? "red" : "#A8AAAE"} className="fa-solid fa-plus" />
-                                <ImageField $color={errors?.messages[`images_data.${index}.image`] ? "red" : "#A8AAAE"} htmlFor={"product_image" + imageColorObj.id}/>
+                                <PlusIcon $color={isSubStringKeyInErrors(`images_data.${index}.images`)? "red" : "#A8AAAE"} className="fa-solid fa-plus" />
+                                <ImageField $color={isSubStringKeyInErrors(`images_data.${index}.images`)? "red" : "#A8AAAE"} htmlFor={"product_image" + imageColorObj.id}/>
                                 <input accept=".jpg,.jpeg,.png" 
                                 onChange={(e)=> handleUploadColoredImage(e,imageColorObj.id)} 
                                 id={"product_image" + imageColorObj.id} type="file" 
                                 style={{visibility:'hidden',width:'.2px'}}/>
-                                {errors?.messages[`images_data.${index}.image`] && <ErrorMessage>{errors?.messages[`images_data.${index}.images`]}</ErrorMessage>}
                             </ImageFieldContainer>
-                            {imageColorObj.images.map((image)=>(
-                                <ImageContainer onClick={(e)=>handleDeleteColoredImage(e,imageColorObj.id,image.url)} key={image.url}>
+                            {imageColorObj.images.map((image,_index)=>(
+                                <ImageContainer $color={errors?.messages[`images_data.${index}.images.${_index}`] ? "red" : "#A8AAAE"} onClick={(e)=>handleDeleteColoredImage(e,imageColorObj.id,image.url)} key={image.url}>
                                     <Image src={image.url} />
                                 </ImageContainer>
                             ))}
                         </ImagesAndFieldContainer>
+                        {isSubStringKeyInErrors(`images_data.${index}.images`) && (
+                            <div style={{display:"flex", flexDirection:"column", gap:".25rem"}}>
+                                {showErrorMessagesOfSubStrings(`images_data.${index}.images`).map((message,index)=>(
+                                    <ErrorMessage key={index}>{message}</ErrorMessage>
+                                ))}
+                            </div>
+                        )}
                     </ImageColorContainer>
                 )})}
-                <AddImageButton disabled={images.length >= colors.length? true :false} onClick={handleAddColoredImageInput}>
-                    {images.length >= colors.length?
+                <AddImageButton type="button" disabled={formData.images_data.length >= formData.colors.length} onClick={handleAddColoredImageInput}>
+                    {formData.images_data.length >= formData.colors.length?
                         'No colors available': 'Add color and images'}
                 </AddImageButton>
             </Input>

@@ -49,16 +49,14 @@ background-color: var(--secondary-color);
 const TYPE_SUBTITLE= "a hint to classify the product example 'long sleeves shirt'";
 const TAGS_SUBTITLE = "tags help us categories your product";
 
-export default function ClassificationSection({formResetClicked, errors}){
+export default function ClassificationSection({formResetClicked, errors, setFormData, formData}){
     const tagsInputFieldRef = useRef();
+    
     const [isInputFocused, setInputFocused] = useState(false);
-
-    const [tags,setTags] = useState(['shoes','sport']);
     const [tagsInputValue, setTagsInputValue] = useState("");
 
     useEffect(()=>{
         if (formResetClicked){
-            setTags(['shoes','sport']);
             setTagsInputValue("");
         }
     },[formResetClicked])
@@ -69,7 +67,7 @@ export default function ClassificationSection({formResetClicked, errors}){
     }
 
     function handleTagClick(tag){
-        setTags(tags.filter((t)=> t != tag));
+        setFormData(prev => ({...prev, tags : prev.tags.filter((t)=> t != tag)}));
     }
 
     function handleTagsInputChange(e){
@@ -78,10 +76,10 @@ export default function ClassificationSection({formResetClicked, errors}){
     }
 
     function handleAddTag(tag){
-        if (tags.includes(tag)) return 
+        if (formData.tags.includes(tag)) return 
         if (!tag) return 
 
-        setTags([...tags, tag]);
+        setFormData(prev => ({...prev, tags : [...prev.tags, tag]}));
     }
 
     function handleTagsInputBlur(e){
@@ -97,27 +95,36 @@ export default function ClassificationSection({formResetClicked, errors}){
             setTagsInputValue("");
         }
     }
+
+    function handleInputValueChange(e,name){
+        setFormData((prev) => ({...prev, [name] : e.target.value}));
+    }
+
     
     return (
         <FormDefaultSection title={'Classification'}>
             <Input label={"type"} title={"Type"} subtitle={TYPE_SUBTITLE} errors={errors?.messages['type']}>
-                <TextInputField $error={errors?.messages['type']}  name="type" id="type" type="text" placeholder="product type"/>
+                <TextInputField value={formData.type} onChange={e=>handleInputValueChange(e,'type')} $error={errors?.messages['type']} id="type" type="text" placeholder="product type"/>
             </Input>
 
-            <CategoryInput errors={errors}/>
+            <CategoryInput formData={formData} setFormData={setFormData} errors={errors}/>
 
             <Input label={"tags"} title={"Tags"} subtitle={TAGS_SUBTITLE} errors={errors?.messages['tags']}>
                 <TagsInputContainer $error={errors?.messages['tags']}  $isFocused={isInputFocused} onClick={handleTagsInputContainerClick}>
-                    {tags && tags.map((tag)=>(
+                    {formData.tags && formData.tags.map((tag)=>(
                         <TagContainer key={tag}>
                             <Tag onClick={(e)=>handleTagClick(tag)}>
                                 <p>{tag}</p>
                                 <i style={{color:"#8D8E92"}} className="fa-solid fa-xmark" />
-                                <input type="hidden" name="tags[]" value={tag} />
                             </Tag>
                         </TagContainer>
                     ))}
-                    <TagInput onChange={handleTagsInputChange} value={tagsInputValue} onBlur={handleTagsInputBlur} onKeyDown={handleKeyDown} ref={tagsInputFieldRef}/>
+                    <TagInput 
+                    value={tagsInputValue} 
+                    ref={tagsInputFieldRef}
+                    onChange={handleTagsInputChange} 
+                    onBlur={handleTagsInputBlur} 
+                    onKeyDown={handleKeyDown}/>
                 </TagsInputContainer>
             </Input>
         </FormDefaultSection>

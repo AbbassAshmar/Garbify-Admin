@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useState,useEffect } from 'react';
 import PlusSign from '../../../../../../components/PlusSignCircle/plus-sign-circle';
 
-export default function ColorsInput({formResetClicked, errors, colors,setColors}){
+export default function ColorsInput({formResetClicked, errors,formData, setFormData}){
     const [sameColorError,setSameColorError] = useState();
     const [colorInputValue, setColorInputValue] = useState();
 
@@ -10,41 +10,50 @@ export default function ColorsInput({formResetClicked, errors, colors,setColors}
         if (formResetClicked){
             setSameColorError("");
             setColorInputValue("");
-            setColors([]);
         }
     },[formResetClicked])
 
-    function handleDeleteColor(color){
-        setColors(colors.filter((_color) => _color !== color));
-    }
-
     useEffect(()=>{
-        if (colors.length !== new Set(colors).size){
+        if (formData.colors.length !== new Set(formData.colors).size){
             setSameColorError("Same colors are not allowed.");
         }else{
             setSameColorError('');
         }
-    },[colors])
+    },[formData?.colors])
+
+    function handleDeleteColor(color){
+        setFormData((prev) => ({...prev, colors : prev.colors.filter((_color) => _color !== color)}));
+    }
     
     function handleColorChange(e){
         setColorInputValue(e.currentTarget.value)
     }
 
     function handleColorBlur(e,i){
-        let newColors = [...colors];
+        if (!colorInputValue) return;
+
         let newColor = colorInputValue;
+        let newColors = [...formData.colors];
+
+        if (newColors.some(color => color === newColor)){
+            setSameColorError("Same colors are not allowed.");
+            return;
+        }
 
         newColors[i] = newColor;
-        setColors(newColors)
+        setFormData(prev => ({...prev, colors : newColors}));
+        setColorInputValue('');
     }
 
     function handleColorPlusClick(e){
         let randomColor;
+        let currentColors = [...formData.colors];
+
         do {
-            randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
-        } while (colors.some(color => color.color === randomColor));
+            randomColor = randomColor = "#ffffff".replace(/f/g,() => (~~(Math.random()*16)).toString(16));
+        } while (currentColors.some(color => color === randomColor));
     
-        setColors(prevColors => [...prevColors,randomColor]);
+        setFormData(prev => ({...prev, colors : [...prev.colors, randomColor]}));
     }
 
 
@@ -52,8 +61,8 @@ export default function ColorsInput({formResetClicked, errors, colors,setColors}
         <InputContainer>
             <InputTitle>Colors</InputTitle>
             <ColorsContainer $error={errors?.messages['colors']}>
-                {colors.map((color,i)=>(
-                    <ColorContainer key={color}>
+                {formData.colors.map((color,i)=>(
+                    <ColorContainer key={`${color}${i}`}>
                         <XIconContainer onClick={()=>handleDeleteColor(color)}>
                             <XIcon className="fa-solid fa-xmark" />
                         </XIconContainer>
@@ -62,7 +71,7 @@ export default function ColorsInput({formResetClicked, errors, colors,setColors}
                             onBlur={(e)=>handleColorBlur(e,i)}
                             onChange={handleColorChange}
                             value={color} 
-                            name="colors[]" type="color"/>    
+                            type="color"/>    
                         </ColorsInputFieldContainer>
                     </ColorContainer>
                 ))}

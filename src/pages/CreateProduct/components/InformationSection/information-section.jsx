@@ -37,20 +37,24 @@ transition: border .3s;
 }
 `
 
-export default function InformationSection({errors,formData}){
+export default function InformationSection({errors,formData, setFormData}){
+    function handleInputValueChange(e,name){
+        setFormData((prev) => ({...prev, [name] : e.target.value}));
+    }
+
     return (
         <FormDefaultSection title={'Product Information'}>
             <Input label={"category_name_input"} title={"Product name"} errors={errors?.messages['name']}>
-                <TextInputField $error={errors?.messages['name']} name="name" id="category_name_input" type="text" placeholder="name"/>
+                <TextInputField value={formData.name} onChange={e=>handleInputValueChange(e,'name')} $error={errors?.messages['name']} id="category_name_input" type="text" placeholder="name"/>
             </Input>
             <Input label={"product_description_input"} title={"Description"} errors={errors?.messages['description']}>
-                <TextAreaField $error={errors?.messages['description']} name="description" id="product_description_input" placeholder="describe your product"/>
+                <TextAreaField value={formData.description} onChange={e=>handleInputValueChange(e,'description')} $error={errors?.messages['description']} id="product_description_input" placeholder="describe your product"/>
             </Input>
             <Input label={"product_quantity_input"} title={"Quantity"} errors={errors?.messages['quantity']}>
-                <TextInputField $error={errors?.messages['quantity']} name="quantity" id="product_quantity_input" type="number" min="0" placeholder="0"/>
+                <TextInputField value={formData.quantity} onChange={e=>handleInputValueChange(e,'quantity')} $error={errors?.messages['quantity']} id="product_quantity_input" type="number" min="0" placeholder="0"/>
             </Input>
             <Input label={"product_status_input"} title={"Status"} errors={errors?.messages['status']}>
-                <SelectField name="status" id="product_status_input">
+                <SelectField value={formData.status} onChange={e=>handleInputValueChange(e,'status')} id="product_status_input">
                     <option value="in stock">in stock</option>
                     <option value="out of stock">out of stock</option>
                 </SelectField>

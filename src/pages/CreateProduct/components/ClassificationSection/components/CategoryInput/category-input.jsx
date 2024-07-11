@@ -31,13 +31,11 @@ border:none;
     background-color: #d8dbe0;
 }
 `
-export default function CategoryInput({errors}){
+export default function CategoryInput({errors, formData, setFormData}){
     const [categories] = useGetCategories("nested");
     const [history, setHistory] = useState([]);
 
 	const [currentCategory,setCurrentCategory] = useState({name:"categories", id : -1, children: []});
-    const [selectedCategory, setSelectedCategory] = useState("");
-
     const [currentPath, setCurrentPath] = useState(["categories"]);
     const [selectedCategoryPath, setSelectedCategoryPath] = useState("");
 
@@ -52,7 +50,7 @@ export default function CategoryInput({errors}){
     }
 
     function selectCategory(category){
-        setSelectedCategory(category.id);
+        setFormData(prev => ({...prev, category_id : category.id}));
         setSelectedCategoryPath([...currentPath, category.display_name]);
     }
 
@@ -94,8 +92,8 @@ export default function CategoryInput({errors}){
                             <SubcategoriesCount>({category.children.length} subcategories)</SubcategoriesCount>
                         </div>
                         <div style={{display:'flex',gap:'.25rem', alignItems:"center"}}>
-                            <CheckBox onClick={()=>selectCategory(category)} $checked={category.id == selectedCategory}>
-                                {category.id == selectedCategory && <i style={{fontSize:"14px", color:'var(--main-color)'}} className="fa-solid fa-check" />}
+                            <CheckBox onClick={()=>selectCategory(category)} $checked={category.id == formData.category_id}>
+                                {category.id == formData.category_id && <i style={{fontSize:"14px", color:'var(--main-color)'}} className="fa-solid fa-check" />}
                             </CheckBox>
                             {category.children.length > 0 &&(
                                 <AngleBox onClick={()=>updateCurrentCategory(category)}>
@@ -105,7 +103,6 @@ export default function CategoryInput({errors}){
                         </div>
                     </CategoryContainerNoHover>
                 ))}      
-                <input name="category_id" type="hidden" value={selectedCategory} style={{width:'.2px', position:"absolute"}} />
             </CategoriesPickerContainer>
             <SelectedPathContainer>
                 <p>Selected Category</p>

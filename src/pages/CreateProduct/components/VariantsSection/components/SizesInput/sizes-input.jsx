@@ -53,47 +53,27 @@ background-color: var(--secondary-color);
 `
 
 
-export default function SizesInput({formResetClicked, errors,setFormData}){
-    const [sizeInputValue,setSizeInputValue] = useState("");
-    
-    const [sizesUnit,setSizesUnit] = useState('');
-    const [sizes,setSizes] = useState([])
-
+export default function SizesInput({formResetClicked, errors,setFormData, formData}){
+    const [sizeInputValue,setSizeInputValue] = useState("");    
     const [tableHeadings, setTableHeadings] = useState(['']);
-    const [sizesData,setSizesData] = useState([])  
-
+  
     useEffect(()=>{
         if (formResetClicked){
-            setSizesData([]);
             setTableHeadings(['']);
-            setSizesUnit('');
-            setSizes([])
             setSizeInputValue('');
         }
     },[formResetClicked])
-   
-    useEffect(()=>{
-        setFormData((prev) => ({
-            ...prev,
-            sizes_data:sizesData,
-        }))
-    }, [sizesData])
-
-    useEffect(()=>{
-        setSizesData(sizesData.map(size=>{
-            size.measurement_unit = sizesUnit;
-            return size;
-        }))
-    }, [sizesUnit])
-
 
     function handleSizesUnitInputChange(e){
-        setSizesUnit(e.currentTarget.value)
+        setFormData(prev => ({...prev, sizes_measurement_unit : e.target.value}))
     }
 
     function handleDeleteSize(size){
-        setSizes(sizes.filter((_size)=> _size !== size));
-        setSizesData(sizesData.filter((_size)=> _size.value != size));
+        setFormData(prev => ({
+            ...prev, 
+            sizes : prev.sizes.filter(_size => _size !== size),
+            sizes_data : prev.sizes_data.filter(_size => _size.value != size)
+        }))
     }
 
     function handleSizeClick(size){
@@ -103,17 +83,20 @@ export default function SizesInput({formResetClicked, errors,setFormData}){
     function handleAddSize(size){
         size = size.trim();
         if (!size) return;
-        if (sizes.includes(size)) return;
+        if (formData.sizes.includes(size)) return;
 
-        setSizes([...sizes,size])
-        setSizesData([...sizesData,{
-            value:size,
-            measurement_unit:sizesUnit,
-            attributes : tableHeadings.map((head)=>({
-                value:'',
-                measurement_unit:head
-            }))
-        }])
+        setFormData(prev => ({
+            ...prev, 
+            sizes : [...prev.sizes, size],
+            sizes_data: [...prev.sizes_data,{
+                value:size,
+                measurement_unit:prev.sizes_measurement_unit,
+                attributes : tableHeadings.map((head)=>({
+                    value:'',
+                    measurement_unit:head
+                }))
+            }
+        ]}))
     }
 
     function handleKeyDown(e){
@@ -143,7 +126,7 @@ export default function SizesInput({formResetClicked, errors,setFormData}){
     return(
         <>
             <Input label={"sizes_measurement_unit"} title={'Sizes measurement unit'} errors={errors?.messages['sizes_measurement_unit']}>
-                <TextInputField $error={errors?.messages['sizes_measurement_unit']} onKeyDown={handleSizesUnitInputKeyDown} onChange={handleSizesUnitInputChange} value={sizesUnit} name="sizes_measurement_unit" id="sizes_measurement_unit" type='text' placeholder="ex. inches" />   
+                <TextInputField $error={errors?.messages['sizes_measurement_unit']} onKeyDown={handleSizesUnitInputKeyDown} onChange={handleSizesUnitInputChange} value={formData.sizes_measurement_unit} id="sizes_measurement_unit" type='text' placeholder="ex. inches" />   
             </Input>
 
             <Input label={"sizes"} title={'Sizes'} errors={errors?.messages['sizes']}>
@@ -153,7 +136,7 @@ export default function SizesInput({formResetClicked, errors,setFormData}){
                         <AddSizeButton type="button" onClick={handleAddSizeButtonClick}>Add</AddSizeButton>
                     </div>
                     <SizesListContainer>
-                        {sizes && sizes.map((size)=>(
+                        {formData.sizes && formData.sizes.map(size => (
                             <Size key={size} onClick={(e)=>handleSizeClick(size)}>
                                 <p>{size}</p>
                                 <i style={{color:"#8D8E92"}} className="fa-solid fa-xmark" />
@@ -164,7 +147,7 @@ export default function SizesInput({formResetClicked, errors,setFormData}){
                 </SizesInputContainer>  
             </Input>
 
-            <SizesTable formResetClicked={formResetClicked} mainMeasurementUnit={sizesUnit} tableSizes={sizes} setTableHeadings={setTableHeadings} tableHeadings={tableHeadings} sizesData={sizesData} setSizesData={setSizesData}/>
+            <SizesTable formData={formData} setFormData={setFormData} formResetClicked={formResetClicked} setTableHeadings={setTableHeadings} tableHeadings={tableHeadings}/>
         </>
     )
 }

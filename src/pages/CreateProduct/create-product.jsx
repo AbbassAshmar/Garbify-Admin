@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import InformationSection from "./components/InformationSection/information-section";
 import PricingSection from "./components/PricingSection/pricing-section";
@@ -6,6 +6,9 @@ import VariantsSection from "./components/VariantsSection/variants-section";
 import ClassificationSection from "./components/ClassificationSection/classification-section";
 import MediaSection from "./components/MediaSection/media-section";
 import ResourceCreationWrapper from "../components/ResourceCreationWrapper/resource-creation-wrapper";
+import { useParams } from "react-router-dom";
+import useSendRequest from "../../hooks/use-send-request";
+import useUserState from "../../hooks/use-user-state";
 
 const Content = styled.main`
 display: flex;
@@ -24,11 +27,88 @@ gap:2rem;
 `
 
 export default function CreateProduct(){
-    const [formData, setFormData] = useState();
-    const [colors, setColors] = useState(["#000000"])
+    const {id} = useParams();
+
+    const userState = useUserState();
+    const {sendRequest, serverError} = useSendRequest(userState);
 
     const [formResetClicked, setFormResetClicked] = useState(false);
     const [inputErrors,setInputErrors] = useState({fields : [] , messages : {}});
+
+    const [formData, setFormData] = useState({
+        name : '',
+        description : '',
+        quantity  : '',
+        status : 'in stock',
+        original_price : '',
+        selling_price : '',
+        sale : 0,
+        sale_quantity : '',
+        sale_start_date : '',
+        sale_end_date : '',
+        discount_percentage :'',
+        colors : ['#000000'],
+        type : '',
+        tags : ['shoes','sport'],
+        category_id : '',
+        sizes_data : [],
+        sizes_measurement_unit : '',
+        sizes : [],
+        thumbnail_data : {color : '#000000', image:{file:'',url:''}},
+        images_data : []
+    });
+
+    
+    async function fetchProductForEdit(){
+        const URL = `${process.env}/api/products/${id}`;
+        const {request,response} = await sendRequest(URL);
+
+        if (request?.status == 200){
+            let product = response.data.product;
+            let data = {
+                name : product.name,
+                type : product.type,
+                description : product.description,
+                quantity  : product.quantity,
+                status : product.status,
+                original_price : product.original_price,
+                selling_price : product.selling_price,
+                category_id : product.category.id,
+                images_data : [],
+            };
+            if (product.sale){
+                let sale = {
+                    sale : 1,
+                    sale_quantity : product.sale.quantity,
+                    sale_start_date : product.sale.starts_at,
+                    sale_end_date : product.sale.ends_at,
+                    discount_percentage : product.sale.sale_percentage
+                }
+                data = {...data , sale};
+            }     
+
+            data.colors = product.colors.map(color => color.name);
+            data.sizes = product.sizes.map(size => size.size);
+            data.sizes_data = product.sizes;
+
+            data.measurement_unit = product.sizes[0].unit;
+            data.thumbnail_data ={
+                color : product.thumbnail.color.color, 
+                image : {file :'',url : product.thumbnail.image_url}
+            }
+
+            for (const color in product.images){
+                data.images_data.push({
+                    id : Date.now() , 
+                    color : color, 
+                    images : product.images.map(image => ({
+                        file : "", url : image.image_url
+                    }))
+                })
+            }
+
+        }
+    }
 
     function handleData(formEvent){
         let formObject = new FormData(formEvent.currentTarget);
@@ -84,6 +164,33 @@ export default function CreateProduct(){
         return formObject;
     }
 
+    useEffect(()=>{
+        if (formResetClicked){
+            setFormData({
+                name : '',
+                description : '',
+                quantity  : '',
+                status : 'in stock',
+                original_price : '',
+                selling_price : '',
+                sale : 0,
+                sale_quantity : '',
+                sale_start_date : '',
+                sale_end_date : '',
+                discount_percentage :'',
+                colors : ['#000000'],
+                type : '',
+                tags : ['shoes','sport'],
+                category_id : '',
+                sizes_data : [],
+                sizes_measurement_unit : '',
+                sizes : [],
+                thumbnail_data : {color : '#000000' , image:{file:'',url:''}},
+                images_data : []
+            })
+        }
+    },[formResetClicked])
+
     return(
         <ResourceCreationWrapper 
         setInputErrors={setInputErrors}
@@ -94,14 +201,14 @@ export default function CreateProduct(){
         handleData={handleData}>
             <Content>
                 <InformationPricingContainer>
-                    <InformationSection errors={inputErrors} />
-                    <PricingSection errors={inputErrors} formResetClicked={formResetClicked}/>
+                    <InformationSection errors={inputErrors} formData={formData} setFormData={setFormData}/>
+                    <PricingSection errors={inputErrors} formData={formData} setFormData={setFormData}/>
                 </InformationPricingContainer>
                 <VariantsClassificationContainer>
-                    <VariantsSection errors={inputErrors} formResetClicked={formResetClicked} setFormData={setFormData} colors={colors} setColors={setColors} />
-                    <ClassificationSection errors={inputErrors} formResetClicked={formResetClicked}/>
+                    <VariantsSection errors={inputErrors} formResetClicked={formResetClicked} formData={formData} setFormData={setFormData}/>
+                    <ClassificationSection errors={inputErrors} formResetClicked={formResetClicked} formData={formData} setFormData={setFormData}/>
                 </VariantsClassificationContainer>
-                <MediaSection errors={inputErrors} formResetClicked={formResetClicked} setFormData={setFormData} colors={colors}/>
+                <MediaSection errors={inputErrors} formResetClicked={formResetClicked} formData={formData} setFormData={setFormData}/>
             </Content>
         </ResourceCreationWrapper>    
     )

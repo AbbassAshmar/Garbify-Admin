@@ -3,11 +3,7 @@ import { useEffect, useState } from "react";
 import MinusSignCircle from "../../../../../../../../components/MinusSignCircle/minus-sign-circle";
 import PlusSignCircle from "../../../../../../../../components/PlusSignCircle/plus-sign-circle";
 
-// tableHeadings array ex : ['weight', 'chest']
-// tableSizes array ex : ['small', 'medium','large']
-// sizesData is sent to the backend (list of tableSizes objects)
-
-export default function SizesTable({formResetClicked, mainMeasurementUnit,tableSizes,sizesData,setSizesData,tableHeadings,setTableHeadings}){
+export default function SizesTable({formResetClicked,tableHeadings,setTableHeadings, formData, setFormData}){
     const [isInputFocused, setInputFocused] = useState('');
     const [showTable,setShowTable] = useState(false);
     const [buttonError,setButtonError] = useState('');
@@ -20,23 +16,24 @@ export default function SizesTable({formResetClicked, mainMeasurementUnit,tableS
     },[formResetClicked])
 
     useEffect(()=>{
-        if (!tableSizes.length) 
+        if (!formData.sizes.length) 
         setShowTable(false);
-    },[tableSizes])
+    },[formData.sizes])
 
     useEffect(()=>{
         if (!showTable){
             setTimeout(()=>{
                 setTableHeadings(['']);
-                setSizesData(sizesData.map((size)=>(
-                    {
+                setFormData(prev => ({
+                    ...prev, 
+                    sizes_data : prev.sizes_data.map(size => ({
                         ...size,
                         attributes : [{
                             value:'',
                             measurement_unit:''
                         }]
-                    }
-                )))
+                    }))
+                }))
             },300);
         }
     },[showTable])
@@ -50,37 +47,34 @@ export default function SizesTable({formResetClicked, mainMeasurementUnit,tableS
     };
     
     function handlePlusSignClick(){
-        setSizesData(sizesData.map((size)=>(
-            {
+        setTableHeadings([...tableHeadings,""])
+        setFormData(prev => ({
+            ...prev, 
+            sizes_data : prev.sizes_data.map(size => ({
                 ...size,
                 attributes : [
                     ...size.attributes,
-                    {
-                        value:'',
-                        measurement_unit : '',
-                    }
+                    {value : '' , measurement_unit : ''}
                 ]
-            }
-        )))
-
-        setTableHeadings([...tableHeadings,""])
+            }))
+        }))
     }
 
     function handleMinusSignClick(){
         if (tableHeadings.length == 1) return;
         setTableHeadings(tableHeadings.slice(0, -1));
 
-        const updatedSizesData = sizesData.map((size) => {
+        const updatedSizesData = formData.sizes_data.map((size) => {
             const newSize = { ...size };
             newSize.attributes = newSize.attributes.slice(0, -1);
             return newSize;
         });
-        
-        setSizesData(updatedSizesData);
+
+        setFormData(prev => ({...prev, sizes_data : updatedSizesData}));
     }
 
     function handleSizesTableButtonClick(){
-        if (!mainMeasurementUnit || !tableSizes.length) {
+        if (!formData.sizes_measurement_unit || !formData.sizes.length) {
             setButtonError('please choose your sizes and a sizes measurement unit.')
             return 
         }
@@ -88,30 +82,30 @@ export default function SizesTable({formResetClicked, mainMeasurementUnit,tableS
         setShowTable(!showTable);
     }
 
-    ///improve using debouncing
     function handleHeadingInputChange(e,index){
         setTableHeadings(tableHeadings.map((head,i)=>{
             if (i == index) head = e.currentTarget.value;
             return head;
         }))
 
-        let temp = [...sizesData];
+        let temp = [...formData.sizes_data];
         for(let size of temp){
             let attributes = [...size.attributes]
             attributes[index].measurement_unit =e.currentTarget.value;
             size.attributes =attributes;
         }
-        setSizesData(temp);
+
+        setFormData(prev => ({...prev, sizes_data : temp}));
     }
     
     function handleCellInputChange(e,sizeIndex,attributeIndex){
-        const temp = [...sizesData];
+        const temp = [...formData.sizes_data];
         
         const attributes = [...temp[sizeIndex].attributes];
         attributes[attributeIndex].value = e.currentTarget.value;
-        temp[sizeIndex] = { ...temp[sizeIndex], attributes };
+        temp[sizeIndex] = {...temp[sizeIndex], attributes };
         
-        setSizesData(temp);
+        setFormData(prev => ({...prev, sizes_data : temp}));
     }
 
 
@@ -122,15 +116,15 @@ export default function SizesTable({formResetClicked, mainMeasurementUnit,tableS
                 <Table>
                     <thead>
                         <TRow>
-                            <THeading>{mainMeasurementUnit || 'sizing*'}</THeading>
+                            <THeading>{formData.sizes_measurement_unit || 'sizing*'}</THeading>
                             {tableHeadings && tableHeadings.map((head,index)=>(
-                                <THeading $isFocused={isInputFocused==mainMeasurementUnit+index} key={index}>
+                                <THeading $isFocused={isInputFocused==formData.sizes_measurement_unit+index} key={index}>
                                     <DataInput 
                                     onChange={(e)=>handleHeadingInputChange(e,index)}
                                     value={head}
                                     type="text" placeholder="sizing"
-                                    $isFocused={isInputFocused==mainMeasurementUnit+index} 
-                                    onFocus={(e)=>handleTableInputsFocus(mainMeasurementUnit+index)}
+                                    $isFocused={isInputFocused==formData.sizes_measurement_unit+index} 
+                                    onFocus={(e)=>handleTableInputsFocus(formData.sizes_measurement_unit+index)}
                                     onBlur={handleTableInputsBlur}   
                                     style={{fontSize:"var(--body)",fontWeight:"500"}}
                                     />
@@ -139,14 +133,14 @@ export default function SizesTable({formResetClicked, mainMeasurementUnit,tableS
                         </TRow>
                     </thead>
                     <tbody>
-                        {tableSizes.map((size,sizeIndex)=>(
+                        {formData.sizes.map((size,sizeIndex)=>(
                             <TRow key={size}>
                                 <TData>{size}</TData>
                                 {tableHeadings && tableHeadings.map((_,attributeIndex)=>(
                                     <TData $isFocused={isInputFocused==size+attributeIndex} key={attributeIndex}>
                                         <DataInput
                                         onChange={(e)=>handleCellInputChange(e,sizeIndex,attributeIndex)}  
-                                        value={sizesData[sizeIndex].attributes[attributeIndex].value}      
+                                        value={formData.sizes_data[sizeIndex].attributes[attributeIndex].value}      
                                         type="text" placeholder="value"
                                         $isFocused={isInputFocused==size+attributeIndex} 
                                         onBlur={handleTableInputsBlur} 

@@ -20,8 +20,6 @@ export default function useCreateResource({sendRequest,userState}) {
 
         const {request,response} = await sendRequest(url, init);
 
-        console.log(data)
-        console.log(response)
         if (request?.status == 201){
             setInputErrors({fields:[] , messages:{}});
             setIsSuccess(true);

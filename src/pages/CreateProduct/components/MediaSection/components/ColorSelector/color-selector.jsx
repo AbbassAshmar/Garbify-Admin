@@ -23,7 +23,9 @@ font-size:1.25rem;
     color:grey;
 }
 `
-
+const Option = styled.option`
+padding:10px;
+`
 
 export default function ColorSelector({ id, colors, selectedColor, onChange, optionCondition, XClick, errors}){
     return (
@@ -35,7 +37,11 @@ export default function ColorSelector({ id, colors, selectedColor, onChange, opt
             <SelectField $error={errors || !selectedColor} onChange={onChange} id={id}>
                 {colors.map((color) => {
                     if (optionCondition(color))
-                    return <option key={color} value={color}>{color}</option>
+                    return (
+                        <Option style={{color:`${color}`,fontWeight:"bold"}} key={color} value={color}>
+                            {color}
+                        </Option>
+                    )
                 })}
             </SelectField>
             {!selectedColor ? 
