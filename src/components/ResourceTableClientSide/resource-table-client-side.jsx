@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import {useState } from "react";
 import SuccessOrErrorPopUp from "../../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
 import DefaultPageHeader from "../DefaultPageHeader/default-page-header";
 import useUserState from "../../../hooks/use-user-state";
@@ -72,7 +72,7 @@ width:100%;
 `;
 
 const SortIcon = styled.i`
-color:${({$color})=>$color};
+color:${({$color}) => $color};
 transform:translateY(3px);
 rotate:${({$rotate})=>$rotate};
 transition:rotate .3s, color .3s;
@@ -137,7 +137,7 @@ export default function ResourceTableClientSide({resourceName, headers, columnsW
     const [searchValue,setSearchValue] = useState("");
 
     const userState = useUserState();
-    const {sendRequest, serverError} = useSendRequest(userState);
+    const {serverError} = useSendRequest(userState);
     const [resultPopUp, setResultPopUp] = useState({show:false,status:"",message:""});
 
     const filteredResource = resource.filter(element => {

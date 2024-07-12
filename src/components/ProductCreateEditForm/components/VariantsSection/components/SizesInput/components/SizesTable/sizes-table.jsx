@@ -28,9 +28,9 @@ export default function SizesTable({formResetClicked,tableHeadings,setTableHeadi
                     ...prev, 
                     sizes_data : prev.sizes_data.map(size => ({
                         ...size,
-                        attributes : [{
-                            value:'',
-                            measurement_unit:''
+                        alternative_sizes : [{
+                            size:'',
+                            unit:''
                         }]
                     }))
                 }))
@@ -52,9 +52,9 @@ export default function SizesTable({formResetClicked,tableHeadings,setTableHeadi
             ...prev, 
             sizes_data : prev.sizes_data.map(size => ({
                 ...size,
-                attributes : [
-                    ...size.attributes,
-                    {value : '' , measurement_unit : ''}
+                alternative_sizes : [
+                    ...size.alternative_sizes,
+                    {size : '' , unit : ''}
                 ]
             }))
         }))
@@ -64,9 +64,9 @@ export default function SizesTable({formResetClicked,tableHeadings,setTableHeadi
         if (tableHeadings.length == 1) return;
         setTableHeadings(tableHeadings.slice(0, -1));
 
-        const updatedSizesData = formData.sizes_data.map((size) => {
+        const updatedSizesData = formData.sizes_data.map(size => {
             const newSize = { ...size };
-            newSize.attributes = newSize.attributes.slice(0, -1);
+            newSize.alternative_sizes = newSize.alternative_sizes.slice(0, -1);
             return newSize;
         });
 
@@ -74,7 +74,7 @@ export default function SizesTable({formResetClicked,tableHeadings,setTableHeadi
     }
 
     function handleSizesTableButtonClick(){
-        if (!formData.sizes_measurement_unit || !formData.sizes.length) {
+        if (!formData.sizes_unit || !formData.sizes.length) {
             setButtonError('please choose your sizes and a sizes measurement unit.')
             return 
         }
@@ -90,20 +90,20 @@ export default function SizesTable({formResetClicked,tableHeadings,setTableHeadi
 
         let temp = [...formData.sizes_data];
         for(let size of temp){
-            let attributes = [...size.attributes]
-            attributes[index].measurement_unit =e.currentTarget.value;
-            size.attributes =attributes;
+            let alternative_sizes = [...size.alternative_sizes]
+            alternative_sizes[index].unit =e.currentTarget.value;
+            size.alternative_sizes =alternative_sizes;
         }
 
         setFormData(prev => ({...prev, sizes_data : temp}));
     }
     
-    function handleCellInputChange(e,sizeIndex,attributeIndex){
+    function handleCellInputChange(e,sizeIndex,alternativeIndex){
         const temp = [...formData.sizes_data];
         
-        const attributes = [...temp[sizeIndex].attributes];
-        attributes[attributeIndex].value = e.currentTarget.value;
-        temp[sizeIndex] = {...temp[sizeIndex], attributes };
+        const alternative_sizes = [...temp[sizeIndex].alternative_sizes];
+        alternative_sizes[alternativeIndex].size = e.currentTarget.value;
+        temp[sizeIndex] = {...temp[sizeIndex], alternative_sizes };
         
         setFormData(prev => ({...prev, sizes_data : temp}));
     }
@@ -116,15 +116,15 @@ export default function SizesTable({formResetClicked,tableHeadings,setTableHeadi
                 <Table>
                     <thead>
                         <TRow>
-                            <THeading>{formData.sizes_measurement_unit || 'sizing*'}</THeading>
+                            <THeading>{formData.sizes_unit || 'sizing*'}</THeading>
                             {tableHeadings && tableHeadings.map((head,index)=>(
-                                <THeading $isFocused={isInputFocused==formData.sizes_measurement_unit+index} key={index}>
+                                <THeading $isFocused={isInputFocused==formData.sizes_unit+index} key={index}>
                                     <DataInput 
                                     onChange={(e)=>handleHeadingInputChange(e,index)}
                                     value={head}
                                     type="text" placeholder="sizing"
-                                    $isFocused={isInputFocused==formData.sizes_measurement_unit+index} 
-                                    onFocus={(e)=>handleTableInputsFocus(formData.sizes_measurement_unit+index)}
+                                    $isFocused={isInputFocused==formData.sizes_unit+index} 
+                                    onFocus={(e)=>handleTableInputsFocus(formData.sizes_unit+index)}
                                     onBlur={handleTableInputsBlur}   
                                     style={{fontSize:"var(--body)",fontWeight:"500"}}
                                     />
@@ -136,15 +136,15 @@ export default function SizesTable({formResetClicked,tableHeadings,setTableHeadi
                         {formData.sizes.map((size,sizeIndex)=>(
                             <TRow key={size}>
                                 <TData>{size}</TData>
-                                {tableHeadings && tableHeadings.map((_,attributeIndex)=>(
-                                    <TData $isFocused={isInputFocused==size+attributeIndex} key={attributeIndex}>
+                                {tableHeadings && tableHeadings.map((_,alternativeIndex)=>(
+                                    <TData $isFocused={isInputFocused==size+alternativeIndex} key={alternativeIndex}>
                                         <DataInput
-                                        onChange={(e)=>handleCellInputChange(e,sizeIndex,attributeIndex)}  
-                                        value={formData.sizes_data[sizeIndex].attributes[attributeIndex].value}      
+                                        onChange={(e)=>handleCellInputChange(e,sizeIndex,alternativeIndex)}  
+                                        value={formData.sizes_data[sizeIndex].alternative_sizes[alternativeIndex].size}      
                                         type="text" placeholder="value"
-                                        $isFocused={isInputFocused==size+attributeIndex} 
+                                        $isFocused={isInputFocused==size+alternativeIndex} 
                                         onBlur={handleTableInputsBlur} 
-                                        onFocus={(e)=>handleTableInputsFocus(size+attributeIndex)}
+                                        onFocus={(e)=>handleTableInputsFocus(size+alternativeIndex)}
                                         />
                                     </TData>
                                 ))}

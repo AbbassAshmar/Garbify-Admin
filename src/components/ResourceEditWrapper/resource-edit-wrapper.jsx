@@ -1,13 +1,13 @@
 import styled from "styled-components";
 import { useState, useRef, useEffect } from "react";
-import useUserState from "../../../hooks/use-user-state";
-import useSendRequest from "../../../hooks/use-send-request";
-import useCreateResource from "../../../hooks/use-create-resource";
-import SuccessOrErrorPopUp from "../../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
-import ResourceCreatedPopUP from "../ResourceCreatedPopUp/resource-created-pop-up";
-import DefaultPageHeader from "../../components/DefaultPageHeader/default-page-header";
+import useUserState from "../../hooks/use-user-state";
+import useSendRequest from "../../hooks/use-send-request";
+import DefaultPageHeader from "../DefaultPageHeader/default-page-header";
+import SuccessOrErrorPopUp from "../SuccessOrErrorPopUp/success-or-error-pop-up";
+import ResourceActionSuccessPopUp from "../ResourceActionSuccessPopUp/resource-action-success-pop-up";
+import useEditResource from "../../hooks/use-edit-resource";
 
-const AddProductButton = styled.button`
+const EditProductButton = styled.button`
 border:none;
 color:white;
 cursor:pointer;
@@ -40,13 +40,14 @@ background-color: #f1f1f1;
 }
 `
 
-export default function ResourceCreationWrapper({children, endpointURL, handleData, resource, formResetClicked, setFormResetClicked, setInputErrors}){
+export default function ResourceEditWrapper({children, endpointURL, handleData, resource, formResetClicked, setFormResetClicked, setInputErrors}){
     const discardButtonRef = useRef();
+
     const userState = useUserState();
     const {sendRequest ,serverError} = useSendRequest(userState);
 
     const [resultPopUp, setResultPopUp] = useState({show:false,status:"",message:""});
-    const {isLoading, isSuccess, inputErrors, handleFormSubmit:handleSubmit} = useCreateResource({sendRequest,userState});
+    const {isLoading, isSuccess, inputErrors, handleFormSubmit:handleSubmit} = useEditResource(sendRequest);
 
     const [showSuccessPopUP, setShowSuccessPopUp] = useState(false);
 
@@ -86,16 +87,16 @@ export default function ResourceCreationWrapper({children, endpointURL, handleDa
     const renderHeaderButtons = ()=>(
         <>
             <DiscardChangesButton ref={discardButtonRef} type="reset" onClick={handleDiscardForm}>Discard</DiscardChangesButton>
-            <AddProductButton disabled={isLoading} type="submit">Add {resource}</AddProductButton>
+            <EditProductButton disabled={isLoading} type="submit">Edit {resource}</EditProductButton>
         </>
     )
 
     return (
         <>
-            {showSuccessPopUP && <ResourceCreatedPopUP button={"View "+resource+"s"} redirect={"/"+resource+"s"} message={`${resource} created successfully`} show={showSuccessPopUP} setShow={setShowSuccessPopUp}/>}
+            {showSuccessPopUP && <ResourceActionSuccessPopUp button={"View "+resource+"s"} redirect={"/"+resource+"s"} message={`${resource} updated successfully`} show={showSuccessPopUP} setShow={setShowSuccessPopUp}/>}
             <SuccessOrErrorPopUp serverError={serverError} outerSettings={resultPopUp} setOuterSettings={setResultPopUp}/>
             <form onSubmit={handleFormSubmit}>
-                <DefaultPageHeader renderButtons={renderHeaderButtons} title={"New " + resource}>
+                <DefaultPageHeader renderButtons={renderHeaderButtons} title={"Edit " + resource}>
                     {children}
                 </DefaultPageHeader>
             </form>

@@ -1,26 +1,20 @@
 import { useState } from 'react';
 
-
-
-export default function useCreateResource({sendRequest,userState}) {
+export default function useEditResource(sendRequest) {
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [inputErrors, setInputErrors] = useState({ fields: [], messages: {} });
 
     const handleFormSubmit = async (url, data, onSuccess, onError) => {
         setIsLoading(true);
-        const init = {
-            method: "POST",
+        const INIT = {
+            method: "PATCH",
             body: data,
-            headers: {
-                'accept': 'application/json',
-                'Authorization': 'Bearer ' + userState?.token
-            },
         };
 
-        const {request,response} = await sendRequest(url, init);
+        const {request,response} = await sendRequest(url, INIT);
 
-        if (request?.status == 201){
+        if (request?.status == 200){
             setInputErrors({fields:[] , messages:{}});
             setIsSuccess(true);
             onSuccess();
@@ -42,7 +36,7 @@ export default function useCreateResource({sendRequest,userState}) {
                 onError("Unexpected error... try again later")
             }
         }
-
+        
         setIsSuccess(false);
         setIsLoading(false);
     };

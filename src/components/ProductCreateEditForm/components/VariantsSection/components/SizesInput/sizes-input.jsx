@@ -65,14 +65,20 @@ export default function SizesInput({formResetClicked, errors,setFormData, formDa
     },[formResetClicked])
 
     function handleSizesUnitInputChange(e){
-        setFormData(prev => ({...prev, sizes_measurement_unit : e.target.value}))
+        setFormData(prev => ({
+            ...prev, 
+            sizes_unit : e.target.value,
+            sizes_data : prev.sizes_data.map(size => (
+                {...size, unit : e.target.value}
+            ))
+        }))
     }
 
     function handleDeleteSize(size){
         setFormData(prev => ({
             ...prev, 
             sizes : prev.sizes.filter(_size => _size !== size),
-            sizes_data : prev.sizes_data.filter(_size => _size.value != size)
+            sizes_data : prev.sizes_data.filter(_size => _size.size != size)
         }))
     }
 
@@ -89,11 +95,11 @@ export default function SizesInput({formResetClicked, errors,setFormData, formDa
             ...prev, 
             sizes : [...prev.sizes, size],
             sizes_data: [...prev.sizes_data,{
-                value:size,
-                measurement_unit:prev.sizes_measurement_unit,
-                attributes : tableHeadings.map((head)=>({
-                    value:'',
-                    measurement_unit:head
+                size:size,
+                unit:prev.sizes_unit,
+                alternative_sizes : tableHeadings.map(head=>({
+                    size:'',
+                    unit:head
                 }))
             }
         ]}))
@@ -125,8 +131,8 @@ export default function SizesInput({formResetClicked, errors,setFormData, formDa
 
     return(
         <>
-            <Input label={"sizes_measurement_unit"} title={'Sizes measurement unit'} errors={errors?.messages['sizes_measurement_unit']}>
-                <TextInputField $error={errors?.messages['sizes_measurement_unit']} onKeyDown={handleSizesUnitInputKeyDown} onChange={handleSizesUnitInputChange} value={formData.sizes_measurement_unit} id="sizes_measurement_unit" type='text' placeholder="ex. inches" />   
+            <Input label={"sizes_unit"} title={'Sizes measurement unit'} errors={errors?.messages['sizes_unit']}>
+                <TextInputField $error={errors?.messages['sizes_unit']} onKeyDown={handleSizesUnitInputKeyDown} onChange={handleSizesUnitInputChange} value={formData.sizes_unit} id="sizes_unit" type='text' placeholder="ex. inches" />   
             </Input>
 
             <Input label={"sizes"} title={'Sizes'} errors={errors?.messages['sizes']}>
@@ -151,6 +157,5 @@ export default function SizesInput({formResetClicked, errors,setFormData, formDa
         </>
     )
 }
-
 
 

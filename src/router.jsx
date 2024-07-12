@@ -1,5 +1,5 @@
 import {createBrowserRouter} from "react-router-dom";
-import Default from "./pages/components/Default/default";
+import Default from "./pages/Default/default";
 import Dashboard from "./pages/Dashboard/dashboard";
 import CreateProduct from "./pages/CreateProduct/create-product";
 import CreateCategory from "./pages/CreateCategory/create-category";
@@ -9,6 +9,7 @@ import ListProducts from "./pages/ListProducts/list-products";
 import CreateUser from "./pages/CreateUser/create-user";
 import UsersTable from "./pages/UsersTable/users-table";
 import OrdersTable from "./pages/OrdersTable/orders-table";
+import EditProduct from "./pages/EditProduct/edit-product";
 
 export const Router = createBrowserRouter([
     {
@@ -23,6 +24,10 @@ export const Router = createBrowserRouter([
             {
                 path:"/products/add",
                 element:<CreateProduct />
+            },
+            {
+                path:"/products/:id/edit",
+                element:<EditProduct />
             },
             {
                 path:"/categories/add",

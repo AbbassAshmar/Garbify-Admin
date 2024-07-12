@@ -2,7 +2,7 @@ import { useState } from "react";
 import DetailsSection from "./components/DetailsSection/details-section";
 import MediaSection from "./components/MediaSection/media-section";
 import { MediaDetailsContent } from "../CreateCategory/create-category";
-import ResourceCreationWrapper from "../components/ResourceCreationWrapper/resource-creation-wrapper";
+import ResourceCreationWrapper from "../../components/ResourceCreationWrapper/resource-creation-wrapper";
 
 
 export default function CreateUser(){

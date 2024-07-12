@@ -78,12 +78,12 @@ transition: background-color .3s;
 }
 `
 
-export default function ResourceCreatedPopUP({show, setShow, message, redirect, button}){
+export default function ResourceActionSuccessPopUp({show, setShow, message, redirect, buttonText}){
     const navigate = useNavigate();
     const popUpRef = useRef();
 
     function handleClosePopUp(){
-        setShow(true);
+        setShow(false);
     }
 
     function handleViewCategoriesButtonClick(e){
@@ -105,7 +105,7 @@ export default function ResourceCreatedPopUP({show, setShow, message, redirect, 
                         </Header>
                         <TextMessage>{message}</TextMessage>
                         <ButtonsContainer>
-                            <ViewCategoriesButton onClick={handleViewCategoriesButtonClick}>{button}</ViewCategoriesButton>
+                            <ViewCategoriesButton onClick={handleViewCategoriesButtonClick}>{buttonText}</ViewCategoriesButton>
                             <ContinueButton onClick={handleClosePopUp}>Continue</ContinueButton>
                         </ButtonsContainer>
                     </Container>

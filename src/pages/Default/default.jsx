@@ -1,7 +1,7 @@
-import Navbar from "../../../components/Navbar/navbar";
+import Navbar from "../../components/Navbar/navbar";
 import { Outlet } from "react-router-dom";
 import styled from "styled-components";
-import SideBarNavigation from "../../../components/SideBarNavigation/side-bar-navigation";
+import SideBarNavigation from "../../components/SideBarNavigation/side-bar-navigation";
 import { useState } from "react";
 
 const Container = styled.div`
