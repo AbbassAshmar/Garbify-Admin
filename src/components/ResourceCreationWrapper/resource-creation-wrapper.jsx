@@ -3,8 +3,8 @@ import { useState, useRef, useEffect } from "react";
 import useUserState from "../../hooks/use-user-state";
 import useSendRequest from "../../hooks/use-send-request";
 import useCreateResource from "../../hooks/use-create-resource";
-import SuccessOrErrorPopUp from "../components/SuccessOrErrorPopUp/success-or-error-pop-up";
-import DefaultPageHeader from "../components/DefaultPageHeader/default-page-header";
+import SuccessOrErrorPopUp from "../SuccessOrErrorPopUp/success-or-error-pop-up";
+import DefaultPageHeader from "../DefaultPageHeader/default-page-header";
 import ResourceActionSuccessPopUp from "../ResourceActionSuccessPopUp/resource-action-success-pop-up";
 
 const AddProductButton = styled.button`

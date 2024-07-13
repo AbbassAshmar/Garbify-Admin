@@ -40,7 +40,7 @@ background-color: #f1f1f1;
 }
 `
 
-export default function ResourceEditWrapper({children, endpointURL, handleData, resource, formResetClicked, setFormResetClicked, setInputErrors}){
+export default function ResourceError({children, endpointURL, handleData, resource, formResetClicked, setFormResetClicked, setInputErrors}){
     const discardButtonRef = useRef();
 
     const userState = useUserState();
@@ -63,9 +63,7 @@ export default function ResourceEditWrapper({children, endpointURL, handleData, 
         if (formResetClicked) setFormResetClicked(false);
     },[formResetClicked])
 
-    function onSuccess(){
-        discardButtonRef.current.click();
-    }   
+    function onSuccess(){}   
 
     function onError(message){
         setResultPopUp({

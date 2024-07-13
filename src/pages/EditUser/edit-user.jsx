@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSendRequest from "../../hooks/use-send-request";
 import useUserState from "../../hooks/use-user-state";
-import ProductCreateEditForm from "../../components/ProductCreateEditForm/product-create-edit-form";
 import ResourceEditWrapper from "../../components/ResourceEditWrapper/resource-edit-wrapper";
-import processProductData from "../../helpers/process-product-data";
 import ResourceError from "../../components/ResourceError/resource-error";
 import DefaultPageHeader from "../../components/DefaultPageHeader/default-page-header";
+import processUserData from "../../helpers/process-user-data";
+import UserCreateEditForm from "../../components/UserCreateEditForm/user-create-edit-form";
 
 const initialFormData = {
     name: '',
@@ -45,63 +45,17 @@ export default function EditProduct(){
 
     useEffect(() => {
         if (formResetClicked) 
-        setFormData({ ...initialFormData });
+        setFormData({ ...initialFormData});
     }, [formResetClicked]);
 
     useEffect(()=>{
-        if (id) fetchProductForEdit();
+        if (id) fetchUserForEdit();
     }, [id])
 
-    async function fetchProductForEdit(){
-        const URL = `/api/products/${id}`;
+    async function fetchUserForEdit(){
+        const URL = `/api/users/${id}`;
         const {request,response} = await sendRequest(URL);
         handleResponse(request, response);
-    }
-
-    function transferProductToFormData(product){
-        let data = {
-            name : product.name || '',
-            type : product.type || '',
-            description : product.description || '',
-            quantity  : product.quantity || '',
-            status : product.status || 'in stock',
-            original_price : product.original_price || '', 
-            selling_price : product.selling_price || '', 
-            category_id : product.category?.id || '',
-            images_data : [],
-            colors : product.colors?.map(color => color.name) || [],
-            tags : product?.tags.map(tag => tag.name) || [],
-            sizes : product?.sizes.map(size => size.size) || [],
-            sizes_data : product.sizes || [],
-            sizes_unit : product.sizes[0]?.unit || '',
-            thumbnail_data : {
-                color : product.thumbnail?.color?.color || '', 
-                image : {file :'',url : product.thumbnail?.image_url || ''}
-            }
-        };
-        
-        for (const color in product?.images){
-            data.images_data.push({
-                id : Date.now() , 
-                color : color, 
-                images : product.images.map(image => ({
-                    file : "", url : image.image_url
-                }))
-            })
-        }
-
-        if (product.sale){
-            let sale = {
-                sale : 1,
-                sale_quantity : product.sale?.quantity || '',
-                sale_start_date : product.sale?.starts_at || '',
-                sale_end_date : product.sale?.ends_at || '',
-                discount_percentage : product.sale?.sale_percentage || ''
-            }
-            data = {...data , sale};
-        }     
-
-        return data;
     }
 
     function handleResponse(request, response){
@@ -111,14 +65,18 @@ export default function EditProduct(){
         }
 
         if (request.status == 200){
-            let product = response.data.product;
-            let data = transferProductToFormData(product);
+            let user = response.data.user;
+            let data = transferUserToFormData(user);
             setFormData(prev => ({...prev, ...data}));
             setShowErrorPage("");
         }
 
+        else if (request.status == 403){
+            setShowErrorPage(`You are not allowed to edit this user's information !`);
+        }
+
         else if (request.status == 404){
-            setShowErrorPage(`The product you are looking for does not exist !`);
+            setShowErrorPage(`The User you are looking for does not exist !`);
         }
 
         else {
@@ -126,13 +84,25 @@ export default function EditProduct(){
         }
     }
 
+    function transferUserToFormData(user){
+        let data = {
+            name : user.name || '',
+            email : user.email || '',
+            profile_picture : {file : "", url : user.profile_picture.images_url || ''},
+            password :  user.password || '',
+            confirm_password :  user.confirm_password || '',
+        };
+
+        return data;
+    }
+
     function handleData(formEvent) {
-        return processProductData(formEvent,formData,true);
+        return processUserData(formEvent,formData,true);
     }
 
     if (showErrorPage != ""){
         return (
-            <DefaultPageHeader title={"Edit Product"}>
+            <DefaultPageHeader title={"Edit User"}>
                 <ResourceError message={showErrorPage} />
             </DefaultPageHeader>
         )
@@ -144,10 +114,10 @@ export default function EditProduct(){
         setInputErrors={setInputErrors}
         setFormResetClicked={setFormResetClicked} 
         formResetClicked={formResetClicked} 
-        endpointURL={`/api/products/${id}`} 
-        resource={"product"} 
+        endpointURL={`/api/users/${id}`} 
+        resource={"user"} 
         handleData={handleData}>
-            <ProductCreateEditForm 
+            <UserCreateEditForm 
             editMode={true} 
             formData={formData} 
             inputErrors={inputErrors} 

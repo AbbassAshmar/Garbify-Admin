@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import ReactDOM from 'react-dom';
 import {useNavigate} from "react-router-dom";
-import useClickOutside from "../../../hooks/use-click-outside";
+import useClickOutside from "../../hooks/use-click-outside";
 import { useRef } from "react";
 
 const BGWrapper = styled.div`

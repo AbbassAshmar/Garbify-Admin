@@ -5,6 +5,7 @@ const Container = styled.div`
 gap:2rem;
 padding:2rem;
 display: flex;
+min-height: 100vh;
 flex-direction:column;
 background-color: #F1F4F9;
 `
@@ -43,13 +44,13 @@ display: flex;
 gap:1rem;
 `
 
-export default function DefaultPageHeader({children, title, renderButtons}){
+export default function DefaultPageHeader({children, title, renderButtons, path=null}){
     return(
         <Container>
             <Header>
                 <HeaderText>
                     <PageTitle>{title}</PageTitle>
-                    <PagePath>{location.pathname.split("/").join(" / ")}</PagePath>
+                    <PagePath>{path || location.pathname.split("/").join(" / ")}</PagePath>
                 </HeaderText>
                 <HeaderButtons>
                     {renderButtons && renderButtons()}

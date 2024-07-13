@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import {useState } from "react";
-import SuccessOrErrorPopUp from "../../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
 import DefaultPageHeader from "../DefaultPageHeader/default-page-header";
-import useUserState from "../../../hooks/use-user-state";
-import useSendRequest from "../../../hooks/use-send-request";
+import useUserState from "../../hooks/use-user-state";
+import useSendRequest from "../../hooks/use-send-request";
 import SearchBarClientSide from "./components/SearchBarClientSide/search-bar-client-side";
+import SuccessOrErrorPopUp from "../SuccessOrErrorPopUp/success-or-error-pop-up";
 
 const Content = styled.div`
 gap:2rem;

@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import SuccessOrErrorPopUp from "../../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
+import SuccessOrErrorPopUp from "../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
 import DefaultPageHeader from "../DefaultPageHeader/default-page-header";
-import useUserState from "../../../hooks/use-user-state";
-import useSendRequest from "../../../hooks/use-send-request";
+import useUserState from "../../hooks/use-user-state";
+import useSendRequest from "../../hooks/use-send-request";
 import SearchBarServerSide from "./components/SearchBarServerSide/search-bar-server-side";
 import Pagination from "./components/Pagination/pagination";
 

@@ -7,7 +7,7 @@ import useUserState from "../../hooks/use-user-state";
 import useSendRequest from "../../hooks/use-send-request";
 import useDeleteResource from "../../hooks/use-delete-resource";
 import SuccessOrErrorPopUp from "../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
-import ResourceTableServerSide from "../components/ResourceTableServerSide/resource-table-server-side";
+import ResourceTableServerSide from "../../components/ResourceTableServerSide/resource-table-server-side";
 
 const TableRow = styled.tr`
 border-bottom: 2px solid #F1F4F9;

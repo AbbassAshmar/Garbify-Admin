@@ -40,29 +40,30 @@ color:var(--main-color);
 font-size: 13px;
 `
 
-export default function DetailsSection({userType, setUserType, formResetClicked, errors}){
+export default function DetailsSection({userType, setUserType, formResetClicked, errors, setFormData, formData}){
     useEffect(()=>{
         if (formResetClicked)
         setUserType("Client");
     }, [formResetClicked])
 
-    useEffect(()=>{
-        console.log(userType)
-    }, [userType])
+    function handleInputValueChange(e,name){
+        setFormData((prev) => ({...prev, [name] : e.target.value}));
+    }
+
     return(
         <Container>
             <FormDefaultSection title="User Information" style={{padding:"0", boxShadow:"none"}} >
                 <Input label={"user_name_input"} title={"User name"} subtitle={"user name is unique"} errors={errors?.messages['name']}>
-                    <TextInputField name="name" id="user_name_input" type="text" placeholder="ex. jackTheRipper"/>
+                    <TextInputField value={formData.name} onChange={e=>handleInputValueChange(e,'name')} id="user_name_input" type="text" placeholder="ex. jackTheRipper"/>
                 </Input>
                 <Input label={"user_email_input"} title={"User email"} subtitle={"user email is unique"} errors={errors?.messages['email']}>
-                    <TextInputField name="email" id="user_email_input" type="text" placeholder="ex. jackTheRipper123@gmail.com"/>
+                    <TextInputField value={formData.name} onChange={e=>handleInputValueChange(e,'name')} id="user_email_input" type="text" placeholder="ex. jackTheRipper123@gmail.com"/>
                 </Input>
                 <Input label={"user_confirm_password_input"} title={"User password"} subtitle={"password should be at least 8 characters"} errors={errors?.messages['password']}>
-                    <TextInputField name="password" id="user_password_input" type="password" placeholder="JackTheRipper432"/>
+                    <TextInputField value={formData.name} onChange={e=>handleInputValueChange(e,'name')} id="user_password_input" type="password" placeholder="JackTheRipper432"/>
                 </Input>
                 <Input label={"user_confirm_password_input"} title={"Confirm password"} subtitle={"re-write the password."} errors={errors?.messages['confirm_password']}>
-                    <TextInputField name="confirm_password" id="user_confirm_password_input" type="password" placeholder="JackTheRipper432"/>
+                    <TextInputField value={formData.confirm_password} onChange={e=>handleInputValueChange(e,'confirm_password')} id="user_confirm_password_input" type="password" placeholder="JackTheRipper432"/>
                 </Input>
                 <Input label={"user_type_input"} title={"User Type"} subtitle={"Admin has permissions to add, delete and edit resources."} errors={errors?.messages['type']}>
                     <div style={{display:'flex',gap:"1rem"}}>
@@ -80,7 +81,6 @@ export default function DetailsSection({userType, setUserType, formResetClicked,
                             </FakeRadioInput>
                             <p>Client</p>
                         </RadioInputContainer>
-                        
                     </div>
                 </Input>
             </FormDefaultSection>

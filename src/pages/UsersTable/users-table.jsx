@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import ResourceTableClientSide from "../components/ResourceTableClientSide/resource-table-client-side";
+import ResourceTableClientSide from "../../components/ResourceTableClientSide/resource-table-client-side";
 import { Users } from "../../dummy_data";
 import { useEffect, useState } from "react";
 import UserCardHorizontal from "../../components/UserCardHorizontal/user-card-horizontal";

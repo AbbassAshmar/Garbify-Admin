@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { ErrorMessage } from "../../../../../../components/Input/input";
-import { NestedCategories } from "../../../../../../dummy_data";
 import useGetCategories from "../../../../../../hooks/use-get-categories";
 
 const Container = styled.div`

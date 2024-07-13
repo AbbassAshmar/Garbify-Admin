@@ -1,5 +1,5 @@
 export default function processProductData(formEvent, formData, isEditing) {
-    const formObject = new FormData(formEvent);
+    const formObject = new FormData(formEvent.target);
 
     // Handle thumbnail data
     appendThumbnailData(formObject, formData.thumbnail_data);

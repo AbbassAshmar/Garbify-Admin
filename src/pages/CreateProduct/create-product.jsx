@@ -37,7 +37,7 @@ export default function CreateProduct(){
     }, [formResetClicked]);
     
     function handleData(formEvent) {
-        processProductData(formEvent,formData,false);
+        return processProductData(formEvent,formData,false);
     }
 
     return(

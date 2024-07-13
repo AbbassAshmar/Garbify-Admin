@@ -1,7 +1,7 @@
 import styled from "styled-components"
 import Input from "../../../../../../components/Input/input";
 import { useEffect, useState } from "react";
-import {CategoriesPickerContainer, BackButton, CategoryContainer ,CategoryName ,SubcategoriesCount, BackButtonAndPath,CurrentPathText, SelectedPathContainer, SelectedPathText} from "../../../../../CreateCategory/components/DetailsSection/components/CategoryParentPicker/category-parent-picker";
+import {CategoriesPickerContainer, BackButton, CategoryContainer ,CategoryName ,SubcategoriesCount, BackButtonAndPath,CurrentPathText, SelectedPathContainer, SelectedPathText} from "../../../../../../pages/CreateCategory/components/DetailsSection/components/CategoryParentPicker/category-parent-picker";
 import {Link} from "react-router-dom";
 import useGetCategories from "../../../../../../hooks/use-get-categories";
 

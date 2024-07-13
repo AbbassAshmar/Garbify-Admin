@@ -39,7 +39,7 @@ width: .2px;
 position: absolute;
 `
 
-export default function MediaSection({errors, formResetClicked}){
+export default function MediaSection({errors, formResetClicked, formData, setFormData}){
     const [userImageUrl, setUserImageUrl] = useState('');
 
     useEffect(()=>{
@@ -48,7 +48,13 @@ export default function MediaSection({errors, formResetClicked}){
     },[formResetClicked])
 
     function handleCategoryImageInputChange(e){
-        setUserImageUrl(URL.createObjectURL(e.currentTarget.files[0]))
+        setFormData((prev) => ({
+            ...prev, 
+            profile_picture : {
+                file : e.target.files[0], 
+                url:URL.createObjectURL(e.currentTarget.files[0])
+            }
+        }));
     }
 
     return(
@@ -56,7 +62,7 @@ export default function MediaSection({errors, formResetClicked}){
             <FormDefaultSection style={{padding:"0",boxShadow:"none"}} title={"User Profile Picture"} subtitle={"represents the user (optional)"}>
                 <ImageInputContainer htmlFor="user_profile_picture">
                     <PlusIcon className="fa-solid fa-plus" />
-                    {userImageUrl && <CategoryImage src={userImageUrl} />}
+                    {formData.profile_picture.url && <CategoryImage src={formData.profile_picture.url} />}
                     <HiddenImageInput accept=".jpg,.jpeg,.png" 
                     onChange={handleCategoryImageInputChange} 
                     id="user_profile_picture" type="file" name="profile_picture"/>

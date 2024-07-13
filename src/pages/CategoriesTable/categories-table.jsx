@@ -1,12 +1,11 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import CategoryCardHorizontal from "./components/CategoryCardHorizontal/category-card-horizontal";
-import { FlatCategories } from "../../dummy_data";
 import {Link} from "react-router-dom";
 import SuccessOrErrorPopUp from "../../components/SuccessOrErrorPopUp/success-or-error-pop-up";
 import useUserState from "../../hooks/use-user-state";
 import useSendRequest from "../../hooks/use-send-request";
-import ResourceTableClientSide from "../components/ResourceTableClientSide/resource-table-client-side";
+import ResourceTableClientSide from "../../components/ResourceTableClientSide/resource-table-client-side";
 import useDeleteResource from "../../hooks/use-delete-resource";
 import useGetCategories from "../../hooks/use-get-categories";
 

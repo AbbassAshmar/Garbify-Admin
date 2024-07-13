@@ -1,8 +1,7 @@
 import styled from "styled-components";
 import { useEffect, useRef, useState } from "react";
-import { NestedCategories } from "../../dummy_data";
-import DefaultPageHeader from "../components/DefaultPageHeader/default-page-header";
 import useGetCategories from "../../hooks/use-get-categories";
+import DefaultPageHeader from "../../components/DefaultPageHeader/default-page-header";
 
 const Content = styled.div`
 width: 100%;
