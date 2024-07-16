@@ -135,9 +135,8 @@ font-size:var(--small-1);
 width: fit-content;
 border-bottom: 2px solid var(--secondary-color);
 `
-export default function CategoryParentPicker({formResetClicked, errors}){
+export default function CategoryParentPicker({errors,formData, setFormData}){
     const [categories, setCategories] = useGetCategories("nested");
-	const [categoryParentID, setCategoryParentID] = useState(""); 
 
 	const [currentPath, setCurrentPath] = useState(['categories']);
 	const [selectedPath,setSelectedPath] = useState('');
@@ -148,11 +147,6 @@ export default function CategoryParentPicker({formResetClicked, errors}){
 	useEffect(()=>{
         setCurrentCategories((prev) => ({...prev,children:categories}));
     },[categories])
-
-    useEffect(()=>{
-        if (formResetClicked)
-        setCategoryParentID("");
-    }, [formResetClicked])
 
     function updateCurrentCategories(category){
         //add to history the old state
@@ -175,13 +169,9 @@ export default function CategoryParentPicker({formResetClicked, errors}){
     }
 
 	function handleAddHereButtonClick(){
-		setCategoryParentID(currentCategories.id);
+		setFormData(prev => ({...prev, parent_id : currentCategories.id}));
 		setSelectedPath(`/ ${currentPath.join(" / ")}`);
 	}
-
-    useEffect(()=>{
-        console.log(currentCategories)
-    },[currentCategories])
 
     return(
         <Container>
@@ -212,11 +202,10 @@ export default function CategoryParentPicker({formResetClicked, errors}){
                             <i style={{lineHeight:"16px"}} className="fa-solid fa-plus"/>
                             <p style={{lineHeight:"16px"}}>Add here</p>
                         </div>
-                        <CheckBox $checked={categoryParentID == currentCategories.id}>
-                            {categoryParentID == currentCategories.id && <i style={{fontSize:"14px", color:'var(--main-color)'}} className="fa-solid fa-check" />}
+                        <CheckBox $checked={formData.parent_id == currentCategories.id}>
+                            {formData.parent_id == currentCategories.id && <i style={{fontSize:"14px", color:'var(--main-color)'}} className="fa-solid fa-check" />}
                         </CheckBox>
                     </AddHereButton>
-					<input name="parent_id" type="hidden" value={categoryParentID} style={{width:'.2px', position:"absolute"}} />
                 </CategoriesPickerContainer>
 				{errors?.messages['parent_id'] && <ErrorMessage>{errors.messages['parent_id']}</ErrorMessage>}
 				<SelectedPathContainer>

@@ -9,7 +9,7 @@ export default function useCreateResource({sendRequest,userState}) {
 
     const handleFormSubmit = async (url, data, onSuccess, onError) => {
         setIsLoading(true);
-        const init = {
+        const INIT = {
             method: "POST",
             body: data,
             headers: {
@@ -18,7 +18,7 @@ export default function useCreateResource({sendRequest,userState}) {
             },
         };
 
-        const {request,response} = await sendRequest(url, init);
+        const {request,response} = await sendRequest(url, INIT);
 
         if (request?.status == 201){
             setInputErrors({fields:[] , messages:{}});

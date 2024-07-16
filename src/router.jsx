@@ -10,6 +10,7 @@ import CreateUser from "./pages/CreateUser/create-user";
 import UsersTable from "./pages/UsersTable/users-table";
 import OrdersTable from "./pages/OrdersTable/orders-table";
 import EditProduct from "./pages/EditProduct/edit-product";
+import EditCategry from "./pages/EditCategory/edit-category";
 
 export const Router = createBrowserRouter([
     {
@@ -32,6 +33,10 @@ export const Router = createBrowserRouter([
             {
                 path:"/categories/add",
                 element:<CreateCategory />
+            },
+            {
+                path:"/categories/:id/edit",
+                element:<EditCategry />
             },
             { 
                 path:"/categories/tree",

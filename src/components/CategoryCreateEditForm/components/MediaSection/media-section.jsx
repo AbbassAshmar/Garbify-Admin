@@ -38,16 +38,15 @@ width: .2px;
 position: absolute;
 `
 
-export default function MediaSection({errors, formResetClicked}){
-    const [categoryImageURL, setCategoryImageURL] = useState('');
-
-    useEffect(()=>{
-        if (formResetClicked)
-        setCategoryImageURL('');
-    },[formResetClicked])
-
+export default function MediaSection({errors, setFormData, formData}){
     function handleCategoryImageInputChange(e){
-        setCategoryImageURL(URL.createObjectURL(e.currentTarget.files[0]))
+        setFormData((prev) => ({
+            ...prev, 
+            image : {
+                file : e.target.files[0], 
+                url:URL.createObjectURL(e.currentTarget.files[0])
+            }
+        }));
     }
 
     return(
@@ -55,10 +54,10 @@ export default function MediaSection({errors, formResetClicked}){
             <FormDefaultSection style={{padding:"0",boxShadow:"none"}} title={"Category image"} subtitle={"Represents the category"}>
                 <ImageInputContainer htmlFor="category_image">
                     <PlusIcon className="fa-solid fa-plus" />
-                    {categoryImageURL && <CategoryImage src={categoryImageURL} />}
+                    {formData?.image?.url && <CategoryImage src={formData.image.url} />}
                     <HiddenImageInput accept=".jpg,.jpeg,.png" 
                     onChange={handleCategoryImageInputChange} 
-                    id="category_image" type="file" name="image"/>
+                    id="category_image" type="file"/>
                 </ImageInputContainer>
                 {errors?.messages['image'] && <ErrorMessage>{errors.messages['image']}</ErrorMessage>}
             </FormDefaultSection>

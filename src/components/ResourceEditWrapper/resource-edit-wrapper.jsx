@@ -47,7 +47,7 @@ export default function ResourceError({children, endpointURL, handleData, resour
     const {sendRequest ,serverError} = useSendRequest(userState);
 
     const [resultPopUp, setResultPopUp] = useState({show:false,status:"",message:""});
-    const {isLoading, isSuccess, inputErrors, handleFormSubmit:handleSubmit} = useEditResource(sendRequest);
+    const {isLoading, isSuccess, inputErrors, handleFormSubmit:handleSubmit} = useEditResource({sendRequest,userState});
 
     const [showSuccessPopUP, setShowSuccessPopUp] = useState(false);
 

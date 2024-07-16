@@ -1,7 +1,4 @@
-import { useState } from "react";
-import DetailsSection from "./components/DetailsSection/details-section";
-import MediaSection from "./components/MediaSection/media-section";
-import { MediaDetailsContent } from "../CreateCategory/create-category";
+import { useEffect, useState } from "react";
 import ResourceCreationWrapper from "../../components/ResourceCreationWrapper/resource-creation-wrapper";
 import processUserData from "../../helpers/process-user-data";
 import UserCreateEditForm from "../../components/UserCreateEditForm/user-create-edit-form";
@@ -15,11 +12,19 @@ const initialFormData = {
 };
 
 export default function CreateUser(){
+    const [userType, setUserType] = useState("Client");
     const [formData, setFormData] = useState(initialFormData);
 
     const [formResetClicked, setFormResetClicked] = useState(false);
     const [inputErrors,setInputErrors] = useState({fields : [] , messages : {}});
-    const [userType, setUserType] = useState("Client");
+
+    useEffect(() => {
+        if (formResetClicked) {
+            setFormData({ ...initialFormData });
+            setUserType("Client")
+        }
+    }, [formResetClicked]);
+    
 
     function handleData(formEvent) {
         return processUserData(formEvent,formData,false);
@@ -27,10 +32,10 @@ export default function CreateUser(){
 
     function setEndpoint(){
         if (userType ==="Client"){
-            return "/api/register";
+            return "/api/users/clients";
         }
         else if (userType === "Admin"){
-            return "/api/register/admin";
+            return "/api/users/admins";
         }
     }
 
@@ -48,7 +53,6 @@ export default function CreateUser(){
             inputErrors={inputErrors} 
             userType={userType}
             setUserType={setUserType}
-            formResetClicked={formResetClicked} 
             setFormData={setFormData}/>
         </ResourceCreationWrapper>
     )

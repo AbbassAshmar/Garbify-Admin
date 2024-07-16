@@ -39,15 +39,8 @@ width: .2px;
 position: absolute;
 `
 
-export default function MediaSection({errors, formResetClicked, formData, setFormData}){
-    const [userImageUrl, setUserImageUrl] = useState('');
-
-    useEffect(()=>{
-        if (formResetClicked)
-        setUserImageUrl('');
-    },[formResetClicked])
-
-    function handleCategoryImageInputChange(e){
+export default function MediaSection({errors, formData, setFormData}){
+    function handleProfilePictureChange(e){
         setFormData((prev) => ({
             ...prev, 
             profile_picture : {
@@ -62,10 +55,10 @@ export default function MediaSection({errors, formResetClicked, formData, setFor
             <FormDefaultSection style={{padding:"0",boxShadow:"none"}} title={"User Profile Picture"} subtitle={"represents the user (optional)"}>
                 <ImageInputContainer htmlFor="user_profile_picture">
                     <PlusIcon className="fa-solid fa-plus" />
-                    {formData.profile_picture.url && <CategoryImage src={formData.profile_picture.url} />}
+                    {formData?.profile_picture?.url && <CategoryImage src={formData.profile_picture.url} />}
                     <HiddenImageInput accept=".jpg,.jpeg,.png" 
-                    onChange={handleCategoryImageInputChange} 
-                    id="user_profile_picture" type="file" name="profile_picture"/>
+                    onChange={handleProfilePictureChange} 
+                    id="user_profile_picture" type="file" />
                 </ImageInputContainer>
                 {errors?.messages['profile_picture'] && <ErrorMessage>{errors.messages['profile_picture']}</ErrorMessage>}
             </FormDefaultSection>

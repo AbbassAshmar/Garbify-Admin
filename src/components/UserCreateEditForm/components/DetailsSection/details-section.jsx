@@ -40,11 +40,7 @@ color:var(--main-color);
 font-size: 13px;
 `
 
-export default function DetailsSection({userType, setUserType, formResetClicked, errors, setFormData, formData}){
-    useEffect(()=>{
-        if (formResetClicked)
-        setUserType("Client");
-    }, [formResetClicked])
+export default function DetailsSection({userType, setUserType, errors, setFormData, formData,editMode}){
 
     function handleInputValueChange(e,name){
         setFormData((prev) => ({...prev, [name] : e.target.value}));
@@ -68,14 +64,14 @@ export default function DetailsSection({userType, setUserType, formResetClicked,
                 <Input label={"user_type_input"} title={"User Type"} subtitle={"Admin has permissions to add, delete and edit resources."} errors={errors?.messages['type']}>
                     <div style={{display:'flex',gap:"1rem"}}>
                         <RadioInputContainer $checked={userType=="Admin"} htmlFor="user_type_input_admin">
-                            <RadioInput onChange={()=>setUserType("Admin")} checked={userType==="Admin"} type="radio" id="user_type_input_admin" value={"Admin"} />
+                            <RadioInput disabled={editMode} onChange={()=>setUserType("Admin")} checked={userType==="Admin"} type="radio" id="user_type_input_admin" value={"Admin"} />
                             <FakeRadioInput $checked={userType=="Admin"}>
                                 {userType=="Admin" && <CheckIcon className="fa-solid fa-check"/> }
                             </FakeRadioInput>
                             <p>Admin</p>
                         </RadioInputContainer>
                         <RadioInputContainer  $checked={userType=="Client"} htmlFor="user_type_input_client">
-                            <RadioInput onChange={()=>setUserType("Client")} checked={userType==="Client"} type="radio" id="user_type_input_client" value={"Client"} />
+                            <RadioInput disabled={editMode} onChange={()=>setUserType("Client")} checked={userType==="Client"} type="radio" id="user_type_input_client" value={"Client"} />
                             <FakeRadioInput $checked={userType=="Client"}>
                                 {userType=="Client" && <CheckIcon className="fa-solid fa-check"/> }
                             </FakeRadioInput>

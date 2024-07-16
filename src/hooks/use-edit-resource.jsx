@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function useEditResource(sendRequest) {
+export default function useEditResource({sendRequest, userState}) {
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [inputErrors, setInputErrors] = useState({ fields: [], messages: {} });
@@ -10,6 +10,10 @@ export default function useEditResource(sendRequest) {
         const INIT = {
             method: "PATCH",
             body: data,
+            headers: { // don't specify content-type
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + userState?.token
+            },
         };
 
         const {request,response} = await sendRequest(url, INIT);

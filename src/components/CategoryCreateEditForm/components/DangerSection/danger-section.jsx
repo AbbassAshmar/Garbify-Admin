@@ -1,6 +1,5 @@
 import Input from "../../../../components/Input/input";
 import styled from "styled-components";
-import { TextInputField } from "../../../../components/Input/input";
 import FormDefaultSection from "../../../../components/FormDefaultSection/form-default-section";
 import { useState } from "react";
 import useSendRequest from "../../../../hooks/use-send-request";
@@ -25,12 +24,6 @@ box-shadow: 0px 0px 8px rgba(0,0,0,.4);
     background-color: darkred;
 }
 `
-const inputStyle = {
-display:"flex",
-flexDirection:"row",
-justifyContent:"space-between",
-alignItems:"center"
-}
 
 export default function DangerSection(){
     const {id} = useParams();
@@ -46,7 +39,7 @@ export default function DangerSection(){
         if (!request) return;
 
         if (request.status == 200){
-            navigate("/users");
+            navigate("/categories");
             return;
         }
 
@@ -65,26 +58,27 @@ export default function DangerSection(){
         }
     }
 
-    async function requestDeleteUser(id){
+    async function requestDeleteProduct(id){
         setIsLoading(true);
 
-        const URL = `/users/${id}`;
+        const URL = `/categories/${id}`;
         const INIT = {method:"DELETE"};
 
         const {request, response} = await sendRequest(URL,INIT);
         handleResponse(request,response)
+
         setIsLoading(false);
     }
 
     function handleDeleteButtonClick(e){
-        requestDeleteUser(id);
+        requestDeleteProduct(id);
     }
 
     return (
         <FormDefaultSection title={'Danger Section'} style={{border:"3px solid red"}}>
             <SuccessOrErrorPopUp serverError={serverError} outerSettings={resultPopUp} setOuterSettings={setResultPopUp}/>
-            <Input style={inputStyle} title={"Delete this user"} subtitle={"Once you delete a user, there is no going back. Please be certain."}>
-                <DeleteButton disabled={isLoading} onClick={handleDeleteButtonClick}>Delete user</DeleteButton>
+            <Input style={{display:"flex",flexDirection:"row",justifyContent:"space-between",alignItems:"center"}} title={"Delete this category"} subtitle={"Once you delete a category, there is no going back. Please be certain."}>
+                <DeleteButton disabled={isLoading} onClick={handleDeleteButtonClick}>Delete category</DeleteButton>
             </Input>
         </FormDefaultSection>
     )

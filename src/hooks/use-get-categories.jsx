@@ -3,7 +3,7 @@ import useSendRequest from "./use-send-request";
 
 
 
-export default function useGetCategories(form){
+export default function useGetCategories(format){
     const [categories, setCategories] = useState([]);
     const {sendRequest, serverError} = useSendRequest();
 
@@ -12,7 +12,7 @@ export default function useGetCategories(form){
     },[])
 
     async function fetchCategoriesNested(){
-        const {request, response} = await sendRequest(`/api/categories/${form}`);
+        const {request, response} = await sendRequest(`/api/categories/${format}`);
 
         if (request?.status == 200){
             setCategories(response.data.categories);

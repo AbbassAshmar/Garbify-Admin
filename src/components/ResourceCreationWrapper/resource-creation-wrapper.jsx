@@ -46,7 +46,7 @@ export default function ResourceCreationWrapper({children, endpointURL, handleDa
     const {sendRequest ,serverError} = useSendRequest(userState);
 
     const [resultPopUp, setResultPopUp] = useState({show:false,status:"",message:""});
-    const {isLoading, isSuccess, inputErrors, handleFormSubmit:handleSubmit} = useCreateResource(sendRequest);
+    const {isLoading, isSuccess, inputErrors, handleFormSubmit:handleSubmit} = useCreateResource({sendRequest,userState});
 
     const [showSuccessPopUP, setShowSuccessPopUp] = useState(false);
 
