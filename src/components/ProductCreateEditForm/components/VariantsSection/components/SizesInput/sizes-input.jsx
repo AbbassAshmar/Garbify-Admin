@@ -55,14 +55,21 @@ background-color: var(--secondary-color);
 
 export default function SizesInput({formResetClicked, errors,setFormData, formData}){
     const [sizeInputValue,setSizeInputValue] = useState("");    
-    const [tableHeadings, setTableHeadings] = useState(['']);
+    const [tableHeadings, setTableHeadings] = useState([]);
   
     useEffect(()=>{
         if (formResetClicked){
-            setTableHeadings(['']);
             setSizeInputValue('');
         }
     },[formResetClicked])
+    
+    useEffect(()=>{
+        if (formData.sizes_data.length){
+            setTableHeadings(formData.sizes_data[0].alternative_sizes.map(
+                size => size.unit
+            ))
+        }
+    },[formData.sizes_data])
 
     function handleSizesUnitInputChange(e){
         setFormData(prev => ({

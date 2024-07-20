@@ -69,7 +69,7 @@ export default function EditProduct(){
             selling_price : product.selling_price || '', 
             category_id : product.category?.id || '',
             images_data : [],
-            colors : product.colors?.map(color => color.name) || [],
+            colors : product.colors?.map(color => color.color) || [],
             tags : product?.tags.map(tag => tag.name) || [],
             sizes : product?.sizes.map(size => size.size) || [],
             sizes_data : product.sizes || [],
@@ -79,14 +79,22 @@ export default function EditProduct(){
                 image : {file :'',url : product.thumbnail?.image_url || ''}
             }
         };
-        
-        for (const color in product?.images){
+      
+        for (const color in (product?.images || [])){
+            const images = product.images[color].filter(image => (
+                image.image_url != data.thumbnail_data.image.url
+            ))
+
+            if (images.length == 0){
+                continue;
+            }
+
             data.images_data.push({
-                id : Date.now() , 
+                id : color, 
                 color : color, 
-                images : product.images.map(image => ({
+                images :images.map(image => ({
                     file : "", url : image.image_url
-                }))
+                })) 
             })
         }
 
@@ -98,7 +106,7 @@ export default function EditProduct(){
                 sale_end_date : product.sale?.ends_at || '',
                 discount_percentage : product.sale?.sale_percentage || ''
             }
-            data = {...data , sale};
+            data = {...data , ...sale};
         }     
 
         return data;
@@ -136,7 +144,6 @@ export default function EditProduct(){
                 <ResourceError message={showErrorPage} />
             </DefaultPageHeader>
         )
-
     }
 
     return(

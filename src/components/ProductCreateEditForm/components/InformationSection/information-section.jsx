@@ -22,7 +22,7 @@ transition: border .3s;
     color:#A8AAAE;
 }
 `
-const SelectField = styled.select`
+export const SelectField = styled.select`
 width:100%;
 padding:.5rem;
 font-weight:500;

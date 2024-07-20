@@ -1,6 +1,6 @@
 export default function processProductData(formEvent, formData, isEditing) {
     const formObject = new FormData(formEvent.target);
-
+    console.log(formData);
     // Handle thumbnail data
     appendThumbnailData(formObject, formData.thumbnail_data);
 
@@ -16,6 +16,9 @@ export default function processProductData(formEvent, formData, isEditing) {
     appendArrayData(formObject, 'colors', formData.colors);
     appendArrayData(formObject, 'tags', formData.tags);
     appendOtherData(formObject, formData);
+
+    appendDateTimeField(formObject, formData, "sale_start_date");
+    appendDateTimeField(formObject, formData, "sale_end_date");
 
     return formObject;
 }
@@ -70,12 +73,15 @@ function appendArrayData(formObject, key, dataArray) {
     dataArray.forEach(item => formObject.append(`${key}[]`, item));
 }
 
+function appendDateTimeField(formObject,formDate, dateTime){
+    formObject.append(dateTime, formDate[dateTime].replace("T", " "));
+}
+
 function appendOtherData(formObject, formData) {
     const otherData = [
         'sizes_unit', 'name', 'description', 'status', 'type', 
         'original_price', 'selling_price', 'quantity', 'category_id', 
-        'sale', 'sale_quantity', 'sale_start_date', 'sale_end_date', 
-        'discount_percentage'
+        'sale', 'sale_quantity','discount_percentage'
     ];
 
     otherData.forEach(key => {

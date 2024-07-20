@@ -5,7 +5,7 @@ import PlusSignCircle from "../../../../../../../../components/PlusSignCircle/pl
 
 export default function SizesTable({formResetClicked,tableHeadings,setTableHeadings, formData, setFormData}){
     const [isInputFocused, setInputFocused] = useState('');
-    const [showTable,setShowTable] = useState(false);
+    const [showTable,setShowTable] = useState(true);
     const [buttonError,setButtonError] = useState('');
 
     useEffect(()=>{
@@ -18,20 +18,22 @@ export default function SizesTable({formResetClicked,tableHeadings,setTableHeadi
     useEffect(()=>{
         if (!formData.sizes.length) 
         setShowTable(false);
-    },[formData.sizes])
+    },[JSON.stringify(formData.sizes)])
 
+    useEffect(()=>{
+        if (formData.sizes_data[0]?.alternative_sizes.length) 
+        setShowTable(true);
+    },[JSON.stringify(formData.sizes_data)])
+    
     useEffect(()=>{
         if (!showTable){
             setTimeout(()=>{
-                setTableHeadings(['']);
+                setTableHeadings([]);
                 setFormData(prev => ({
                     ...prev, 
                     sizes_data : prev.sizes_data.map(size => ({
                         ...size,
-                        alternative_sizes : [{
-                            size:'',
-                            unit:''
-                        }]
+                        alternative_sizes : []
                     }))
                 }))
             },300);
@@ -78,8 +80,22 @@ export default function SizesTable({formResetClicked,tableHeadings,setTableHeadi
             setButtonError('please choose your sizes and a sizes measurement unit.')
             return 
         }
+
+        if (!showTable){
+            setShowTable(true);
+            setTableHeadings([""]);
+            setFormData(prev => ({
+                ...prev, 
+                sizes_data : prev.sizes_data.map(size => ({
+                    ...size,
+                    alternative_sizes : [{size:"",unit:""}]
+                }))
+            }))
+        }else{
+            setShowTable(false);
+        }
+
         setButtonError("");
-        setShowTable(!showTable);
     }
 
     function handleHeadingInputChange(e,index){
@@ -117,7 +133,7 @@ export default function SizesTable({formResetClicked,tableHeadings,setTableHeadi
                     <thead>
                         <TRow>
                             <THeading>{formData.sizes_unit || 'sizing*'}</THeading>
-                            {tableHeadings && tableHeadings.map((head,index)=>(
+                            {tableHeadings.length > 0 && tableHeadings.map((head,index)=>(
                                 <THeading $isFocused={isInputFocused==formData.sizes_unit+index} key={index}>
                                     <DataInput 
                                     onChange={(e)=>handleHeadingInputChange(e,index)}
@@ -136,11 +152,11 @@ export default function SizesTable({formResetClicked,tableHeadings,setTableHeadi
                         {formData.sizes.map((size,sizeIndex)=>(
                             <TRow key={size}>
                                 <TData>{size}</TData>
-                                {tableHeadings && tableHeadings.map((_,alternativeIndex)=>(
+                                {tableHeadings.length > 0 && tableHeadings.map((_,alternativeIndex)=>(
                                     <TData $isFocused={isInputFocused==size+alternativeIndex} key={alternativeIndex}>
                                         <DataInput
                                         onChange={(e)=>handleCellInputChange(e,sizeIndex,alternativeIndex)}  
-                                        value={formData.sizes_data[sizeIndex].alternative_sizes[alternativeIndex].size}      
+                                        value={(formData.sizes_data[sizeIndex].alternative_sizes[alternativeIndex]?.size || "")}      
                                         type="text" placeholder="value"
                                         $isFocused={isInputFocused==size+alternativeIndex} 
                                         onBlur={handleTableInputsBlur} 

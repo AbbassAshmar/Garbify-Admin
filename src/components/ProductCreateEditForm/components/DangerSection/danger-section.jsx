@@ -23,6 +23,10 @@ box-shadow: 0px 0px 8px rgba(0,0,0,.4);
 &:hover{
     background-color: darkred;
 }
+&:disabled{
+    color:black;
+    background-color: grey;
+}
 `
 
 export default function DangerSection({formData, setFormData}){
@@ -30,7 +34,6 @@ export default function DangerSection({formData, setFormData}){
     const navigate = useNavigate();
 
     const [resultPopUp, setResultPopUp] = useState({show:false,status:"",message:""});
-    const [error, setError] = useState("");
 
     const userState = useUserState();
     const {sendRequest, serverError} = useSendRequest(userState);
@@ -63,7 +66,7 @@ export default function DangerSection({formData, setFormData}){
     async function requestDeleteProduct(id){
         setIsLoading(true);
 
-        const URL = `/products/${id}`;
+        const URL = `/api/products/${id}`;
         const INIT = {method:"DELETE"};
 
         const {request, response} = await sendRequest(URL,INIT);

@@ -27,7 +27,7 @@ export default function ProductCreateEditForm({editMode,formData, inputErrors,fo
         <Content>
             <InformationPricingContainer>
                 <InformationSection errors={inputErrors} formData={formData} setFormData={setFormData}/>
-                <PricingSection errors={inputErrors} formData={formData} setFormData={setFormData}/>
+                <PricingSection editMode={editMode} errors={inputErrors} formData={formData} setFormData={setFormData}/>
             </InformationPricingContainer>
             <VariantsClassificationContainer>
                 <VariantsSection errors={inputErrors} formResetClicked={formResetClicked} formData={formData} setFormData={setFormData}/>
