@@ -2,6 +2,7 @@ import Input from "../../../../components/Input/input";
 import styled from "styled-components";
 import { TextInputField } from "../../../../components/Input/input";
 import FormDefaultSection from "../../../../components/FormDefaultSection/form-default-section";
+import useGetProductStatuses from "../../../../hooks/use-get-product-statuses";
 
 const TextAreaField = styled.textarea`
 resize: none;
@@ -38,6 +39,8 @@ transition: border .3s;
 `
 
 export default function InformationSection({errors,formData, setFormData}){
+    const [statuses] = useGetProductStatuses();
+
     function handleInputValueChange(e,name){
         setFormData((prev) => ({...prev, [name] : e.target.value}));
     }
@@ -55,8 +58,11 @@ export default function InformationSection({errors,formData, setFormData}){
             </Input>
             <Input label={"product_status_input"} title={"Status"} errors={errors?.messages['status']}>
                 <SelectField value={formData.status} onChange={e=>handleInputValueChange(e,'status')} id="product_status_input">
-                    <option value="in stock">in stock</option>
-                    <option value="out of stock">out of stock</option>
+                    {statuses.length > 0 && statuses.map((status)=>(
+                        <option key={status.id} value={status.id}>
+                            {status.name}
+                        </option>
+                    ))}
                 </SelectField>
             </Input>
         </FormDefaultSection>
