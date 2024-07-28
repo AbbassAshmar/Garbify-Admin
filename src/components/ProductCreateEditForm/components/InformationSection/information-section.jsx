@@ -56,8 +56,9 @@ export default function InformationSection({errors,formData, setFormData}){
             <Input label={"product_quantity_input"} title={"Quantity"} errors={errors?.messages['quantity']}>
                 <TextInputField value={formData.quantity} onChange={e=>handleInputValueChange(e,'quantity')} $error={errors?.messages['quantity']} id="product_quantity_input" type="number" min="0" placeholder="0"/>
             </Input>
-            <Input label={"product_status_input"} title={"Status"} errors={errors?.messages['status']}>
-                <SelectField value={formData.status} onChange={e=>handleInputValueChange(e,'status')} id="product_status_input">
+            <Input label={"product_status_input"} title={"Status"} errors={errors?.messages['status_id']}>
+                <SelectField defaultValue={""} value={formData.status_id} onChange={e=>handleInputValueChange(e,'status_id')} id="product_status_input">
+                    <option disabled value={""}> -- select an option -- </option>
                     {statuses.length > 0 && statuses.map((status)=>(
                         <option key={status.id} value={status.id}>
                             {status.name}

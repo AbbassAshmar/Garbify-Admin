@@ -7,7 +7,7 @@ const initialFormData = {
     name: '',
     description: '',
     quantity: '',
-    status: '',
+    status_id: '',
     original_price: '',
     selling_price: '',
     sale: 0,

@@ -153,7 +153,6 @@ export default function SizesInput({formResetClicked, errors,setFormData, formDa
                             <Size key={size} onClick={(e)=>handleSizeClick(size)}>
                                 <p>{size}</p>
                                 <i style={{color:"#8D8E92"}} className="fa-solid fa-xmark" />
-                                <input type="hidden" name="sizes[]" value={size} />
                             </Size>
                         ))}
                     </SizesListContainer>

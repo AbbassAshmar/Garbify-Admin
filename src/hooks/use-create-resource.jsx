@@ -42,6 +42,7 @@ export default function useCreateResource({sendRequest,userState}) {
     }
     const handleFormSubmit = async (url, data, onSuccess, onError) => {
         setIsLoading(true);
+
         const INIT = {
             method: "POST",
             body: data,

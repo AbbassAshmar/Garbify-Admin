@@ -5,20 +5,15 @@ export default function useEditResource({sendRequest, userState}) {
     const [isSuccess, setIsSuccess] = useState(false);
     const [inputErrors, setInputErrors] = useState({ fields: [], messages: {} });
 
-    const handleFormSubmit = async (url, data, onSuccess, onError) => {
-        setIsLoading(true);
-        const INIT = {
-            method: "PATCH",
-            body: data,
-            headers: { // don't specify content-type
-                'accept': 'application/json',
-                'Authorization': 'Bearer ' + userState?.token
-            },
+
+    function handleResponse(request, response, onSuccess, onError){
+        if (!request) {
+            setIsSuccess(false);
+            setInputErrors({fields:[] , messages:{}});
+            return;
         };
 
-        const {request,response} = await sendRequest(url, INIT);
-
-        if (request?.status == 200){
+        if (request.status == 200){
             setInputErrors({fields:[] , messages:{}});
             setIsSuccess(true);
             onSuccess();
@@ -26,22 +21,48 @@ export default function useEditResource({sendRequest, userState}) {
         } 
         
         //validation error
-        else if (request?.status == 400){
+        else if (request.status == 400){
             setInputErrors({ fields: response.metadata.error_fields, messages: response.error.details });
             onError(response.error.message);
+            setIsSuccess(false);
         } 
         
         //other errors
         else  {
+            setIsSuccess(false);
             setInputErrors({fileds:[], messages:{}});
+
             if (response?.error?.message){
                 onError(response.error.message)
             }else{
                 onError("Unexpected error... try again later")
             }
         }
-        
-        setIsSuccess(false);
+    }
+
+    const handleFormSubmit = async (url, data, onSuccess, onError) => {
+        setIsLoading(true);
+        data.append("_method", 'PATCH');
+
+        for (let i of data.entries()){
+            console.log(i);
+        }
+
+        const INIT = {
+            method: "POST",
+            body: data,
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + userState?.token
+            },
+        };
+
+        console.log(INIT);
+
+        const {request,response} = await sendRequest(url, INIT);
+        console.log(request);
+        console.log(response);
+        handleResponse(request, response, onSuccess, onError);
         setIsLoading(false);
     };
 

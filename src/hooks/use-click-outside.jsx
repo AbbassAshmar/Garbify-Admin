@@ -7,7 +7,7 @@ export default function useClickOutside(refs,state,callback){
             let contains = false;
 
             for (let element of refs){
-                if (element.current.contains(e.target) ){
+                if (element.current?.contains(e.target)){
                     contains = true 
                     break;
                 }

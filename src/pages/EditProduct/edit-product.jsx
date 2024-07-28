@@ -39,9 +39,10 @@ export default function EditProduct(){
 
     const [formResetClicked, setFormResetClicked] = useState(false);
     const [inputErrors,setInputErrors] = useState({fields : [] , messages : {}});
-    const [formData, setFormData] = useState(initialFormData);
-
     const [showErrorPage, setShowErrorPage] = useState("");
+
+    const [formData, setFormData] = useState(initialFormData);
+    const [originalProduct, setOriginalProduct] = useState(initialFormData);
 
     useEffect(() => {
         if (formResetClicked) 
@@ -117,25 +118,23 @@ export default function EditProduct(){
             setShowErrorPage("Servers are down at the moment. Try again later.");
             return;
         }
-
         if (request.status == 200){
             let product = response.data.product;
             let data = transferProductToFormData(product);
             setFormData(prev => ({...prev, ...data}));
+            setOriginalProduct(prev => ({...prev, ...data}));
             setShowErrorPage("");
         }
-
         else if (request.status == 404){
             setShowErrorPage(`The product you are looking for does not exist !`);
         }
-
         else {
             setShowErrorPage(`An Unexpected Error happened...Try again later.`);
         }
     }
 
     function handleData(formEvent) {
-        return processProductData(formEvent,formData,true);
+        return processProductData(formEvent,formData,true,originalProduct);
     }
 
     if (showErrorPage != ""){
