@@ -135,24 +135,78 @@ font-size:var(--small-1);
 width: fit-content;
 border-bottom: 2px solid var(--secondary-color);
 `
-export default function CategoryParentPicker({errors,formData, setFormData}){
+export default function CategoryParentPicker({errors,formData, setFormData, isEditing}){
     const [categories, setCategories] = useGetCategories("nested");
 
 	const [currentPath, setCurrentPath] = useState(['categories']);
 	const [selectedPath,setSelectedPath] = useState('');
 
-	const [currentCategories,setCurrentCategories] = useState({display_name:"categories", id : -1, children: []});
+	const [currentCategory,setCurrentCategory] = useState({display_name:"categories", id : -1, children: []});
   	const [categoriesHistory,setCategoriesHistory] = useState([]);
 
-	useEffect(()=>{
-        setCurrentCategories((prev) => ({...prev,children:categories}));
+    useEffect(()=>{
+        if (isEditing){
+            removeSelectedCategoryFromCategories({id : -1, children : categories});
+        }
     },[categories])
 
-    function updateCurrentCategories(category){
+    useEffect(()=>{
+        if (formData['parent_id'] != '' && isEditing){
+            findSelectedPath();
+        }
+    },[formData, categories])
+
+    useEffect(()=>{
+        if (currentCategory?.display_name == "categories" && currentCategory?.children?.length == 0)
+        setCurrentCategory((prev) => ({...prev,children:categories}));
+    },[categories])
+
+    function removeSelectedCategoryFromCategories(currentCategory){
+        currentCategory.children.forEach(child =>{
+            if (child.id == formData.id){
+                
+                currentCategory = {
+                    ...currentCategory, 
+                    children : currentCategory.children.filter(_child => (
+                        child.id !=_child.id
+                    ))
+                }
+
+                setCategories([
+                    ...categories.filter(_child => _child.id != currentCategory.id), 
+                    currentCategory
+                ])
+            }
+        })
+    }
+
+    function findSelectedPath(){
+        function helper(category, path, history){
+            if (!category) return;
+
+            if (category.id == formData.parent_id){
+                path = [...path, category.display_name];
+                setCurrentPath(path);
+                setSelectedPath(`/ ${path.join(" / ")}`);
+                setCurrentCategory(category);
+                setCategoriesHistory(history);
+                return;
+            }
+
+            category.children?.forEach(child => {
+                helper(child, [...path, category.display_name], [...history, category])
+            })
+        }
+
+        const _categories = {display_name:"categories", id : -1, children: categories}
+        helper(_categories, [], []);
+    }
+
+    function updatecurrentCategory(category){
         //add to history the old state
-        setCategoriesHistory([...categoriesHistory, currentCategories]);
-        // update currentCategories to children of category having id = categoryID
-        setCurrentCategories(category)
+        setCategoriesHistory([...categoriesHistory, currentCategory]);
+        // update currentCategory to children of category having id = categoryID
+        setCurrentCategory(category)
 		// update the path
 		setCurrentPath([...currentPath,category.display_name]);
   	}
@@ -163,13 +217,13 @@ export default function CategoryParentPicker({errors,formData, setFormData}){
         let newCategoriesHistory = [...categoriesHistory];
         let latestInHistory = newCategoriesHistory.pop(-1)
 
-        setCurrentCategories(latestInHistory);
+        setCurrentCategory(latestInHistory);
         setCategoriesHistory(newCategoriesHistory);
 		setCurrentPath((prev) => prev.slice(0,-1))
     }
 
 	function handleAddHereButtonClick(){
-		setFormData(prev => ({...prev, parent_id : currentCategories.id}));
+		setFormData(prev => ({...prev, parent_id : currentCategory.id}));
 		setSelectedPath(`/ ${currentPath.join(" / ")}`);
 	}
 
@@ -188,8 +242,8 @@ export default function CategoryParentPicker({errors,formData, setFormData}){
 						</BackButton>
 						<CurrentPathText>/ {currentPath.join(" / ")}</CurrentPathText>
 					</BackButtonAndPath>
-                    {currentCategories.children.length > 0 && currentCategories.children.map(category=>(
-                        <CategoryContainer key={category.id} type="button" onClick={e=>updateCurrentCategories(category)}>
+                    {currentCategory.children.length > 0 && currentCategory.children.map(category=>(
+                        <CategoryContainer key={category.id} type="button" onClick={e=>updatecurrentCategory(category)}>
                             <div style={{display:'flex',gap:'1rem', alignItems:"center"}}>
                                 <CategoryName>{category.display_name}</CategoryName>
                                 <SubcategoriesCount>({category.children?.length} subcategories)</SubcategoriesCount>
@@ -202,8 +256,8 @@ export default function CategoryParentPicker({errors,formData, setFormData}){
                             <i style={{lineHeight:"16px"}} className="fa-solid fa-plus"/>
                             <p style={{lineHeight:"16px"}}>Add here</p>
                         </div>
-                        <CheckBox $checked={formData.parent_id == currentCategories.id}>
-                            {formData.parent_id == currentCategories.id && <i style={{fontSize:"14px", color:'var(--main-color)'}} className="fa-solid fa-check" />}
+                        <CheckBox $checked={formData.parent_id == currentCategory.id}>
+                            {formData.parent_id == currentCategory.id && <i style={{fontSize:"14px", color:'var(--main-color)'}} className="fa-solid fa-check" />}
                         </CheckBox>
                     </AddHereButton>
                 </CategoriesPickerContainer>

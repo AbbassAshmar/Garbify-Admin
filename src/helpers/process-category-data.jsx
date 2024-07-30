@@ -1,27 +1,30 @@
-export default function processCategoryData(formEvent, formData, isEditing) {
+export default function processCategoryData(formEvent, formData, isEditing, originalData) {
     const formObject = new FormData(formEvent.target);
 
-    // Handle thumbnail data
-    appendProfilePicture(formObject, formData.image);
+    appendCategoryImage(formObject, formData, isEditing, originalData);
 
     // Append other form data
-    appendOtherData(formObject, formData);
+    appendOtherData(formObject, formData, isEditing, originalData);
 
     return formObject;
 }
 
-
-function appendProfilePicture(formObject, image) {
-    formObject.append('image', image.file);
+function appendCategoryImage(formObject, formData, isEditing, originalData) {
+    console.log(formData['image'].file != originalData['image'].file)
+    if (!isEditing || (isEditing && formData['image'].file != originalData['image'].file)){
+        formObject.append('image', formData['image'].file);
+    }
 }
 
-function appendOtherData(formObject, formData) {
+function appendOtherData(formObject, formData, isEditing, originalData) {
     const otherData = [
         'name' , 'description', 'parent_id', 'display_name'
     ];
 
     otherData.forEach(key => {
-        formObject.append(key, formData[key]);
+        if (!isEditing || (isEditing && formData[key] != originalData[key])){
+            formObject.append(key, formData[key]);
+        }
     });
 }
 

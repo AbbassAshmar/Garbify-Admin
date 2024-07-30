@@ -118,6 +118,7 @@ export default function EditProduct(){
             setShowErrorPage("Servers are down at the moment. Try again later.");
             return;
         }
+        
         if (request.status == 200){
             let product = response.data.product;
             let data = transferProductToFormData(product);

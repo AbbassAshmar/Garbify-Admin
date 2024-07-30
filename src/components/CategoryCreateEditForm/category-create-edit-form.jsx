@@ -14,12 +14,11 @@ box-shadow: 0px 0px 15px rgba(0,0,0,.11) ;
 `
 
 
-export default function CategoryCreateEditForm({editMode,formData, inputErrors, setFormData}){
-
+export default function CategoryCreateEditForm({editMode,formData, inputErrors, setFormData, isEditing=false}){
     return( 
         <MediaDetailsContent>   
             <MediaSection errors={inputErrors} formData={formData} setFormData={setFormData}/>
-            <DetailsSection formData={formData} setFormData={setFormData} errors={inputErrors} />
+            <DetailsSection formData={formData} setFormData={setFormData} errors={inputErrors} isEditing={isEditing}/>
             {editMode && <DangerSection />}
         </MediaDetailsContent>
     )

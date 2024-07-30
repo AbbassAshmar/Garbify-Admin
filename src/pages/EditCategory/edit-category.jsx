@@ -23,6 +23,7 @@ export default function EditCategry(){
     const {sendRequest, serverError} = useSendRequest(userState);
 
     const [formData, setFormData] = useState(initialFormData);
+    const [originalCategory, setOriginalCategory] = useState(initialFormData);
     const [formResetClicked, setFormResetClicked] = useState(false);
 
     const [showErrorPage, setShowErrorPage] = useState("");
@@ -53,6 +54,7 @@ export default function EditCategry(){
             let category = response.data.category;
             let data = transformCategoryToFormData(category);
             setFormData(prev => ({...prev, ...data}));
+            setOriginalCategory(prev => ({...prev, ...data}));
             setShowErrorPage("");
         }
 
@@ -67,18 +69,18 @@ export default function EditCategry(){
 
     function transformCategoryToFormData(category){
         let data = {
-            name : category.name || '',
-            description : category.description || '',
-            display_name : category.display_name || '',
-            image : {file : "", url : category.image.images_url || ''},
-            parent_id :  category.parent_id || '',
+            name : category?.name || '',
+            description : category?.description || '',
+            display_name : category?.display_name || '',
+            image : {file : "", url : category?.image_url || ''},
+            parent_id :  category?.parent_id == null ? -1 : (category?.parent_id || ''),
         };
 
         return data;
     }
 
     function handleData(formEvent) {
-        return processCategoryData(formEvent,formData,true);
+        return processCategoryData(formEvent,formData, true, originalCategory);
     }
 
     if (showErrorPage != ""){
@@ -98,6 +100,7 @@ export default function EditCategry(){
         resource={"category"} 
         handleData={handleData}>
             <CategoryCreateEditForm 
+            isEditing={true}
             inputErrors={inputErrors} 
             formData={formData} 
             setFormData={setFormData}/>
